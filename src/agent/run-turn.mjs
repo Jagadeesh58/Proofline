@@ -239,14 +239,13 @@ export async function runTurn({
         onTiming,
         onText: (chunk) => {
           roundChunks.push(chunk);
-          if (!canCallTools) {
+          if (streamGate) {
             if (firstTokenTime === null) firstTokenTime = Date.now() - started;
-            if (streamGate) {
-              streamGate.push(chunk);
-            } else {
-              streamedDirectly = true;
-              emit(send, 'token', { text: chunk });
-            }
+            streamGate.push(chunk);
+          } else if (!canCallTools) {
+            if (firstTokenTime === null) firstTokenTime = Date.now() - started;
+            streamedDirectly = true;
+            emit(send, 'token', { text: chunk });
           }
         },
       });
@@ -555,7 +554,7 @@ export async function runTurn({
       continue;
     }
 
-    if (streamGate && canCallTools) {
+    if (streamGate && canCallTools && !firstTokenTime) {
       for (const chunk of roundChunks) {
         if (firstTokenTime === null) firstTokenTime = Date.now() - started;
         streamGate.push(chunk);

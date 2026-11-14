@@ -156,9 +156,10 @@ async function postJson(body, signal, url = endpoint(false)) {
 
 function requestController(signal) {
   const controller = new AbortController();
+  const timeoutMs = config.geminiTimeoutMs || 8_000;
   const timeout = setTimeout(
     () => controller.abort(new Error('Gemini request timed out.')),
-    config.requestTimeoutMs
+    timeoutMs
   );
   const relayAbort = () => controller.abort(signal.reason);
   signal?.addEventListener('abort', relayAbort, { once: true });
@@ -300,6 +301,9 @@ export async function generateStream({
           if (callTimestamps.length) callTimestamps.pop();
           const waitMs = error.retryAfterMs ?? 5000;
           if (waitMs <= 2000 && attempt === 1) {
+            if (totalBackoffMs + waitMs > (config.maxTurnBackoffMs || 10_000)) {
+              break;
+            }
             onRetry?.();
             totalRetries += 1;
             totalBackoffMs += waitMs;
@@ -316,6 +320,9 @@ export async function generateStream({
             break;
           }
           if (waitMs <= 20_000 && attempt === 1) {
+            if (totalBackoffMs + waitMs > (config.maxTurnBackoffMs || 10_000)) {
+              break;
+            }
             const seconds = Math.max(1, Math.ceil(waitMs / 1000));
             onStatus?.(`Waiting for the model rate limit, about ${seconds} seconds`);
             onRetry?.();
@@ -426,6 +433,9 @@ export async function generateJson({ prompt, schema, signal, onRetry, onStatus, 
           if (callTimestamps.length) callTimestamps.pop();
           const waitMs = error.retryAfterMs ?? 5000;
           if (waitMs <= 2000 && attempt === 1) {
+            if (totalBackoffMs + waitMs > (config.maxTurnBackoffMs || 10_000)) {
+              break;
+            }
             onRetry?.();
             totalBackoffMs += waitMs;
             await wait(waitMs, signal);
@@ -440,6 +450,9 @@ export async function generateJson({ prompt, schema, signal, onRetry, onStatus, 
             break;
           }
           if (waitMs <= 20_000 && attempt === 1) {
+            if (totalBackoffMs + waitMs > (config.maxTurnBackoffMs || 10_000)) {
+              break;
+            }
             const seconds = Math.max(1, Math.ceil(waitMs / 1000));
             onStatus?.(`Waiting for the model rate limit, about ${seconds} seconds`);
             onRetry?.();

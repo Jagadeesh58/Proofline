@@ -61,6 +61,10 @@ export const config = Object.freeze({
   maxGeminiCalls: Math.min(10, number('MAX_GEMINI_CALLS', 10)),
   extractionMode: process.env.EXTRACTION_MODE === 'per_entity' ? 'per_entity' : 'batched',
   requestTimeoutMs: number('REQUEST_TIMEOUT_MS', 25_000),
+  geminiTimeoutMs: 8_000,
+  tavilySearchTimeoutMs: 4_000,
+  tavilyExtractTimeoutMs: 5_000,
+  maxTurnBackoffMs: 10_000,
 });
 
 export const userFacing = Object.freeze({

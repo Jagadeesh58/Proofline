@@ -49,9 +49,12 @@ async function request(endpoint, payload, signal, onRetry) {
   if (cached && cached.expiresAt > Date.now()) {
     return JSON.parse(JSON.stringify(cached.data));
   }
+  const perCallTimeout = endpoint === 'search'
+    ? (config.tavilySearchTimeoutMs || 4_000)
+    : (config.tavilyExtractTimeoutMs || 5_000);
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(new Error('Request timed out')), config.requestTimeoutMs);
+    const timeout = setTimeout(() => controller.abort(new Error('Request timed out')), perCallTimeout);
     const relayAbort = () => controller.abort(signal.reason);
     signal?.addEventListener('abort', relayAbort, { once: true });
     try {

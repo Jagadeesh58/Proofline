@@ -16,6 +16,20 @@ function validDate(value) {
   return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month && date.getUTCDate() === day;
 }
 
+export async function mapConcurrent(items, limit, fn) {
+  const results = new Array(items.length);
+  let index = 0;
+  async function worker() {
+    while (index < items.length) {
+      const i = index++;
+      results[i] = await fn(items[i], i);
+    }
+  }
+  const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());
+  await Promise.all(workers);
+  return results;
+}
+
 export function validateWebSearchInput(
   rawInput,
   todayUtc = new Date().toISOString().slice(0, 10),
@@ -500,7 +514,7 @@ export async function runWebSearch({
   budget.searches += calls.length;
 
   const searchStarted = Date.now();
-  const searchResults = await Promise.allSettled(calls.map(async (call) => {
+  const searchResults = await mapConcurrent(calls, 3, async (call) => {
     const callStart = Date.now();
     try {
       const res = await searchFn({
@@ -508,15 +522,15 @@ export async function runWebSearch({
         onRetry: () => { budget.providerRetries = (budget.providerRetries || 0) + 1; },
       });
       onTiming?.({ type: 'search', q: call.q, topic: call.topic, duration_ms: Date.now() - callStart, ok: true });
-      return res;
+      return { status: 'fulfilled', value: res };
     } catch (err) {
       onTiming?.({
         type: 'search', q: call.q, topic: call.topic, duration_ms: Date.now() - callStart,
         ok: false, error: err.message,
       });
-      throw err;
+      return { status: 'rejected', reason: err };
     }
-  }));
+  });
   const allSources = [];
   const freeQueryGroups = [];
   for (let index = 0; index < searchResults.length; index += 1) {
@@ -575,7 +589,7 @@ export async function runWebSearch({
       + 'Narrow the request; no page extracts were started.';
     throw new ToolInputError(message);
   }
-  const targetPages = await Promise.all(targetContexts.map(async (context) => {
+  const targetPages = await mapConcurrent(targetContexts, 3, async (context) => {
     const plan = recalledClaims?.find((claim) => claim.entity_key === context.entityKey)?.plan_key
       || store.getClaimsForEntities([context.entityKey])
         .find((claim) => claim.entity_key === context.entityKey)?.plan_key
@@ -613,6 +627,7 @@ export async function runWebSearch({
           entity: context.entity,
           searchFn,
           extractFn,
+          allowRawFallback: false,
           providerErrors,
           onTiming,
         });
@@ -643,7 +658,7 @@ export async function runWebSearch({
       } : null,
       news, news_unavailable_reason: context.newsUnavailableReason || null,
     };
-  }));
+  });
 
   const extractedUrls = new Set(targetContexts.map((context) => context.baselineUrl).filter(Boolean));
   const freeExtractTasks = [];
