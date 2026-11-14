@@ -1,0 +1,582 @@
+{
+  "description": "Offline fixture registry authored for regression measurement. Seeded and non-seeded domains and lookalikes are project fixtures, not a live ownership audit.",
+  "lookalikes": [
+    {
+      "entity": "HubSpot",
+      "url": "https://hubspot.in",
+      "expected": "Third party"
+    },
+    {
+      "entity": "HubSpot",
+      "url": "https://hubspot.co",
+      "expected": "Third party"
+    },
+    {
+      "entity": "HubSpot",
+      "url": "https://hubspot.org",
+      "expected": "Third party"
+    },
+    {
+      "entity": "HubSpot",
+      "url": "https://hubspot.tech",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Salesforce Sales Cloud",
+      "url": "https://salesforce-login.com",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Salesforce Sales Cloud",
+      "url": "https://salesforce.com.evil.example",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Pipedrive",
+      "url": "https://pipedrive-review.com",
+      "expected": "Third party"
+    },
+    {
+      "entity": "GitHub",
+      "url": "https://github-security.net",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Neon",
+      "url": "https://neon-pricing.info",
+      "expected": "Third party"
+    },
+    {
+      "entity": "HubSpot",
+      "url": "https://g2.com/products/hubspot/reviews",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Close",
+      "url": "https://close-crm.com",
+      "category": "CRM",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Attio",
+      "url": "https://attio-login.com",
+      "category": "CRM",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Copper",
+      "url": "https://copper-crm.com",
+      "category": "CRM",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Xata",
+      "url": "https://xata.xyz",
+      "category": "Database",
+      "expected": "Third party"
+    },
+    {
+      "entity": "MotherDuck",
+      "url": "https://motherduck-cloud.com",
+      "category": "Database",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Convex",
+      "url": "https://convex-cloud.com",
+      "category": "Database",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Koyeb",
+      "url": "https://koyeb-app.com",
+      "category": "Hosting",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Sentry",
+      "url": "https://sentry.io.attacker.com",
+      "category": "Developer tools",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Stripe",
+      "url": "https://stripe.com.attacker.net",
+      "category": "Payments",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Duolingo",
+      "url": "https://duolingo.uk",
+      "category": "Consumer apps",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Proton",
+      "url": "https://proton-mail.com",
+      "category": "Office suites",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Paddle",
+      "url": "https://paddle.co.uk",
+      "category": "Payments",
+      "expected": "Third party"
+    },
+    {
+      "entity": "PayPal",
+      "url": "https://paypal-security.com",
+      "category": "Payments",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Airbnb",
+      "url": "https://airbnb-host.com",
+      "category": "Consumer apps",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Postman",
+      "url": "https://postman-api.com",
+      "category": "Developer tools",
+      "expected": "Third party"
+    },
+    {
+      "entity": "PayU India",
+      "url": "https://payu-payments.com",
+      "category": "Payments",
+      "expected": "Third party"
+    },
+    {
+      "entity": "Wise",
+      "url": "https://wise-support.com",
+      "category": "Payments",
+      "expected": "Third party"
+    }
+  ],
+  "case_count": 97,
+  "seeded": [
+    {
+      "entity": "HubSpot",
+      "category": "CRM",
+      "url": "https://hubspot.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Salesforce Sales Cloud",
+      "category": "CRM",
+      "url": "https://salesforce.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Pipedrive",
+      "category": "CRM",
+      "url": "https://pipedrive.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Zoho CRM",
+      "category": "CRM",
+      "url": "https://zoho.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Freshsales",
+      "category": "CRM",
+      "url": "https://freshworks.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "monday CRM",
+      "category": "CRM",
+      "url": "https://monday.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "PostgreSQL",
+      "category": "Database",
+      "url": "https://postgresql.org",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "MySQL",
+      "category": "Database",
+      "url": "https://mysql.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "MongoDB",
+      "category": "Database",
+      "url": "https://mongodb.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Redis",
+      "category": "Database",
+      "url": "https://redis.io",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "CockroachDB",
+      "category": "Database",
+      "url": "https://cockroachlabs.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "PlanetScale",
+      "category": "Database",
+      "url": "https://planetscale.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Neon",
+      "category": "Database",
+      "url": "https://neon.tech",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Supabase",
+      "category": "Database",
+      "url": "https://supabase.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "AWS",
+      "category": "Hosting and cloud",
+      "url": "https://aws.amazon.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Microsoft Azure",
+      "category": "Hosting and cloud",
+      "url": "https://azure.microsoft.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Google Cloud",
+      "category": "Hosting and cloud",
+      "url": "https://cloud.google.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "DigitalOcean",
+      "category": "Hosting and cloud",
+      "url": "https://digitalocean.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Render",
+      "category": "Hosting and cloud",
+      "url": "https://render.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Railway",
+      "category": "Hosting and cloud",
+      "url": "https://railway.app",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Fly.io",
+      "category": "Hosting and cloud",
+      "url": "https://fly.io",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Cloudflare",
+      "category": "Hosting and cloud",
+      "url": "https://cloudflare.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "GitHub",
+      "category": "Developer tools",
+      "url": "https://github.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "GitLab",
+      "category": "Developer tools",
+      "url": "https://gitlab.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Bitbucket",
+      "category": "Developer tools",
+      "url": "https://bitbucket.org",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Linear",
+      "category": "Developer tools",
+      "url": "https://linear.app",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Vercel",
+      "category": "Developer tools",
+      "url": "https://vercel.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Netlify",
+      "category": "Developer tools",
+      "url": "https://netlify.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Atlassian Jira",
+      "category": "Developer tools",
+      "url": "https://atlassian.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Microsoft 365",
+      "category": "Office suites",
+      "url": "https://microsoft.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Google Workspace",
+      "category": "Office suites",
+      "url": "https://google.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Notion",
+      "category": "Office suites",
+      "url": "https://notion.so",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Slack",
+      "category": "Office suites",
+      "url": "https://slack.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Dropbox",
+      "category": "Office suites",
+      "url": "https://dropbox.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Figma",
+      "category": "Consumer and design apps",
+      "url": "https://figma.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Canva",
+      "category": "Consumer and design apps",
+      "url": "https://canva.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Zoom",
+      "category": "Consumer and design apps",
+      "url": "https://zoom.us",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Discord",
+      "category": "Consumer and design apps",
+      "url": "https://discord.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Spotify",
+      "category": "Consumer and design apps",
+      "url": "https://spotify.com",
+      "expected": "Official site (verified)"
+    },
+    {
+      "entity": "Trello",
+      "category": "Consumer and design apps",
+      "url": "https://trello.com",
+      "expected": "Official site (verified)"
+    }
+  ],
+  "non_seeded": [
+    {
+      "entity": "Close",
+      "category": "CRM",
+      "url": "https://close.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Attio",
+      "category": "CRM",
+      "url": "https://attio.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Copper",
+      "category": "CRM",
+      "url": "https://copper.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Xata",
+      "category": "Database",
+      "url": "https://xata.io",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "MotherDuck",
+      "category": "Database",
+      "url": "https://motherduck.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Convex",
+      "category": "Database",
+      "url": "https://convex.dev",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Turso",
+      "category": "Database",
+      "url": "https://turso.tech",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Fly.io",
+      "category": "Hosting",
+      "url": "https://fly.io",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Koyeb",
+      "category": "Hosting",
+      "url": "https://koyeb.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Heroku",
+      "category": "Hosting",
+      "url": "https://heroku.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Sentry",
+      "category": "Developer tools",
+      "url": "https://sentry.io",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Postman",
+      "category": "Developer tools",
+      "url": "https://postman.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Docker",
+      "category": "Developer tools",
+      "url": "https://docker.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "JetBrains",
+      "category": "Developer tools",
+      "url": "https://jetbrains.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Grafana",
+      "category": "Developer tools",
+      "url": "https://grafana.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "HashiCorp",
+      "category": "Developer tools",
+      "url": "https://hashicorp.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Coda",
+      "category": "Office suites",
+      "url": "https://coda.io",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Dropbox",
+      "category": "Office suites",
+      "url": "https://dropbox.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "LibreOffice",
+      "category": "Office suites",
+      "url": "https://libreoffice.org",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Proton",
+      "category": "Office suites",
+      "url": "https://proton.me",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Stripe",
+      "category": "Payments",
+      "url": "https://stripe.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Razorpay",
+      "category": "Payments",
+      "url": "https://razorpay.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Adyen",
+      "category": "Payments",
+      "url": "https://adyen.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Paddle",
+      "category": "Payments",
+      "url": "https://paddle.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "PayPal",
+      "category": "Payments",
+      "url": "https://paypal.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Duolingo",
+      "category": "Consumer apps",
+      "url": "https://duolingo.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Pinterest",
+      "category": "Consumer apps",
+      "url": "https://pinterest.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Airbnb",
+      "category": "Consumer apps",
+      "url": "https://airbnb.com",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "PayU India",
+      "category": "Payments",
+      "url": "https://payu.in",
+      "expected": "Vendor site (not verified)"
+    },
+    {
+      "entity": "Wise",
+      "category": "Payments",
+      "url": "https://wise.com",
+      "expected": "Vendor site (not verified)"
+    }
+  ]
+}

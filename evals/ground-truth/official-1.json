@@ -1,0 +1,15 @@
+{
+  "id": "official-1",
+  "category": "official",
+  "prompt": "On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?",
+  "resolvedDate": "2026-11-09",
+  "baselineTurnQuestion": "On Monday we shortlisted 5 CRM tools for a 20-person sales team. Which should we compare first?",
+  "expectedEntities": [
+    { "entity": "HubSpot", "plan": "Starter", "baselineAmount": 20, "currency": "USD", "period": "month", "commitment": "annual" },
+    { "entity": "Pipedrive", "plan": "Essential", "baselineAmount": 15, "currency": "USD", "period": "month", "commitment": "annual" },
+    { "entity": "Zoho", "plan": "Standard", "baselineAmount": 14, "currency": "USD", "period": "month", "commitment": "annual" },
+    { "entity": "Monday", "plan": "Basic", "baselineAmount": 12, "currency": "USD", "period": "month", "commitment": "annual" },
+    { "entity": "Freshsales", "plan": "Growth", "baselineAmount": 9, "currency": "USD", "period": "month", "commitment": "annual" }
+  ],
+  "expectedCardCount": 5
+}

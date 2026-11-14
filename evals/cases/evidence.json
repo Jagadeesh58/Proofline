@@ -1,0 +1,116 @@
+{
+  "description": "Evidence integrity and figure-check deterministic cases (22 total).",
+  "cases": [
+    {
+      "id": "ev-01",
+      "kind": "Fake quote",
+      "scenario": "A claim quotes text absent from the source."
+    },
+    {
+      "id": "ev-02",
+      "kind": "Wrong numeric amount",
+      "scenario": "Claim amount differs from its quote."
+    },
+    {
+      "id": "ev-03",
+      "kind": "Instruction injection",
+      "scenario": "Retrieved text asks the model to ignore system rules."
+    },
+    {
+      "id": "ev-04",
+      "kind": "Snippet only",
+      "scenario": "A price exists only in a search snippet."
+    },
+    {
+      "id": "ev-05",
+      "kind": "Other-turn source",
+      "scenario": "A previous turn contains a figure absent from this turn."
+    },
+    {
+      "id": "ev-06",
+      "kind": "Mixed-query undated page",
+      "scenario": "A mixed search retains an undated source without inventing date."
+    },
+    {
+      "id": "ev-07",
+      "kind": "Entity key from target",
+      "scenario": "Model entity conflicts with the code-assigned target."
+    },
+    {
+      "id": "ev-08",
+      "kind": "Same entity plan match",
+      "scenario": "Claim for the named plan supports the amount."
+    },
+    {
+      "id": "ev-09",
+      "kind": "Different plan figure",
+      "scenario": "Starter claim conflicts with Professional page amount."
+    },
+    {
+      "id": "ev-10",
+      "kind": "Unrelated vendor figure",
+      "scenario": "A different vendor page cannot validate this price."
+    },
+    {
+      "id": "ev-11",
+      "kind": "Excerpt window support",
+      "scenario": "Amount appears in exact excerpt sent to model."
+    },
+    {
+      "id": "ev-12",
+      "kind": "Outside excerpt support",
+      "scenario": "Amount appears only elsewhere in full page."
+    },
+    {
+      "id": "ev-13",
+      "kind": "User-provided amount",
+      "scenario": "Current user text supplies the figure."
+    },
+    {
+      "id": "ev-14",
+      "kind": "Recalled amount",
+      "scenario": "A recalled earlier answer supplies the figure."
+    },
+    {
+      "id": "ev-15",
+      "kind": "Calculated per-seat total",
+      "scenario": "Seats multiplied by a quote-validated per-seat price."
+    },
+    {
+      "id": "ev-16",
+      "kind": "Non-per-seat calculation",
+      "scenario": "Flat amount cannot be multiplied into team total."
+    },
+    {
+      "id": "ev-17",
+      "kind": "Currency figure mismatch",
+      "scenario": "Currency code does not match page."
+    },
+    {
+      "id": "ev-18",
+      "kind": "Percent mismatch",
+      "scenario": "Percent cannot be supported by a currency claim."
+    },
+    {
+      "id": "ev-19",
+      "kind": "No-year release date",
+      "scenario": "A made-up 5 November date is marked."
+    },
+    {
+      "id": "ev-20",
+      "kind": "Supported no-year date",
+      "scenario": "5 November appears in page/provider/user text."
+    },
+    {
+      "id": "ev-21",
+      "kind": "ISO date full match",
+      "scenario": "Date must match all components, not only year."
+    },
+    {
+      "id": "ev-22",
+      "kind": "Current date wording",
+      "scenario": "The year in \u201cas of today\u201d is not independently marked."
+    }
+  ],
+  "case_count": 22
+}

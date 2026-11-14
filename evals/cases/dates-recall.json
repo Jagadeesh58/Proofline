@@ -1,0 +1,213 @@
+{
+  "description": "Date parsing and memory recall deterministic cases (41 total).",
+  "cases": [
+    {
+      "id": "date-01",
+      "kind": "Today in timezone",
+      "prompt": "Today I asked about an API."
+    },
+    {
+      "id": "date-02",
+      "kind": "Yesterday",
+      "prompt": "What did I ask yesterday?"
+    },
+    {
+      "id": "date-03",
+      "kind": "Last weekday",
+      "prompt": "What did I ask last Tuesday?"
+    },
+    {
+      "id": "date-04",
+      "kind": "Explicit full date",
+      "prompt": "What did I ask on 3 November 2026?"
+    },
+    {
+      "id": "date-05",
+      "kind": "Month-first full date",
+      "prompt": "What did I ask on November 3, 2026?"
+    },
+    {
+      "id": "date-06",
+      "kind": "Day-first full date",
+      "prompt": "What did I ask on 3 November 2026?"
+    },
+    {
+      "id": "date-07",
+      "kind": "ISO date",
+      "prompt": "What happened in our chat on 2026-11-03?"
+    },
+    {
+      "id": "date-08",
+      "kind": "Relative days ago",
+      "prompt": "What did I ask 5 days ago?"
+    },
+    {
+      "id": "date-09",
+      "kind": "Last week",
+      "prompt": "Find our conversation from last week."
+    },
+    {
+      "id": "date-10",
+      "kind": "This week",
+      "prompt": "What did we discuss this week?"
+    },
+    {
+      "id": "date-11",
+      "kind": "Date range",
+      "prompt": "Summarise conversations from 1 to 5 November 2026."
+    },
+    {
+      "id": "date-12",
+      "kind": "Week range",
+      "prompt": "What did we discuss in week 44?"
+    },
+    {
+      "id": "date-13",
+      "kind": "Conflicting dates",
+      "prompt": "What did I ask on 2 and 3 November 2026?"
+    },
+    {
+      "id": "date-14",
+      "kind": "Future date",
+      "prompt": "What will I ask next Friday?"
+    },
+    {
+      "id": "date-15",
+      "kind": "Missing historical date",
+      "prompt": "What did I ask on 1 January 2020?"
+    },
+    {
+      "id": "date-16",
+      "kind": "No-year month date",
+      "prompt": "What did I ask on 5 November?"
+    },
+    {
+      "id": "date-17",
+      "kind": "US no-year month date",
+      "prompt": "What did I ask on Nov 5?"
+    },
+    {
+      "id": "date-18",
+      "kind": "No-year October date",
+      "prompt": "What did I ask on 20 Oct?"
+    },
+    {
+      "id": "date-19",
+      "kind": "No-year year boundary",
+      "prompt": "What did I ask on 31 December?"
+    },
+    {
+      "id": "date-20",
+      "kind": "Display date vs source date",
+      "prompt": "What did I ask on 9 November and when was the answer generated?"
+    },
+    {
+      "id": "date-21",
+      "kind": "Timezone boundary",
+      "prompt": "What did I ask at midnight in Kolkata?"
+    },
+    {
+      "id": "date-22",
+      "kind": "Daylight-saving timezone",
+      "prompt": "What did I ask at midnight in New York?"
+    },
+    {
+      "id": "date-23",
+      "kind": "False-positive date word may",
+      "prompt": "The answer may include a price."
+    },
+    {
+      "id": "date-24",
+      "kind": "False-positive date word sat",
+      "prompt": "The test sat on the table."
+    },
+    {
+      "id": "date-25",
+      "kind": "False-positive ordinal second",
+      "prompt": "The second approach uses caching."
+    },
+    {
+      "id": "date-26",
+      "kind": "False-positive phrase march on",
+      "prompt": "We will march on after lunch."
+    },
+    {
+      "id": "date-27",
+      "kind": "Future weather Friday",
+      "prompt": "What is the weather on Friday?"
+    },
+    {
+      "id": "date-28",
+      "kind": "Imported display date without generation date",
+      "prompt": "Import a turn with created_at only; generation date remains unknown."
+    },
+    {
+      "id": "date-29",
+      "kind": "Imported display date distinct from source date",
+      "prompt": "Display Monday 9 Nov; source generation date 20 Oct."
+    },
+    {
+      "id": "topic-01",
+      "kind": "Topic recall framing",
+      "prompt": "What did I ask earlier about Neon?"
+    },
+    {
+      "id": "topic-02",
+      "kind": "Topic recall framing",
+      "prompt": "Can you remind me what you recommended last time?"
+    },
+    {
+      "id": "topic-03",
+      "kind": "Topic recall framing",
+      "prompt": "The one where you recommended Neon"
+    },
+    {
+      "id": "topic-04",
+      "kind": "Topic recall framing",
+      "prompt": "We discussed HubSpot before; what was the earlier price?"
+    },
+    {
+      "id": "topic-05",
+      "kind": "Topic recall framing",
+      "prompt": "What did I ask you previously about PostgreSQL?"
+    },
+    {
+      "id": "topic-06",
+      "kind": "Topic recall framing",
+      "prompt": "You told me something about Supabase, what was it?"
+    },
+    {
+      "id": "topic-07",
+      "kind": "Topic recall framing",
+      "prompt": "What was I asking about Pipedrive last time?"
+    },
+    {
+      "id": "topic-08",
+      "kind": "Topic recall framing",
+      "prompt": "Has any pricing changed since then?"
+    },
+    {
+      "id": "topic-09",
+      "kind": "Topic recall framing",
+      "prompt": "Earlier, you compared two hosting providers. Which ones?"
+    },
+    {
+      "id": "topic-10",
+      "kind": "Topic recall framing",
+      "prompt": "We talked about this previously; can you bring up that answer?"
+    },
+    {
+      "id": "date-39",
+      "kind": "Noisy recall framing with date filter",
+      "prompt": "Last Tuesday, has any pricing changed since then?",
+      "date_filter": "2026-11-03"
+    },
+    {
+      "id": "date-40",
+      "kind": "No silent weekday substitution",
+      "prompt": "What did I ask you on Friday?",
+      "expected": "No unrelated demo-history substitution"
+    }
+  ],
+  "case_count": 42
+}

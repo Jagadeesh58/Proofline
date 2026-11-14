@@ -1,0 +1,10 @@
+{
+  "description": "The three brief prompts crossed with live, imported, demo and empty history modes.",
+  "prompts": [
+    "On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?",
+    "What did I ask you on 3 November? Is your answer still correct today?",
+    "Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?"
+  ],
+  "history_modes": ["live", "imported", "demo", "empty"],
+  "case_count": 12
+}

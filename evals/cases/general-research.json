@@ -1,0 +1,20 @@
+{
+  "description": "General research prompts for supported, cited answers. These require live model and search providers and an independent grader.",
+  "prompts": [
+    "Compare two current managed PostgreSQL hosting options for a small production app, and distinguish verified facts from unknowns.",
+    "What changed recently in the stable release channels of two widely used backend runtimes?",
+    "Find current public documentation for a web API feature and explain its limitations.",
+    "Compare current free-tier quotas for two developer tools, with billing periods and regions stated only when sourced.",
+    "Summarise three recent official announcements from a named cloud provider and state the publication dates.",
+    "Compare current pricing for two CRM products without mixing annual and monthly terms.",
+    "Find the latest stable version of two database engines and link to release notes.",
+    "Research whether a named framework supports a requested platform today.",
+    "Compare two current serverless hosting plans for a small team, including limits.",
+    "Find current official documentation on a security feature and list any important caveats.",
+    "Research a named company's current public API rate limits and identify the source page date.",
+    "Summarise current support for a language feature across two named runtimes.",
+    "Identify what a vendor has announced since a specific earlier date, using provider publication dates.",
+    "Compare a current database hosting feature across official vendor documentation and a third-party blog.",
+    "Answer a multi-hop question using at least two independent sources, and explain what could not be confirmed."
+  ]
+}

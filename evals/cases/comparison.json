@@ -1,0 +1,106 @@
+{
+  "description": "Comparison status deterministic cases (25 total).",
+  "cases": [
+    {
+      "id": "cmp-01",
+      "scenario": "Monthly vs annual"
+    },
+    {
+      "id": "cmp-02",
+      "scenario": "Promotional price"
+    },
+    {
+      "id": "cmp-03",
+      "scenario": "Seat count / per-seat basis"
+    },
+    {
+      "id": "cmp-04",
+      "scenario": "Same official domain"
+    },
+    {
+      "id": "cmp-05",
+      "scenario": "Different official domains"
+    },
+    {
+      "id": "cmp-06",
+      "scenario": "Third-party aggregator"
+    },
+    {
+      "id": "cmp-07",
+      "scenario": "SEO-labelled source"
+    },
+    {
+      "id": "cmp-08",
+      "scenario": "Lookalike domain"
+    },
+    {
+      "id": "cmp-09",
+      "scenario": "HubSpot .info"
+    },
+    {
+      "id": "cmp-10",
+      "scenario": "Parent-brand Microsoft Dynamics"
+    },
+    {
+      "id": "cmp-11",
+      "scenario": "Parent-brand Salesforce Sales Cloud"
+    },
+    {
+      "id": "cmp-12",
+      "scenario": "Equal limit"
+    },
+    {
+      "id": "cmp-13",
+      "scenario": "Different limit"
+    },
+    {
+      "id": "cmp-14",
+      "scenario": "Newer version"
+    },
+    {
+      "id": "cmp-15",
+      "scenario": "Older version"
+    },
+    {
+      "id": "cmp-16",
+      "scenario": "Beta version channel"
+    },
+    {
+      "id": "cmp-17",
+      "scenario": "Unknown commitment on both sides"
+    },
+    {
+      "id": "cmp-18",
+      "scenario": "Known vs unknown commitment"
+    },
+    {
+      "id": "cmp-19",
+      "scenario": "Different plan alias"
+    },
+    {
+      "id": "cmp-20",
+      "scenario": "Absent baseline plan"
+    },
+    {
+      "id": "cmp-21",
+      "scenario": "Stale page date"
+    },
+    {
+      "id": "cmp-22",
+      "scenario": "Answer-text baseline"
+    },
+    {
+      "id": "cmp-23",
+      "scenario": "Unverified name-matched domain"
+    },
+    {
+      "id": "cmp-24",
+      "scenario": "Reported release after generation date"
+    },
+    {
+      "id": "cmp-25",
+      "scenario": "No earlier record"
+    }
+  ],
+  "case_count": 25
+}

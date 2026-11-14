@@ -1,0 +1,205 @@
+{
+  "description": "Prompt-level search-policy cases. A search is expected for mutable facts; a stable concept should not require web_search.",
+  "cases": [
+    {
+      "id": "trap-01",
+      "expected_search": true,
+      "prompt": "Who is the current CEO of HubSpot?"
+    },
+    {
+      "id": "trap-02",
+      "expected_search": true,
+      "prompt": "Does Neon currently support read replicas on its free plan?"
+    },
+    {
+      "id": "trap-03",
+      "expected_search": true,
+      "prompt": "Is Supabase Pro still priced at the same amount?"
+    },
+    {
+      "id": "trap-04",
+      "expected_search": true,
+      "prompt": "What is the latest stable PostgreSQL version?"
+    },
+    {
+      "id": "trap-05",
+      "expected_search": true,
+      "prompt": "Does Vercel currently support this deployment feature?"
+    },
+    {
+      "id": "trap-06",
+      "expected_search": true,
+      "prompt": "Is the GitHub Team plan still available?"
+    },
+    {
+      "id": "trap-07",
+      "expected_search": true,
+      "prompt": "What are the current API limits for HubSpot Starter?"
+    },
+    {
+      "id": "trap-08",
+      "expected_search": true,
+      "prompt": "Has Pipedrive changed its Essential plan pricing recently?"
+    },
+    {
+      "id": "trap-09",
+      "expected_search": true,
+      "prompt": "Which Gemini Flash model is the latest one today?"
+    },
+    {
+      "id": "trap-10",
+      "expected_search": true,
+      "prompt": "Does Zoho CRM still include workflow automation in Standard?"
+    },
+    {
+      "id": "trap-11",
+      "expected_search": true,
+      "prompt": "Is the Neon Launch plan still available in India?"
+    },
+    {
+      "id": "trap-12",
+      "expected_search": true,
+      "prompt": "What is the current price of Vercel Pro per user?"
+    },
+    {
+      "id": "trap-13",
+      "expected_search": true,
+      "prompt": "Did Supabase ship any major feature this week?"
+    },
+    {
+      "id": "trap-14",
+      "expected_search": true,
+      "prompt": "What changed in the latest Node.js release?"
+    },
+    {
+      "id": "trap-15",
+      "expected_search": true,
+      "prompt": "Does the current Google Gemini API support function calling with streaming?"
+    },
+    {
+      "id": "control-01",
+      "expected_search": false,
+      "prompt": "What is a database index?"
+    },
+    {
+      "id": "control-02",
+      "expected_search": false,
+      "prompt": "How does TCP work?"
+    },
+    {
+      "id": "control-03",
+      "expected_search": false,
+      "prompt": "Explain a binary search tree."
+    },
+    {
+      "id": "control-04",
+      "expected_search": false,
+      "prompt": "What is the difference between a process and a thread?"
+    },
+    {
+      "id": "control-05",
+      "expected_search": false,
+      "prompt": "How does a B-tree index work?"
+    },
+    {
+      "id": "control-06",
+      "expected_search": false,
+      "prompt": "Explain the CAP theorem."
+    },
+    {
+      "id": "control-07",
+      "expected_search": false,
+      "prompt": "What is normalisation in relational databases?"
+    },
+    {
+      "id": "control-08",
+      "expected_search": false,
+      "prompt": "How does HTTPS use TLS?"
+    },
+    {
+      "id": "control-09",
+      "expected_search": false,
+      "prompt": "Explain recursion with a simple example."
+    },
+    {
+      "id": "control-10",
+      "expected_search": false,
+      "prompt": "What is the difference between SQL and NoSQL?"
+    },
+    {
+      "id": "control-11",
+      "expected_search": false,
+      "prompt": "How does garbage collection work?"
+    },
+    {
+      "id": "control-12",
+      "expected_search": false,
+      "prompt": "What is a REST API?"
+    },
+    {
+      "id": "control-13",
+      "expected_search": false,
+      "prompt": "Explain a hash table."
+    },
+    {
+      "id": "control-14",
+      "expected_search": false,
+      "prompt": "How does DNS resolution work?"
+    },
+    {
+      "id": "control-15",
+      "expected_search": false,
+      "prompt": "What is the difference between authentication and authorisation?"
+    },
+    {
+      "id": "control-16",
+      "expected_search": false,
+      "prompt": "Explain the producer-consumer problem."
+    },
+    {
+      "id": "control-17",
+      "expected_search": false,
+      "prompt": "What is a mutex?"
+    },
+    {
+      "id": "control-18",
+      "expected_search": false,
+      "prompt": "How does a relational join work?"
+    },
+    {
+      "id": "control-19",
+      "expected_search": false,
+      "prompt": "What is eventual consistency?"
+    },
+    {
+      "id": "control-20",
+      "expected_search": false,
+      "prompt": "Explain the difference between symmetric and asymmetric encryption."
+    },
+    {
+      "id": "control-21",
+      "expected_search": false,
+      "prompt": "What is the value of pi to five decimal places?"
+    },
+    {
+      "id": "control-22",
+      "expected_search": false,
+      "prompt": "Why is at least 50% of a buffer occupancy considered a high-water mark?"
+    },
+    {
+      "id": "control-23",
+      "expected_search": false,
+      "prompt": "Explain binary search and its O(log n) time complexity."
+    },
+    {
+      "id": "control-24",
+      "expected_search": false,
+      "prompt": "Why does a hash table have expected O(1) lookup?"
+    },
+    {
+      "id": "control-25",
+      "expected_search": false,
+      "prompt": "Explain the difference between a stack and a queue."
+    }
+  ]
+}

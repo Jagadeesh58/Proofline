@@ -1,0 +1,12 @@
+{
+  "id": "official-3",
+  "category": "official",
+  "prompt": "Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?",
+  "resolvedDate": "2026-11-10",
+  "expectedRecalledQuestion": "Which managed Postgres hosting options should we evaluate for our backend service?",
+  "expectedEntities": [
+    { "entity": "Neon", "plan": "Launch", "baselineAmount": 19, "currency": "USD", "basis": "usage" },
+    { "entity": "Supabase", "plan": "Pro", "baselineAmount": 25, "currency": "USD", "basis": "flat" }
+  ],
+  "expectedCardCount": 2
+}

@@ -1,0 +1,11 @@
+{
+  "id": "official-2",
+  "category": "official",
+  "prompt": "What did I ask you on 3 November? Is your answer still correct today?",
+  "resolvedDate": "2026-11-03",
+  "expectedRecalledQuestion": "How should I choose between managed PostgreSQL providers for a small backend project?",
+  "expectedBaselineEntities": [
+    { "entity": "Neon", "plan": "Launch", "baselineAmount": 19, "currency": "USD", "basis": "usage" },
+    { "entity": "Supabase", "plan": "Pro", "baselineAmount": 25, "currency": "USD", "basis": "flat" }
+  ]
+}

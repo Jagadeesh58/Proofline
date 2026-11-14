@@ -1,0 +1,42 @@
+{
+  "description": "Reviewer-behaviour scenarios for deterministic and live review (9 total).",
+  "cases": [
+    {
+      "id": "rev-01",
+      "scenario": "Exact date recall with live history"
+    },
+    {
+      "id": "rev-02",
+      "scenario": "Exact date recall with imported history"
+    },
+    {
+      "id": "rev-03",
+      "scenario": "Exact date recall with demo history"
+    },
+    {
+      "id": "rev-04",
+      "scenario": "Empty-history date recall"
+    },
+    {
+      "id": "rev-05",
+      "scenario": "Weather on Friday must not trigger memory recall"
+    },
+    {
+      "id": "rev-06",
+      "scenario": "Ordinary entity overlap is not a recall event"
+    },
+    {
+      "id": "rev-07",
+      "scenario": "Explicit \u201cthe one where\u201d recall phrasing"
+    },
+    {
+      "id": "rev-08",
+      "scenario": "Check cards precede commentary"
+    },
+    {
+      "id": "rev-09",
+      "scenario": "Figure marker remains visible and canonical"
+    }
+  ],
+  "case_count": 9
+}

@@ -1,0 +1,38 @@
+{
+  "description": "Offline failure and resilience case inventory (8 total).",
+  "cases": [
+    {
+      "id": "fail-01",
+      "scenario": "Gemini HTTP 429"
+    },
+    {
+      "id": "fail-02",
+      "scenario": "Gemini HTTP 5xx retry exhausted"
+    },
+    {
+      "id": "fail-03",
+      "scenario": "Aborted Gemini request"
+    },
+    {
+      "id": "fail-04",
+      "scenario": "Browser disconnect during stream"
+    },
+    {
+      "id": "fail-05",
+      "scenario": "Tavily search failure with partial results"
+    },
+    {
+      "id": "fail-06",
+      "scenario": "Tavily extract failure with no search fallback for known baseline"
+    },
+    {
+      "id": "fail-07",
+      "scenario": "Malformed provider JSON"
+    },
+    {
+      "id": "fail-08",
+      "scenario": "Per-entity extraction failure does not block siblings"
+    }
+  ],
+  "case_count": 8
+}

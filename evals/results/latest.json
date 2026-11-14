@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-14T16:19:06.256Z",
+  "run_id": "offline-2026-11-14T16-19-06.256Z-698b229d",
+  "model": "gemini-3.5-flash-lite",
+  "group": "offline",
+  "provider_keys_present": {
+    "gemini": true,
+    "tavily": true,
+    "grader": false
+  },
+  "live_calls_made": 0,
+  "test_summary": {
+    "tests": 232,
+    "suites": 0,
+    "pass": 232,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "status": "passed",
+  "command_exit_code": 0,
+  "output_tail": "✔ topic recall does not recall the currently streaming turn (31.8062ms)\n✔ weather-on-Friday question shows no recall block (16.3032ms)\n✔ a past date with no matching conversation is passed to the model as a zero-match fact (9.2666ms)\n✔ imports keep missing fields missing and mark an unknown generation date (236.888ms)\n✔ an imported turn can have a display timestamp distinct from its generation timestamp (5.7953ms)\n✔ transactional imports roll back the whole batch if a date is invalid (96.2374ms)\n✔ boot sweep marks unfinished live turns interrupted and claim extraction failed (236.7113ms)\n✔ uses only compact recent-turn context and keeps each turn once (113.4507ms)\n✔ refreshes topic recall after a completed streaming answer (17.1476ms)\n✔ does not put marked demo history into recent model context (17.4606ms)\n✔ does not invent an imported generation date from its display timestamp (17.1613ms)\n✔ ordinary related topic questions do not emit a recall memory event (62.6819ms)\n✔ recall framing recognises ten natural references and ignores ordinary overlap (69.1604ms)\n✔ does not silently substitute demo history from another date for weekday recall (17.1504ms)\n✔ same-day recall finds turns created earlier today (51.0696ms)\n✔ current-week recall finds turns created during the current week (17.1076ms)\n✔ resolves relative dates forward and backward with strict week bounds (29.1287ms)\n✔ store integrity check validates schema and foreign keys (15.4461ms)\n✔ table-driven tests: month-only phrases (201.0126ms)\n✔ table-driven tests: relative expressions (46.2689ms)\n✔ table-driven tests: explicit date ranges (69.7116ms)\n✔ table-driven tests: negative guards and product names (131.711ms)\n✔ table-driven tests: timezone boundaries near midnight (36.1866ms)\n✔ topic recall returns up to 3 relevant past turns ranked by BM25 scoring plus recency within budget (314.1019ms)\n✔ topic recall respects character budget config.maxContextChars (33.1601ms)\n✔ when 0 turns match a queried past date, explicitly return fact and never invent history (6.9983ms)\nℹ tests 232\nℹ suites 0\nℹ pass 232\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 40628.8268\n",
+  "offline_provider_calls": {
+    "gemini": 0,
+    "tavily_search": 0,
+    "tavily_extract": 0,
+    "explanation": "Offline tests use local fixtures and mocked fetch functions; no provider API request is made."
+  },
+  "case_matrix": {
+    "dates_recall": 41,
+    "evidence": 22,
+    "comparison": 25,
+    "domain_labels": 97,
+    "domain_seeded_entities": 40,
+    "domain_non_seeded_entities": 30,
+    "domain_lookalikes": 27,
+    "search_policy": 40,
+    "search_policy_traps": 15,
+    "search_policy_controls": 25,
+    "stable_scanner_regression_cases": 40,
+    "mutable_scanner_regression_cases": 25,
+    "official_prompts": 12,
+    "general_research": 15,
+    "failure_resilience": 8,
+    "reviewer": 9,
+    "ablation": 6
+  },
+  "domain_fixture_metrics": {
+    "fixture_lists_authored_by_project": true,
+    "not_live_ownership_audit": true,
+    "seeded_entities": 40,
+    "non_seeded_entities": 30,
+    "lookalikes": 27,
+    "seeded_false_third_party": 0,
+    "seeded_false_third_party_rate": "0.0%",
+    "non_seeded_false_third_party": 0,
+    "non_seeded_false_third_party_rate": "0.0%",
+    "false_name_match": 0,
+    "false_name_match_rate": "0.0%"
+  }
+}
