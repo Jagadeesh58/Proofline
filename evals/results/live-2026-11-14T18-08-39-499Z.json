@@ -1,38 +1,38 @@
 {
-  "date": "2026-11-14T16:01:22.418Z",
+  "date": "2026-11-14T18:08:39.500Z",
   "model": "gemini-3.5-flash-lite",
   "searchBackend": "tavily",
   "totalQuestions": 3,
   "successful": 3,
   "failed": 0,
   "ttft": {
-    "medianMs": 31070,
-    "p90Ms": 41552
+    "medianMs": 29930,
+    "p90Ms": 29973
   },
   "totalLatency": {
-    "medianMs": 31177,
-    "p90Ms": 41707
+    "medianMs": 30341,
+    "p90Ms": 31073
   },
   "citationFaithfulness": {
-    "totalQuotes": 23,
-    "faithfulQuotes": 0,
-    "rate": 0
+    "totalQuotes": 18,
+    "faithfulQuotes": 18,
+    "rate": 1
   },
   "results": [
     {
       "id": "official-1",
       "category": "official",
       "prompt": "On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?",
-      "firstTokenMs": 23354,
-      "totalTimeMs": 23618,
+      "firstTokenMs": 29922,
+      "totalTimeMs": 31073,
       "searchesRun": 10,
       "extractsRun": 5,
       "geminiCalls": 8,
-      "sourcesCount": 65,
-      "cardsCount": 7,
+      "sourcesCount": 62,
+      "cardsCount": 10,
       "answerProduced": true,
-      "answerLength": 872,
-      "answerPreview": "Pricing could not be confirmed for HubSpot, Pipedrive, and Monday CRM due to unconfirmed or differing billing terms.Freshsales Growth remains listed at $9 per user per month billed",
+      "answerLength": 814,
+      "answerPreview": "Pricing for HubSpot Starter ($20), Pipedrive Essential ($15), Zoho CRM Standard ($14), Monday CRM Basic ($12), and Freshsales Growth ($9) could not be confirmed as unchanged from p",
       "error": null,
       "correctness": {
         "passed": true,
@@ -40,28 +40,28 @@
         "reason": "All 5 shortlist tools evaluated with 5 cards"
       },
       "citationFaithfulness": {
-        "totalQuotes": 6,
-        "faithfulQuotes": 0,
-        "faithfulnessRate": 0
+        "totalQuotes": 10,
+        "faithfulQuotes": 10,
+        "faithfulnessRate": 1
       },
       "doneEvent": {
-        "turn_id": "43e7e525-014e-400d-982f-139da2093b70",
+        "turn_id": "c93bc8bc-a7b0-476d-aced-3e9198144361",
         "status": "completed",
         "timings": {
-          "first_status_ms": 46,
-          "memory_ms": 32,
-          "model_round_1_ms": 2282,
+          "first_status_ms": 72,
+          "memory_ms": 21,
+          "model_round_1_ms": 2688,
           "effective_model": "gemini-3.5-flash-lite",
-          "search_ms": 14185,
-          "extraction_ms": 3643,
-          "model_round_2_ms": 3108,
-          "first_token_ms": 23354,
+          "search_ms": 17570,
+          "extraction_ms": 5944,
+          "model_round_2_ms": 4707,
+          "first_token_ms": 29922,
           "scanner_buffering_ms": 0,
           "gemini_calls": [
             {
               "type": "stream",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 2279,
+              "duration_ms": 2683,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "retries": 0,
@@ -70,7 +70,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 3393,
+              "duration_ms": 2985,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -78,7 +78,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 1774,
+              "duration_ms": 3690,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -86,7 +86,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 2010,
+              "duration_ms": 3677,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -94,7 +94,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 2045,
+              "duration_ms": 3703,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -102,7 +102,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 3212,
+              "duration_ms": 3699,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -110,7 +110,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 3170,
+              "duration_ms": 3691,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -118,7 +118,7 @@
             {
               "type": "stream",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 3108,
+              "duration_ms": 4702,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "retries": 0,
@@ -127,113 +127,113 @@
           ],
           "gemini_backoff_ms": 0,
           "gemini_throttle_ms": 0,
-          "gemini_duration_ms": 20991,
+          "gemini_duration_ms": 28830,
           "search_calls": [
-            {
-              "type": "search",
-              "q": "Freshsales new features announcement",
-              "topic": "news",
-              "duration_ms": 1726,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "Zoho CRM pricing",
-              "topic": "general",
-              "duration_ms": 1747,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "Freshsales pricing",
-              "topic": "general",
-              "duration_ms": 2209,
-              "ok": true
-            },
             {
               "type": "search",
               "q": "HubSpot pricing",
               "topic": "general",
-              "duration_ms": 2432,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "Zoho CRM new features announcement",
-              "topic": "news",
-              "duration_ms": 2480,
+              "duration_ms": 1067,
               "ok": true
             },
             {
               "type": "search",
               "q": "Pipedrive pricing",
               "topic": "general",
-              "duration_ms": 2648,
+              "duration_ms": 1086,
               "ok": true
             },
             {
               "type": "search",
-              "q": "Monday CRM pricing",
+              "q": "Zoho CRM pricing",
               "topic": "general",
-              "duration_ms": 2791,
+              "duration_ms": 300,
               "ok": true
             },
             {
               "type": "search",
               "q": "HubSpot new features announcement",
               "topic": "news",
-              "duration_ms": 2851,
+              "duration_ms": 1473,
+              "ok": true
+            },
+            {
+              "type": "search",
+              "q": "Monday CRM pricing",
+              "topic": "general",
+              "duration_ms": 824,
               "ok": true
             },
             {
               "type": "search",
               "q": "Pipedrive new features announcement",
               "topic": "news",
-              "duration_ms": 2886,
+              "duration_ms": 1539,
+              "ok": true
+            },
+            {
+              "type": "search",
+              "q": "Zoho CRM new features announcement",
+              "topic": "news",
+              "duration_ms": 1445,
+              "ok": true
+            },
+            {
+              "type": "search",
+              "q": "Freshsales pricing",
+              "topic": "general",
+              "duration_ms": 752,
               "ok": true
             },
             {
               "type": "search",
               "q": "Monday CRM new features announcement",
               "topic": "news",
-              "duration_ms": 2973,
+              "duration_ms": 1468,
+              "ok": true
+            },
+            {
+              "type": "search",
+              "q": "Freshsales new features announcement",
+              "topic": "news",
+              "duration_ms": 1397,
               "ok": true
             }
           ],
           "extract_calls": [
             {
               "type": "extract",
-              "url": "https://www.freshworks.com/crm/pricing",
-              "duration_ms": 290,
-              "ok": true
-            },
-            {
-              "type": "extract",
               "url": "https://www.hubspot.com/pricing/sales",
-              "duration_ms": 493,
+              "duration_ms": 1105,
               "ok": true
             },
             {
               "type": "extract",
               "url": "https://www.zoho.com/crm/zohocrm-pricing-calculator.html",
-              "duration_ms": 613,
+              "duration_ms": 1233,
+              "ok": true
+            },
+            {
+              "type": "extract",
+              "url": "https://www.saasworthy.com/product/pipedrive/pricing",
+              "duration_ms": 1378,
               "ok": true
             },
             {
               "type": "extract",
               "url": "https://monday.com/crm/pricing",
-              "duration_ms": 724,
+              "duration_ms": 1279,
               "ok": true
             },
             {
               "type": "extract",
-              "url": "https://saleshive.com/vendors/pipedrive",
-              "duration_ms": 884,
+              "url": "https://www.freshworks.com/crm/pricing",
+              "duration_ms": 2800,
               "ok": true
             }
           ],
           "provider_retries": 0,
-          "total_ms": 23618
+          "total_ms": 31073
         },
         "budgets": {
           "searches": 10,
@@ -243,20 +243,20 @@
         }
       },
       "timings": {
-        "first_status_ms": 46,
-        "memory_ms": 32,
-        "model_round_1_ms": 2282,
+        "first_status_ms": 72,
+        "memory_ms": 21,
+        "model_round_1_ms": 2688,
         "effective_model": "gemini-3.5-flash-lite",
-        "search_ms": 14185,
-        "extraction_ms": 3643,
-        "model_round_2_ms": 3108,
-        "first_token_ms": 23354,
+        "search_ms": 17570,
+        "extraction_ms": 5944,
+        "model_round_2_ms": 4707,
+        "first_token_ms": 29922,
         "scanner_buffering_ms": 0,
         "gemini_calls": [
           {
             "type": "stream",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 2279,
+            "duration_ms": 2683,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "retries": 0,
@@ -265,7 +265,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 3393,
+            "duration_ms": 2985,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -273,7 +273,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 1774,
+            "duration_ms": 3690,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -281,7 +281,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 2010,
+            "duration_ms": 3677,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -289,7 +289,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 2045,
+            "duration_ms": 3703,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -297,7 +297,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 3212,
+            "duration_ms": 3699,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -305,7 +305,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 3170,
+            "duration_ms": 3691,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -313,7 +313,7 @@
           {
             "type": "stream",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 3108,
+            "duration_ms": 4702,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "retries": 0,
@@ -322,129 +322,129 @@
         ],
         "gemini_backoff_ms": 0,
         "gemini_throttle_ms": 0,
-        "gemini_duration_ms": 20991,
+        "gemini_duration_ms": 28830,
         "search_calls": [
-          {
-            "type": "search",
-            "q": "Freshsales new features announcement",
-            "topic": "news",
-            "duration_ms": 1726,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "Zoho CRM pricing",
-            "topic": "general",
-            "duration_ms": 1747,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "Freshsales pricing",
-            "topic": "general",
-            "duration_ms": 2209,
-            "ok": true
-          },
           {
             "type": "search",
             "q": "HubSpot pricing",
             "topic": "general",
-            "duration_ms": 2432,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "Zoho CRM new features announcement",
-            "topic": "news",
-            "duration_ms": 2480,
+            "duration_ms": 1067,
             "ok": true
           },
           {
             "type": "search",
             "q": "Pipedrive pricing",
             "topic": "general",
-            "duration_ms": 2648,
+            "duration_ms": 1086,
             "ok": true
           },
           {
             "type": "search",
-            "q": "Monday CRM pricing",
+            "q": "Zoho CRM pricing",
             "topic": "general",
-            "duration_ms": 2791,
+            "duration_ms": 300,
             "ok": true
           },
           {
             "type": "search",
             "q": "HubSpot new features announcement",
             "topic": "news",
-            "duration_ms": 2851,
+            "duration_ms": 1473,
+            "ok": true
+          },
+          {
+            "type": "search",
+            "q": "Monday CRM pricing",
+            "topic": "general",
+            "duration_ms": 824,
             "ok": true
           },
           {
             "type": "search",
             "q": "Pipedrive new features announcement",
             "topic": "news",
-            "duration_ms": 2886,
+            "duration_ms": 1539,
+            "ok": true
+          },
+          {
+            "type": "search",
+            "q": "Zoho CRM new features announcement",
+            "topic": "news",
+            "duration_ms": 1445,
+            "ok": true
+          },
+          {
+            "type": "search",
+            "q": "Freshsales pricing",
+            "topic": "general",
+            "duration_ms": 752,
             "ok": true
           },
           {
             "type": "search",
             "q": "Monday CRM new features announcement",
             "topic": "news",
-            "duration_ms": 2973,
+            "duration_ms": 1468,
+            "ok": true
+          },
+          {
+            "type": "search",
+            "q": "Freshsales new features announcement",
+            "topic": "news",
+            "duration_ms": 1397,
             "ok": true
           }
         ],
         "extract_calls": [
           {
             "type": "extract",
-            "url": "https://www.freshworks.com/crm/pricing",
-            "duration_ms": 290,
-            "ok": true
-          },
-          {
-            "type": "extract",
             "url": "https://www.hubspot.com/pricing/sales",
-            "duration_ms": 493,
+            "duration_ms": 1105,
             "ok": true
           },
           {
             "type": "extract",
             "url": "https://www.zoho.com/crm/zohocrm-pricing-calculator.html",
-            "duration_ms": 613,
+            "duration_ms": 1233,
+            "ok": true
+          },
+          {
+            "type": "extract",
+            "url": "https://www.saasworthy.com/product/pipedrive/pricing",
+            "duration_ms": 1378,
             "ok": true
           },
           {
             "type": "extract",
             "url": "https://monday.com/crm/pricing",
-            "duration_ms": 724,
+            "duration_ms": 1279,
             "ok": true
           },
           {
             "type": "extract",
-            "url": "https://saleshive.com/vendors/pipedrive",
-            "duration_ms": 884,
+            "url": "https://www.freshworks.com/crm/pricing",
+            "duration_ms": 2800,
             "ok": true
           }
         ],
         "provider_retries": 0,
-        "total_ms": 23618
+        "total_ms": 31073
       }
     },
     {
       "id": "official-2",
       "category": "official",
       "prompt": "What did I ask you on 3 November? Is your answer still correct today?",
-      "firstTokenMs": 41552,
-      "totalTimeMs": 41707,
+      "firstTokenMs": 29973,
+      "totalTimeMs": 30260,
       "searchesRun": 4,
       "extractsRun": 2,
       "geminiCalls": 6,
       "sourcesCount": 28,
-      "cardsCount": 4,
+      "cardsCount": 6,
       "answerProduced": true,
-      "answerLength": 371,
-      "answerPreview": "On 3 November 2026, you asked: \"How should I choose between managed PostgreSQL providers for a small backend project?\". (figure not verified)Yes, the answer remains correct today.N",
+      "answerLength": 508,
+      "answerPreview": "On 3 November 2026, you asked: \"How should I choose between managed PostgreSQL providers for a small backend project?\". (figure not verified) The core advice to compare Neon Launc",
       "error": null,
       "correctness": {
         "passed": true,
@@ -452,28 +452,36 @@
         "reason": "Recalled 3 Nov question and evaluated current correctness"
       },
       "citationFaithfulness": {
-        "totalQuotes": 4,
-        "faithfulQuotes": 0,
-        "faithfulnessRate": 0
+        "totalQuotes": 6,
+        "faithfulQuotes": 6,
+        "faithfulnessRate": 1
       },
       "doneEvent": {
-        "turn_id": "19e643e3-6e9f-4a73-9ad8-33cc30506132",
+        "turn_id": "8a7834c2-632c-4eed-afa0-915320f39d8f",
         "status": "completed",
         "timings": {
-          "first_status_ms": 86,
-          "memory_ms": 8,
-          "model_round_1_ms": 1319,
+          "first_status_ms": 97,
+          "memory_ms": 15,
+          "model_round_1_ms": 1750,
           "effective_model": "gemini-3.5-flash-lite",
-          "search_ms": 7347,
-          "extraction_ms": 30836,
-          "model_round_2_ms": 1933,
-          "first_token_ms": 41552,
+          "search_ms": 10475,
+          "extraction_ms": 14966,
+          "model_round_2_ms": 2928,
+          "first_token_ms": 29973,
           "scanner_buffering_ms": 0,
           "gemini_calls": [
             {
+              "type": "json",
+              "model": "gemini-3.5-flash-lite",
+              "duration_ms": 1506,
+              "backoff_wait_ms": 0,
+              "throttle_wait_ms": 0,
+              "status": 200
+            },
+            {
               "type": "stream",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 1319,
+              "duration_ms": 1749,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "retries": 0,
@@ -482,7 +490,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 1563,
+              "duration_ms": 2700,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -490,7 +498,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 2996,
+              "duration_ms": 3525,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -498,23 +506,15 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 4002,
+              "duration_ms": 14250,
               "backoff_wait_ms": 0,
-              "throttle_wait_ms": 0,
-              "status": 200
-            },
-            {
-              "type": "json",
-              "model": "gemini-3.5-flash-lite",
-              "duration_ms": 28604,
-              "backoff_wait_ms": 0,
-              "throttle_wait_ms": 25522,
+              "throttle_wait_ms": 10361,
               "status": 200
             },
             {
               "type": "stream",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 1932,
+              "duration_ms": 2928,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "retries": 0,
@@ -522,35 +522,35 @@
             }
           ],
           "gemini_backoff_ms": 0,
-          "gemini_throttle_ms": 25522,
-          "gemini_duration_ms": 40416,
+          "gemini_throttle_ms": 10361,
+          "gemini_duration_ms": 26658,
           "search_calls": [
             {
               "type": "search",
-              "q": "Neon pricing 2026",
-              "topic": "general",
-              "duration_ms": 1690,
+              "q": "Neon new features announcement",
+              "topic": "news",
+              "duration_ms": 1983,
               "ok": true
             },
             {
               "type": "search",
               "q": "Supabase pricing 2026",
               "topic": "general",
-              "duration_ms": 1985,
+              "duration_ms": 1995,
               "ok": true
             },
             {
               "type": "search",
-              "q": "Neon new features announcement",
-              "topic": "news",
-              "duration_ms": 2039,
+              "q": "Neon pricing 2026",
+              "topic": "general",
+              "duration_ms": 2132,
               "ok": true
             },
             {
               "type": "search",
               "q": "Supabase new features announcement",
               "topic": "news",
-              "duration_ms": 2439,
+              "duration_ms": 3982,
               "ok": true
             }
           ],
@@ -558,18 +558,18 @@
             {
               "type": "extract",
               "url": "https://supabase.com/pricing",
-              "duration_ms": 577,
+              "duration_ms": 326,
               "ok": true
             },
             {
               "type": "extract",
               "url": "https://neon.com/pricing",
-              "duration_ms": 748,
+              "duration_ms": 500,
               "ok": true
             }
           ],
           "provider_retries": 0,
-          "total_ms": 41707
+          "total_ms": 30260
         },
         "budgets": {
           "searches": 4,
@@ -579,20 +579,28 @@
         }
       },
       "timings": {
-        "first_status_ms": 86,
-        "memory_ms": 8,
-        "model_round_1_ms": 1319,
+        "first_status_ms": 97,
+        "memory_ms": 15,
+        "model_round_1_ms": 1750,
         "effective_model": "gemini-3.5-flash-lite",
-        "search_ms": 7347,
-        "extraction_ms": 30836,
-        "model_round_2_ms": 1933,
-        "first_token_ms": 41552,
+        "search_ms": 10475,
+        "extraction_ms": 14966,
+        "model_round_2_ms": 2928,
+        "first_token_ms": 29973,
         "scanner_buffering_ms": 0,
         "gemini_calls": [
           {
+            "type": "json",
+            "model": "gemini-3.5-flash-lite",
+            "duration_ms": 1506,
+            "backoff_wait_ms": 0,
+            "throttle_wait_ms": 0,
+            "status": 200
+          },
+          {
             "type": "stream",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 1319,
+            "duration_ms": 1749,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "retries": 0,
@@ -601,7 +609,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 1563,
+            "duration_ms": 2700,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -609,7 +617,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 2996,
+            "duration_ms": 3525,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -617,23 +625,15 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 4002,
+            "duration_ms": 14250,
             "backoff_wait_ms": 0,
-            "throttle_wait_ms": 0,
-            "status": 200
-          },
-          {
-            "type": "json",
-            "model": "gemini-3.5-flash-lite",
-            "duration_ms": 28604,
-            "backoff_wait_ms": 0,
-            "throttle_wait_ms": 25522,
+            "throttle_wait_ms": 10361,
             "status": 200
           },
           {
             "type": "stream",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 1932,
+            "duration_ms": 2928,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "retries": 0,
@@ -641,35 +641,35 @@
           }
         ],
         "gemini_backoff_ms": 0,
-        "gemini_throttle_ms": 25522,
-        "gemini_duration_ms": 40416,
+        "gemini_throttle_ms": 10361,
+        "gemini_duration_ms": 26658,
         "search_calls": [
           {
             "type": "search",
-            "q": "Neon pricing 2026",
-            "topic": "general",
-            "duration_ms": 1690,
+            "q": "Neon new features announcement",
+            "topic": "news",
+            "duration_ms": 1983,
             "ok": true
           },
           {
             "type": "search",
             "q": "Supabase pricing 2026",
             "topic": "general",
-            "duration_ms": 1985,
+            "duration_ms": 1995,
             "ok": true
           },
           {
             "type": "search",
-            "q": "Neon new features announcement",
-            "topic": "news",
-            "duration_ms": 2039,
+            "q": "Neon pricing 2026",
+            "topic": "general",
+            "duration_ms": 2132,
             "ok": true
           },
           {
             "type": "search",
             "q": "Supabase new features announcement",
             "topic": "news",
-            "duration_ms": 2439,
+            "duration_ms": 3982,
             "ok": true
           }
         ],
@@ -677,88 +677,80 @@
           {
             "type": "extract",
             "url": "https://supabase.com/pricing",
-            "duration_ms": 577,
+            "duration_ms": 326,
             "ok": true
           },
           {
             "type": "extract",
             "url": "https://neon.com/pricing",
-            "duration_ms": 748,
+            "duration_ms": 500,
             "ok": true
           }
         ],
         "provider_retries": 0,
-        "total_ms": 41707
+        "total_ms": 30260
       }
     },
     {
       "id": "official-3",
       "category": "official",
       "prompt": "Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?",
-      "firstTokenMs": 31070,
-      "totalTimeMs": 31177,
-      "searchesRun": 10,
-      "extractsRun": 5,
-      "geminiCalls": 7,
-      "sourcesCount": 52,
-      "cardsCount": 13,
+      "firstTokenMs": 29930,
+      "totalTimeMs": 30341,
+      "searchesRun": 4,
+      "extractsRun": 2,
+      "geminiCalls": 6,
+      "sourcesCount": 24,
+      "cardsCount": 2,
       "answerProduced": true,
-      "answerLength": 360,
-      "answerPreview": "Pricing could not be confirmed for Neon, Supabase, and AWS RDS for PostgreSQL due to unconfirmed billing metrics and differing plan terms.A source dated November 14, 2026, reports ",
+      "answerLength": 500,
+      "answerPreview": "Pricing for Neon and Supabase could not be confirmed as unchanged from previous baseline records because official verified data for those exact prior rates was not available for co",
       "error": null,
       "correctness": {
         "passed": true,
         "assertion": "Resolves last Tuesday, recalls Postgres turn, produces cards for Neon and Supabase, and states pricing status with evidence",
-        "reason": "Postgres turn recalled, cards produced for Neon and Supabase (5 cards)"
+        "reason": "Postgres turn recalled, cards produced for Neon and Supabase (2 cards)"
       },
       "citationFaithfulness": {
-        "totalQuotes": 13,
-        "faithfulQuotes": 0,
-        "faithfulnessRate": 0
+        "totalQuotes": 2,
+        "faithfulQuotes": 2,
+        "faithfulnessRate": 1
       },
       "doneEvent": {
-        "turn_id": "1bc8cbcd-75ef-4dce-b5c6-7b24c85cef43",
+        "turn_id": "6f92bbe6-5fd0-452d-b452-a6dd3a713a6f",
         "status": "completed",
         "timings": {
-          "first_status_ms": 84,
-          "memory_ms": 9,
-          "model_round_1_ms": 8590,
+          "first_status_ms": 100,
+          "memory_ms": 12,
+          "model_round_1_ms": 9211,
           "effective_model": "gemini-3.5-flash-lite",
-          "search_ms": 12781,
-          "extraction_ms": 6152,
-          "model_round_2_ms": 3357,
-          "first_token_ms": 31070,
+          "search_ms": 10987,
+          "extraction_ms": 7995,
+          "model_round_2_ms": 2009,
+          "first_token_ms": 29930,
           "scanner_buffering_ms": 0,
           "gemini_calls": [
             {
               "type": "stream",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 8590,
+              "duration_ms": 9211,
               "backoff_wait_ms": 0,
-              "throttle_wait_ms": 6986,
+              "throttle_wait_ms": 6643,
               "retries": 0,
               "status": 200
             },
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 8660,
+              "duration_ms": 9654,
               "backoff_wait_ms": 0,
-              "throttle_wait_ms": 6994,
+              "throttle_wait_ms": 6646,
               "status": 200
             },
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 2001,
-              "backoff_wait_ms": 0,
-              "throttle_wait_ms": 0,
-              "status": 200
-            },
-            {
-              "type": "json",
-              "model": "gemini-3.5-flash-lite",
-              "duration_ms": 2868,
+              "duration_ms": 5798,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -766,7 +758,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 4012,
+              "duration_ms": 7076,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -774,7 +766,7 @@
             {
               "type": "json",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 5465,
+              "duration_ms": 7751,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "status": 200
@@ -782,7 +774,7 @@
             {
               "type": "stream",
               "model": "gemini-3.5-flash-lite",
-              "duration_ms": 3357,
+              "duration_ms": 2009,
               "backoff_wait_ms": 0,
               "throttle_wait_ms": 0,
               "retries": 0,
@@ -790,77 +782,35 @@
             }
           ],
           "gemini_backoff_ms": 0,
-          "gemini_throttle_ms": 13980,
-          "gemini_duration_ms": 34953,
+          "gemini_throttle_ms": 13289,
+          "gemini_duration_ms": 41499,
           "search_calls": [
             {
               "type": "search",
-              "q": "Neon pricing 2026",
+              "q": "Supabase pricing pro plan",
               "topic": "general",
-              "duration_ms": 56,
+              "duration_ms": 1834,
               "ok": true
             },
             {
               "type": "search",
-              "q": "Supabase pricing 2026",
+              "q": "Neon pricing compute usage",
               "topic": "general",
-              "duration_ms": 56,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "AWS RDS pricing",
-              "topic": "general",
-              "duration_ms": 1286,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "AWS RDS new features announcement",
-              "topic": "news",
-              "duration_ms": 2362,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "AWS RDS PostgreSQL pricing",
-              "topic": "general",
-              "duration_ms": 2395,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "Postgresql pricing",
-              "topic": "general",
-              "duration_ms": 2406,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "Aws rds new features announcement",
-              "topic": "news",
-              "duration_ms": 2615,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "Postgresql new features announcement",
-              "topic": "news",
-              "duration_ms": 2622,
-              "ok": true
-            },
-            {
-              "type": "search",
-              "q": "Supabase new features announcement",
-              "topic": "news",
-              "duration_ms": 4147,
+              "duration_ms": 1853,
               "ok": true
             },
             {
               "type": "search",
               "q": "Neon new features announcement",
               "topic": "news",
-              "duration_ms": 4226,
+              "duration_ms": 2380,
+              "ok": true
+            },
+            {
+              "type": "search",
+              "q": "Supabase new features announcement",
+              "topic": "news",
+              "duration_ms": 4640,
               "ok": true
             }
           ],
@@ -868,85 +818,58 @@
             {
               "type": "extract",
               "url": "https://neon.com/pricing",
-              "duration_ms": 29,
+              "duration_ms": 1,
               "ok": true
             },
             {
               "type": "extract",
               "url": "https://supabase.com/pricing",
-              "duration_ms": 144,
-              "ok": true
-            },
-            {
-              "type": "extract",
-              "url": "https://www.economize.cloud/blog/aws-rds-pricing",
-              "duration_ms": 814,
-              "ok": true
-            },
-            {
-              "type": "extract",
-              "url": "https://docs.digitalocean.com/products/databases/postgresql/details/pricing",
-              "duration_ms": 977,
-              "ok": true
-            },
-            {
-              "type": "extract",
-              "url": "https://aws.amazon.com/rds/postgresql/pricing",
-              "duration_ms": 1220,
+              "duration_ms": 446,
               "ok": true
             }
           ],
-          "provider_retries": 1,
-          "total_ms": 31177
+          "provider_retries": 0,
+          "total_ms": 30341
         },
         "budgets": {
-          "searches": 10,
-          "extracts": 5,
-          "geminiCalls": 7,
-          "rounds": 2,
-          "providerRetries": 1
+          "searches": 4,
+          "extracts": 2,
+          "geminiCalls": 6,
+          "rounds": 2
         }
       },
       "timings": {
-        "first_status_ms": 84,
-        "memory_ms": 9,
-        "model_round_1_ms": 8590,
+        "first_status_ms": 100,
+        "memory_ms": 12,
+        "model_round_1_ms": 9211,
         "effective_model": "gemini-3.5-flash-lite",
-        "search_ms": 12781,
-        "extraction_ms": 6152,
-        "model_round_2_ms": 3357,
-        "first_token_ms": 31070,
+        "search_ms": 10987,
+        "extraction_ms": 7995,
+        "model_round_2_ms": 2009,
+        "first_token_ms": 29930,
         "scanner_buffering_ms": 0,
         "gemini_calls": [
           {
             "type": "stream",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 8590,
+            "duration_ms": 9211,
             "backoff_wait_ms": 0,
-            "throttle_wait_ms": 6986,
+            "throttle_wait_ms": 6643,
             "retries": 0,
             "status": 200
           },
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 8660,
+            "duration_ms": 9654,
             "backoff_wait_ms": 0,
-            "throttle_wait_ms": 6994,
+            "throttle_wait_ms": 6646,
             "status": 200
           },
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 2001,
-            "backoff_wait_ms": 0,
-            "throttle_wait_ms": 0,
-            "status": 200
-          },
-          {
-            "type": "json",
-            "model": "gemini-3.5-flash-lite",
-            "duration_ms": 2868,
+            "duration_ms": 5798,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -954,7 +877,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 4012,
+            "duration_ms": 7076,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -962,7 +885,7 @@
           {
             "type": "json",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 5465,
+            "duration_ms": 7751,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "status": 200
@@ -970,7 +893,7 @@
           {
             "type": "stream",
             "model": "gemini-3.5-flash-lite",
-            "duration_ms": 3357,
+            "duration_ms": 2009,
             "backoff_wait_ms": 0,
             "throttle_wait_ms": 0,
             "retries": 0,
@@ -978,77 +901,35 @@
           }
         ],
         "gemini_backoff_ms": 0,
-        "gemini_throttle_ms": 13980,
-        "gemini_duration_ms": 34953,
+        "gemini_throttle_ms": 13289,
+        "gemini_duration_ms": 41499,
         "search_calls": [
           {
             "type": "search",
-            "q": "Neon pricing 2026",
+            "q": "Supabase pricing pro plan",
             "topic": "general",
-            "duration_ms": 56,
+            "duration_ms": 1834,
             "ok": true
           },
           {
             "type": "search",
-            "q": "Supabase pricing 2026",
+            "q": "Neon pricing compute usage",
             "topic": "general",
-            "duration_ms": 56,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "AWS RDS pricing",
-            "topic": "general",
-            "duration_ms": 1286,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "AWS RDS new features announcement",
-            "topic": "news",
-            "duration_ms": 2362,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "AWS RDS PostgreSQL pricing",
-            "topic": "general",
-            "duration_ms": 2395,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "Postgresql pricing",
-            "topic": "general",
-            "duration_ms": 2406,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "Aws rds new features announcement",
-            "topic": "news",
-            "duration_ms": 2615,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "Postgresql new features announcement",
-            "topic": "news",
-            "duration_ms": 2622,
-            "ok": true
-          },
-          {
-            "type": "search",
-            "q": "Supabase new features announcement",
-            "topic": "news",
-            "duration_ms": 4147,
+            "duration_ms": 1853,
             "ok": true
           },
           {
             "type": "search",
             "q": "Neon new features announcement",
             "topic": "news",
-            "duration_ms": 4226,
+            "duration_ms": 2380,
+            "ok": true
+          },
+          {
+            "type": "search",
+            "q": "Supabase new features announcement",
+            "topic": "news",
+            "duration_ms": 4640,
             "ok": true
           }
         ],
@@ -1056,36 +937,18 @@
           {
             "type": "extract",
             "url": "https://neon.com/pricing",
-            "duration_ms": 29,
+            "duration_ms": 1,
             "ok": true
           },
           {
             "type": "extract",
             "url": "https://supabase.com/pricing",
-            "duration_ms": 144,
-            "ok": true
-          },
-          {
-            "type": "extract",
-            "url": "https://www.economize.cloud/blog/aws-rds-pricing",
-            "duration_ms": 814,
-            "ok": true
-          },
-          {
-            "type": "extract",
-            "url": "https://docs.digitalocean.com/products/databases/postgresql/details/pricing",
-            "duration_ms": 977,
-            "ok": true
-          },
-          {
-            "type": "extract",
-            "url": "https://aws.amazon.com/rds/postgresql/pricing",
-            "duration_ms": 1220,
+            "duration_ms": 446,
             "ok": true
           }
         ],
-        "provider_retries": 1,
-        "total_ms": 31177
+        "provider_retries": 0,
+        "total_ms": 30341
       }
     }
   ]

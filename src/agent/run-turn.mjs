@@ -329,11 +329,15 @@ export async function runTurn({
           }
         }
         if (toolPayload.provider_errors?.length) {
-          const firstFailure = toolPayload.provider_errors[0];
-          emit(send, 'error', {
-            message: 'Some web-search requests failed. Available partial evidence is retained.',
-            status: firstFailure.status, provider_message: firstFailure.message,
-          });
+          const hasAnyEvidence = (toolPayload.sources?.length || 0) > 0
+            || (toolPayload.targets || []).some((t) => t.page?.source_id || (t.news || []).length > 0);
+          if (!hasAnyEvidence) {
+            const firstFailure = toolPayload.provider_errors[0];
+            emit(send, 'error', {
+              message: 'Web search requests failed.',
+              status: firstFailure.status, provider_message: firstFailure.message,
+            });
+          }
         }
         sourceTrust = toolPayload.sourceTrust || {};
         activeTargets = toolPayload.targets || [];

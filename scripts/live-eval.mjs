@@ -139,6 +139,25 @@ function p90(values) {
   return Math.round(sorted[index]);
 }
 
+function max(values) {
+  if (!values.length) return 0;
+  return Math.max(...values);
+}
+
+function wilsonScoreInterval(successful, total, confidence = 1.96) {
+  if (total === 0) return { lower: 0, upper: 0 };
+  const p = successful / total;
+  const z = confidence;
+  const z2 = z * z;
+  const denominator = 1 + z2 / total;
+  const center = (p + z2 / (2 * total)) / denominator;
+  const spread = (z * Math.sqrt((p * (1 - p)) / total + z2 / (4 * total * total))) / denominator;
+  return {
+    lower: Number(Math.max(0, center - spread).toFixed(3)),
+    upper: Number(Math.min(1, center + spread).toFixed(3)),
+  };
+}
+
 function validateQuestionOutcome(item, answer, events, budgets, sources = [], cards = [], preflightError = null) {
   if (preflightError) {
     return {
@@ -551,21 +570,76 @@ export async function executeLiveEvaluation({
     ? Number((totalFaithfulQuotes / totalCheckedQuotes).toFixed(2))
     : 1.0;
 
+  const successfulCount = results.filter((r) => r.correctness?.passed).length;
+  const totalCount = results.length;
+  const passRate = totalCount > 0 ? Number((successfulCount / totalCount).toFixed(3)) : 0;
+  const wilsonInterval = wilsonScoreInterval(successfulCount, totalCount);
+
+  const firstTokenValues = results.map((r) => r.firstTokenMs).filter((v) => v !== null && v !== undefined);
+  const totalTimeValues = results.map((r) => r.totalTimeMs);
+  const firstStatusValues = results.map((r) => r.timings?.first_status_ms).filter((v) => v !== null && v !== undefined);
+  const geminiCallsValues = results.map((r) => r.geminiCalls);
+  const searchesValues = results.map((r) => r.searchesRun);
+  const extractsValues = results.map((r) => r.extractsRun);
+
+  let falseUnchangedCount = 0;
+  for (const r of results) {
+    if (r.cards) {
+      for (const group of r.cards) {
+        for (const c of group.cards || []) {
+          if (c.status === 'Same as before' && c.trust_label !== 'Official site (verified)') {
+            falseUnchangedCount += 1;
+          }
+        }
+      }
+    }
+  }
+
   const summary = {
     date: new Date().toISOString(),
-    model: config.geminiModel,
-    searchBackend: config.searchBackend,
-    totalQuestions: results.length,
-    successful: results.filter((r) => !r.error).length,
-    failed: results.filter((r) => r.error).length,
+    environment: {
+      node: process.version,
+      model: config.geminiModel,
+      fallbackModel: config.geminiFallbackModel,
+      searchBackend: config.searchBackend,
+      accountTier: 'free',
+    },
+    totalQuestions: totalCount,
+    successful: successfulCount,
+    failed: totalCount - successfulCount,
+    passRate,
+    wilsonInterval95: wilsonInterval,
+    firstProgress: {
+      medianMs: median(firstStatusValues),
+      p90Ms: p90(firstStatusValues),
+      maxMs: max(firstStatusValues),
+    },
     ttft: {
-      medianMs: median(results.map((r) => r.firstTokenMs).filter((v) => v !== null)),
-      p90Ms: p90(results.map((r) => r.firstTokenMs).filter((v) => v !== null)),
+      medianMs: median(firstTokenValues),
+      p90Ms: p90(firstTokenValues),
+      maxMs: max(firstTokenValues),
     },
     totalLatency: {
-      medianMs: median(results.map((r) => r.totalTimeMs)),
-      p90Ms: p90(results.map((r) => r.totalTimeMs)),
+      medianMs: median(totalTimeValues),
+      p90Ms: p90(totalTimeValues),
+      maxMs: max(totalTimeValues),
     },
+    callsPerTurn: {
+      median: median(geminiCallsValues),
+      p90: p90(geminiCallsValues),
+      max: max(geminiCallsValues),
+    },
+    searchesPerTurn: {
+      median: median(searchesValues),
+      p90: p90(searchesValues),
+      max: max(searchesValues),
+    },
+    extractsPerTurn: {
+      median: median(extractsValues),
+      p90: p90(extractsValues),
+      max: max(extractsValues),
+    },
+    falseUnchangedCount,
     citationFaithfulness: {
       totalQuotes: totalCheckedQuotes,
       faithfulQuotes: totalFaithfulQuotes,

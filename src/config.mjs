@@ -64,8 +64,8 @@ export const config = Object.freeze({
   extractionMode: process.env.EXTRACTION_MODE === 'per_entity' ? 'per_entity' : 'batched',
   requestTimeoutMs: number('REQUEST_TIMEOUT_MS', 25_000),
   geminiTimeoutMs: 8_000,
-  tavilySearchTimeoutMs: 4_000,
-  tavilyExtractTimeoutMs: 5_000,
+  tavilySearchTimeoutMs: 8_000,
+  tavilyExtractTimeoutMs: 8_000,
   maxTurnBackoffMs: 10_000,
 });
 
