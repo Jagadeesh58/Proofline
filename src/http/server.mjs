@@ -198,16 +198,17 @@ export function createServer(
       }
 
       if (request.method === 'GET' && pathname === '/api/config') {
-        const replayMsg = 'Search is using the synthetic offline evaluation corpus. '
-          + 'Results are fixtures, not current product facts.';
+        const isReplay = config.demoMode || config.searchBackend === 'replay';
+        const replayMsg = 'Replay mode: recorded searches, live pipeline';
         return json(response, 200, {
-          model: config.geminiModel,
+          model: isReplay && !config.geminiKey ? 'Replay Mode' : config.geminiModel,
           timezone: config.timezone,
-          missing: { gemini: !config.geminiKey, tavily: config.searchBackend !== 'replay' && !config.tavilyKey },
+          demoMode: Boolean(config.demoMode),
           searchBackend: config.searchBackend,
+          missing: { gemini: !config.geminiKey && !isReplay, tavily: !isReplay && !config.tavilyKey },
           messages: [
-            !config.geminiKey ? userFacing.missingGemini : null,
-            config.searchBackend === 'replay' ? replayMsg : (!config.tavilyKey ? userFacing.missingTavily : null),
+            isReplay ? replayMsg : (!config.geminiKey ? userFacing.missingGemini : null),
+            !isReplay && !config.tavilyKey ? userFacing.missingTavily : null,
           ].filter(Boolean),
         });
       }

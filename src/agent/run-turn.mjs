@@ -152,16 +152,19 @@ export async function runTurn({
   const contents = conversationContents(modelContext.contextTurns, userText);
   const systemInstruction = `${SYSTEM_PROMPT}\n\n${modelContext.systemText}`;
   const searchReady = isSearchReady(config);
-  const missing = { gemini: !config.geminiKey, tavily: !searchReady };
+  const replayActive = Boolean(config.demoMode || config.searchBackend === 'replay') && !config.geminiKey;
+  const missing = { gemini: !config.geminiKey && !replayActive, tavily: !searchReady };
   if (missing.gemini) {
     store.updateTurn(turn.id, { status: 'failed', claims_status: 'failed', timings_json: timings });
     emit(send, 'error', { message: statusText(missing), code: 'missing_key' });
     emit(send, 'done', { timings: { ...timings, total_ms: Date.now() - started }, budgets: budget });
     return;
   }
-  const initialStatus = missing.tavily
-    ? 'Model ready; web search is not configured.'
-    : 'Reasoning about the request…';
+  const initialStatus = replayActive
+    ? 'Replay mode: recorded searches, live pipeline'
+    : (missing.tavily
+      ? 'Model ready; web search is not configured.'
+      : 'Reasoning about the request…');
   emit(send, 'status', { text: initialStatus });
 
   let baselinePending = false;

@@ -46,7 +46,10 @@ export const config = Object.freeze({
     ? null : Number(process.env.GEMINI_TEMPERATURE),
   maxExtractsPerQuery: Math.min(3, number('MAX_EXTRACTS_PER_QUERY', 1)),
   tavilyKey: process.env.TAVILY_API_KEY || '',
-  searchBackend: process.env.SEARCH_BACKEND === 'replay' ? 'replay' : 'tavily',
+  demoMode: process.env.DEMO_MODE === '1' || process.env.DEMO_MODE === 'true',
+  searchBackend: (process.env.DEMO_MODE === '1' || process.env.DEMO_MODE === 'true')
+    ? 'replay'
+    : (process.env.SEARCH_BACKEND === 'replay' ? 'replay' : 'tavily'),
   graderKey: process.env.EVAL_GRADER_API_KEY || '',
   graderModel: process.env.EVAL_GRADER_MODEL || '',
   graderBaseUrl: process.env.EVAL_GRADER_BASE_URL || '',

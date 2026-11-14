@@ -1,4 +1,5 @@
 import { config } from '../config.mjs';
+import { isReplayModelActive, replayJsonExtraction, replayStreamExecution } from './replay-provider.mjs';
 
 export class ProviderError extends Error {
   constructor(message, status = 0, code = 'provider_error', retryAfterMs = null) {
@@ -183,6 +184,9 @@ export async function generateStream({
   onStatus,
   onTiming,
 }) {
+  if (isReplayModelActive(config)) {
+    return replayStreamExecution({ contents, toolDeclaration, signal, onText, onTiming });
+  }
   if (!config.geminiKey) throw new ProviderError('Gemini API key is missing.', 0, 'missing_key');
   const candidateModels = getCandidateModels();
   let lastError = null;
@@ -374,6 +378,9 @@ export async function generateStream({
 }
 
 export async function generateJson({ prompt, schema, signal, onRetry, onStatus, onTiming }) {
+  if (isReplayModelActive(config)) {
+    return replayJsonExtraction(prompt);
+  }
   if (!config.geminiKey) throw new ProviderError('Gemini API key is missing.', 0, 'missing_key');
   const candidateModels = getCandidateModels();
   let lastError = null;
