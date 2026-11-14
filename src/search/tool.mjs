@@ -285,6 +285,21 @@ async function extractOne({
     content: results?.content || candidate?.content || '',
     published_date: results?.published_date || candidate?.published_date || null,
   });
+  if (extractFn === tavilyExtract) {
+    const cached = store?.getCachedPage?.(safeUrl);
+    if (cached && cached.raw_content) {
+      onTiming?.({ type: 'extract', url: safeUrl, duration_ms: 1, ok: true, cached: true });
+      return makeSource(store, turnId, {
+        url: safeUrl,
+        title: results?.title || cached.title || safeUrl,
+        content: cached.content || results?.content || '',
+        published_date: results?.published_date || null,
+      }, {
+        pageText: cached.raw_content,
+        origin: 'extract',
+      });
+    }
+  }
   const extractStart = Date.now();
   try {
     const response = await extractFn(safeUrl, signal, () => {
@@ -293,6 +308,12 @@ async function extractOne({
     onTiming?.({ type: 'extract', url: safeUrl, duration_ms: Date.now() - extractStart, ok: true });
     const found = (response.results || []).find((item) => safeHttpUrl(item.url) === safeUrl && item.raw_content);
     if (found?.raw_content) {
+      store?.setCachedPage?.({
+        url: safeUrl,
+        title: sourceMeta(found).title,
+        content: sourceMeta(found).content,
+        raw_content: found.raw_content,
+      });
       return makeSource(store, turnId, sourceMeta(found), {
         pageText: found.raw_content,
         origin: 'extract',

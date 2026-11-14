@@ -84,6 +84,37 @@ export class Store {
         + 'PRAGMA user_version = 3;'
       );
     }
+    const versionAfter3 = this.db.prepare('PRAGMA user_version').get().user_version;
+    if (versionAfter3 < 4) {
+      this.db.exec(
+        'CREATE TABLE IF NOT EXISTS page_cache ('
+        + 'url TEXT PRIMARY KEY, title TEXT, content TEXT, raw_content TEXT, '
+        + 'fetched_at_utc TEXT NOT NULL, expires_at_utc TEXT NOT NULL'
+        + '); '
+        + 'CREATE INDEX IF NOT EXISTS page_cache_expires_idx ON page_cache(expires_at_utc); '
+        + 'PRAGMA user_version = 4;'
+      );
+    }
+  }
+
+  getCachedPage(url) {
+    if (!url) return null;
+    const now = new Date().toISOString();
+    return this.db.prepare('SELECT * FROM page_cache WHERE url = ? AND expires_at_utc > ?').get(url, now) || null;
+  }
+
+  setCachedPage({ url, title = '', content = '', raw_content = '', ttlMs = 15 * 60_000 }) {
+    if (!url) return;
+    const now = new Date();
+    const fetchedAt = now.toISOString();
+    const expiresAt = new Date(now.getTime() + ttlMs).toISOString();
+    this.db.prepare(
+      'INSERT INTO page_cache (url, title, content, raw_content, fetched_at_utc, expires_at_utc) '
+      + 'VALUES (?, ?, ?, ?, ?, ?) '
+      + 'ON CONFLICT(url) DO UPDATE SET '
+      + 'title = excluded.title, content = excluded.content, raw_content = excluded.raw_content, '
+      + 'fetched_at_utc = excluded.fetched_at_utc, expires_at_utc = excluded.expires_at_utc'
+    ).run(url, title, content, raw_content, fetchedAt, expiresAt);
   }
 
   sweepInterrupted() {
@@ -91,6 +122,10 @@ export class Store {
     this.db.prepare(
       "UPDATE turns SET claims_status='failed' WHERE claims_status='pending' AND status IN ('interrupted','failed')"
     ).run();
+    const now = new Date().toISOString();
+    try {
+      this.db.prepare('DELETE FROM page_cache WHERE expires_at_utc <= ?').run(now);
+    } catch {}
   }
 
   createTurn({ userText, timezone, sessionId = null, now = new Date(), id = randomUUID() }) {
