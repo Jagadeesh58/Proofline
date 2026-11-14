@@ -1,0 +1,497 @@
+{
+  "timestamp": "2026-11-14T17:09:57.198Z",
+  "account_tier": "Free Tier (15 RPM)",
+  "model": "gemini-3.5-flash-lite",
+  "fallback_model": "gemini-3.5-flash",
+  "profiles": [
+    {
+      "id": "official-1",
+      "prompt": "On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?",
+      "milestones": {
+        "first_progress_ms": 72,
+        "first_token_ms": 27863,
+        "total_time_ms": 28754,
+        "first_token_to_total_gap_ms": 891
+      },
+      "budgets": {
+        "searches": 10,
+        "extracts": 5,
+        "geminiCalls": 8,
+        "rounds": 2
+      },
+      "gemini_calls": [
+        {
+          "call_index": 1,
+          "purpose": "initial_plan_and_tool_call",
+          "type": "stream",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 2485,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 2,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 3044,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 3,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 3283,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 4,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 3399,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 5,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 3619,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 6,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 3707,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 7,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 5660,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 8,
+          "purpose": "final_commentary",
+          "type": "stream",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 3865,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        }
+      ],
+      "searches": [
+        {
+          "query": "HubSpot pricing",
+          "topic": "general",
+          "duration_ms": 1868
+        },
+        {
+          "query": "Pipedrive pricing",
+          "topic": "general",
+          "duration_ms": 1974
+        },
+        {
+          "query": "Zoho CRM pricing",
+          "topic": "general",
+          "duration_ms": 2024
+        },
+        {
+          "query": "Freshsales new features announcement",
+          "topic": "news",
+          "duration_ms": 2024
+        },
+        {
+          "query": "Monday CRM pricing",
+          "topic": "general",
+          "duration_ms": 2722
+        },
+        {
+          "query": "Pipedrive new features announcement",
+          "topic": "news",
+          "duration_ms": 2752
+        },
+        {
+          "query": "Zoho CRM new features announcement",
+          "topic": "news",
+          "duration_ms": 2757
+        },
+        {
+          "query": "Freshsales pricing",
+          "topic": "general",
+          "duration_ms": 2792
+        },
+        {
+          "query": "HubSpot new features announcement",
+          "topic": "news",
+          "duration_ms": 2890
+        },
+        {
+          "query": "Monday CRM new features announcement",
+          "topic": "news",
+          "duration_ms": 3037
+        }
+      ],
+      "extracts": [
+        {
+          "url": "https://www.pipedrive.com/",
+          "duration_ms": 366
+        },
+        {
+          "url": "https://www.zoho.com/crm/zohocrm-pricing-calculator.html",
+          "duration_ms": 465
+        },
+        {
+          "url": "https://monday.com/crm/pricing",
+          "duration_ms": 837
+        },
+        {
+          "url": "https://www.freshworks.com/crm/pricing",
+          "duration_ms": 1542
+        },
+        {
+          "url": "https://www.saasworthy.com/product/hubspot-crm/pricing",
+          "duration_ms": 1763
+        }
+      ],
+      "timings": {
+        "memory_recall_ms": 47,
+        "search_duration_ms": 24840,
+        "extract_duration_ms": 4973,
+        "gemini_duration_ms": 29062,
+        "gemini_backoff_ms": 0,
+        "extraction_wall_ms": 6015,
+        "scanner_buffering_ms": 0,
+        "idle_gaps_ms": 0
+      },
+      "root_cause_analysis": {
+        "why_first_token_equals_total": [
+          "Tool calls are executed on Round 0, taking multiple seconds for search and extraction.",
+          "In Round 1, canCallTools was evaluated as true (round < config.maxToolRounds - 1), causing onText to buffer chunks in roundChunks rather than streaming directly to sentenceGate.",
+          "Commentary tokens were therefore held until generateStream resolved, resulting in first_token_ms being recorded within milliseconds of total_ms.",
+          "Per-target extraction serialized multiple Gemini structured extraction calls, each consuming rate limit budget and increasing total duration."
+        ]
+      }
+    },
+    {
+      "id": "official-2",
+      "prompt": "What did I ask you on 3 November? Is your answer still correct today?",
+      "milestones": {
+        "first_progress_ms": 63,
+        "first_token_ms": 25905,
+        "total_time_ms": 26115,
+        "first_token_to_total_gap_ms": 210
+      },
+      "budgets": {
+        "searches": 4,
+        "extracts": 2,
+        "geminiCalls": 6,
+        "rounds": 2
+      },
+      "gemini_calls": [
+        {
+          "call_index": 1,
+          "purpose": "initial_plan_and_tool_call",
+          "type": "stream",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 961,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 2,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 1743,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 3,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 1688,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 4,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 3961,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 5,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 14592,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 12643
+        },
+        {
+          "call_index": 6,
+          "purpose": "final_commentary",
+          "type": "stream",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 2307,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        }
+      ],
+      "searches": [
+        {
+          "query": "Supabase pricing 2026",
+          "topic": "general",
+          "duration_ms": 1630
+        },
+        {
+          "query": "Supabase new features announcement",
+          "topic": "news",
+          "duration_ms": 1862
+        },
+        {
+          "query": "Neon pricing 2026",
+          "topic": "general",
+          "duration_ms": 2036
+        },
+        {
+          "query": "Neon new features announcement",
+          "topic": "news",
+          "duration_ms": 2182
+        }
+      ],
+      "extracts": [
+        {
+          "url": "https://supabase.com/pricing",
+          "duration_ms": 359
+        },
+        {
+          "url": "https://www.activepieces.com/blog/neon-pricing-2026-plans-free-tier-limits-and-costs",
+          "duration_ms": 815
+        }
+      ],
+      "timings": {
+        "memory_recall_ms": 16,
+        "search_duration_ms": 7710,
+        "extract_duration_ms": 1174,
+        "gemini_duration_ms": 25252,
+        "gemini_backoff_ms": 0,
+        "extraction_wall_ms": 14868,
+        "scanner_buffering_ms": 0,
+        "idle_gaps_ms": 0
+      },
+      "root_cause_analysis": {
+        "why_first_token_equals_total": [
+          "Tool calls are executed on Round 0, taking multiple seconds for search and extraction.",
+          "In Round 1, canCallTools was evaluated as true (round < config.maxToolRounds - 1), causing onText to buffer chunks in roundChunks rather than streaming directly to sentenceGate.",
+          "Commentary tokens were therefore held until generateStream resolved, resulting in first_token_ms being recorded within milliseconds of total_ms.",
+          "Per-target extraction serialized multiple Gemini structured extraction calls, each consuming rate limit budget and increasing total duration."
+        ]
+      }
+    },
+    {
+      "id": "official-3",
+      "prompt": "Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?",
+      "milestones": {
+        "first_progress_ms": 346,
+        "first_token_ms": 32371,
+        "total_time_ms": 32678,
+        "first_token_to_total_gap_ms": 307
+      },
+      "budgets": {
+        "searches": 10,
+        "extracts": 5,
+        "geminiCalls": 8,
+        "rounds": 2
+      },
+      "gemini_calls": [
+        {
+          "call_index": 1,
+          "purpose": "initial_plan_and_tool_call",
+          "type": "stream",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 4058,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 2655
+        },
+        {
+          "call_index": 2,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 4596,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 2658
+        },
+        {
+          "call_index": 3,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 4271,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 1101
+        },
+        {
+          "call_index": 4,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 5069,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 5,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 5300,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 6,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 5419,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 7,
+          "purpose": "page_claim_extraction",
+          "type": "json",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 5599,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        },
+        {
+          "call_index": 8,
+          "purpose": "final_commentary",
+          "type": "stream",
+          "model": "gemini-3.5-flash-lite",
+          "duration_ms": 2767,
+          "backoff_wait_ms": 0,
+          "throttle_wait_ms": 0
+        }
+      ],
+      "searches": [
+        {
+          "query": "Neon new features announcement",
+          "topic": "news",
+          "duration_ms": 19
+        },
+        {
+          "query": "AWS RDS new features announcement",
+          "topic": "news",
+          "duration_ms": 2297
+        },
+        {
+          "query": "Postgresql new features announcement",
+          "topic": "news",
+          "duration_ms": 2510
+        },
+        {
+          "query": "Supabase Pro pricing 2026",
+          "topic": "general",
+          "duration_ms": 2628
+        },
+        {
+          "query": "AWS RDS pricing",
+          "topic": "general",
+          "duration_ms": 2636
+        },
+        {
+          "query": "Neon Postgres pricing Launch plan 2026",
+          "topic": "general",
+          "duration_ms": 2857
+        },
+        {
+          "query": "Postgresql pricing",
+          "topic": "general",
+          "duration_ms": 2848
+        },
+        {
+          "query": "AWS RDS PostgreSQL pricing 2026",
+          "topic": "general",
+          "duration_ms": 3422
+        },
+        {
+          "query": "Supabase new features announcement",
+          "topic": "news",
+          "duration_ms": 4584
+        },
+        {
+          "query": "Aws rds new features announcement",
+          "topic": "news",
+          "duration_ms": 6801
+        }
+      ],
+      "extracts": [
+        {
+          "url": "https://supabase.com/pricing",
+          "duration_ms": 201
+        },
+        {
+          "url": "https://docs.digitalocean.com/products/databases/postgresql/details/pricing",
+          "duration_ms": 742
+        },
+        {
+          "url": "https://aws.amazon.com/rds/pricing",
+          "duration_ms": 1897
+        },
+        {
+          "url": "https://neon.com/pricing",
+          "duration_ms": 2385
+        },
+        {
+          "url": "https://aws.amazon.com/rds/postgresql/pricing",
+          "duration_ms": 2939
+        }
+      ],
+      "timings": {
+        "memory_recall_ms": 16,
+        "search_duration_ms": 30602,
+        "extract_duration_ms": 8164,
+        "gemini_duration_ms": 37079,
+        "gemini_backoff_ms": 0,
+        "extraction_wall_ms": 6816,
+        "scanner_buffering_ms": 0,
+        "idle_gaps_ms": 0
+      },
+      "root_cause_analysis": {
+        "why_first_token_equals_total": [
+          "Tool calls are executed on Round 0, taking multiple seconds for search and extraction.",
+          "In Round 1, canCallTools was evaluated as true (round < config.maxToolRounds - 1), causing onText to buffer chunks in roundChunks rather than streaming directly to sentenceGate.",
+          "Commentary tokens were therefore held until generateStream resolved, resulting in first_token_ms being recorded within milliseconds of total_ms.",
+          "Per-target extraction serialized multiple Gemini structured extraction calls, each consuming rate limit budget and increasing total duration."
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "finding": "First token equals total duration primarily because Round 1 streaming text is buffered in roundChunks until generateStream completes, rather than streamed progressively to the client as sentences pass validation."
+  }
+}
