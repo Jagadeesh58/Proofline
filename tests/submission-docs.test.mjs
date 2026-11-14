@@ -9,13 +9,12 @@ const read = (file) => fs.readFileSync(new URL(`../${file}`, import.meta.url), '
 test('submission documents record the required architecture, lifecycle, and limits', () => {
   const design = read('DESIGN.md');
   const requiredHeadings = [
-    '# Proofline System Design',
-    '## Architecture & Request Lifecycle',
-    '## Search Policy & Single-Tool Contract',
-    '## Time Awareness & State Management',
-    '## Citation & Evidence Engine',
-    '## Rate Limits & Provider Hardening',
-    '## Honest Limits & Trade-offs',
+    '# Proofline: design',
+    '## How a message flows',
+    '## Why it\'s built like this',
+    '## Considered and rejected',
+    '## With another week',
+    '## Evals',
   ];
   let lastIndex = -1;
   for (const heading of requiredHeadings) {
@@ -28,13 +27,18 @@ test('submission documents record the required architecture, lifecycle, and limi
   const designWords = (design.replace(/```[\s\S]*?```/g, ' ').replace(/`[^`]*`/g, ' ').replace(/https?:\/\/\S+/g, ' ').match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
   assert.ok(designWords >= 1100 && designWords <= 1300, `DESIGN.md word count (${designWords}) must be 1100-1300`);
 
+  // Verify config defaults agreement with DESIGN.md
+  assert.ok(design.includes('20 requests per session'), 'DESIGN.md must state session quota of 20');
+  assert.ok(design.includes('200 requests per day'), 'DESIGN.md must state daily global quota of 200');
+
   const readme = read('README.md');
   const readmeHeadings = [
     '# Proofline',
-    '## Quickstart',
     '## Live Deployment',
-    '## How It Works',
-    '## Evaluation Summary',
+    '## Quickstart',
+    '## Official Prompts',
+    '## Evaluation',
+    '## Repository Layout',
   ];
   for (const heading of readmeHeadings) {
     assert.ok(readme.includes(heading), `README.md must contain heading: ${heading}`);
@@ -47,6 +51,12 @@ test('submission documents record the required architecture, lifecycle, and limi
   const jsonFiles = fs.readdirSync(new URL('../evals/results/', import.meta.url)).filter((name) => name.endsWith('.json'));
   assert.ok(jsonFiles.includes('latest.json'), 'evals/results must contain latest.json');
   assert.ok(jsonFiles.includes('live-latest.json'), 'evals/results must contain live-latest.json');
+
+  const latest = JSON.parse(read('evals/results/latest.json'));
+  assert.ok(design.includes(`${latest.test_summary.tests} tests`), 'DESIGN.md must match test count from latest.json');
+
+  const liveLatest = JSON.parse(read('evals/results/live-latest.json'));
+  assert.ok(design.includes(`${liveLatest.citationFaithfulness.totalQuotes}/${liveLatest.citationFaithfulness.totalQuotes} quotes`), 'DESIGN.md must match faithfulness from live-latest.json');
 });
 
 test('deprecated name-matched phrase does not appear anywhere in src, public, tests, README or DESIGN', () => {

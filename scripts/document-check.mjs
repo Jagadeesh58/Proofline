@@ -90,6 +90,26 @@ if (!fs.existsSync(latestPath)) {
       );
     }
   }
+
+  if (expectedTests !== undefined && !design.includes(`${expectedTests} tests`)) {
+    failures.push(`DESIGN.md must cite offline test count "${expectedTests} tests" from evals/results/latest.json.`);
+  }
+}
+
+const liveLatestPath = path.join(root, 'evals/results/live-latest.json');
+if (fs.existsSync(liveLatestPath)) {
+  const liveLatest = JSON.parse(fs.readFileSync(liveLatestPath, 'utf8'));
+  const quotes = liveLatest.citationFaithfulness?.totalQuotes;
+  if (quotes && !design.includes(`${quotes}/${quotes} quotes`)) {
+    failures.push(`DESIGN.md must cite citation faithfulness "${quotes}/${quotes} quotes" from live-latest.json.`);
+  }
+}
+
+if (!design.includes('20 requests per session')) {
+  failures.push('DESIGN.md must state session quota of 20 requests per session.');
+}
+if (!design.includes('200 requests per day')) {
+  failures.push('DESIGN.md must state global daily quota of 200 requests per day.');
 }
 
 if (failures.length) {
