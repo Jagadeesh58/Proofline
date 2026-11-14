@@ -80,11 +80,11 @@ Performance metrics are derived from executed runs recorded in `evals/results/`:
 
 | Metric | Offline Suite (`latest.json`) | Live Run (`live-latest.json`) |
 | --- | ---: | ---: |
-| Date | 2026-11-14T18:01:57Z | 2026-11-14T18:13:14Z |
+| Date | 2026-11-14T18:57:49Z | 2026-11-14T18:13:14Z |
 | Model | gemini-3.5-flash-lite | gemini-3.5-flash-lite |
-| Evaluated units | 241 tests | 3 official prompts |
-| Pass rate | 100% (241/241) | 100% (3/3) |
-| 95% Wilson interval | [0.984, 1.000] | [0.438, 1.000] |
+| Evaluated units | 252 tests | 3 official prompts |
+| Pass rate | 100% (252/252) | 100% (3/3) |
+| 95% Wilson interval | [0.985, 1.000] | [0.438, 1.000] |
 | First progress median / max | N/A | 68 ms / 74 ms |
 | Time to first token median / max | N/A | 21,476 ms / 26,873 ms |
 | Total duration median / max | N/A | 26,858 ms / 27,054 ms |

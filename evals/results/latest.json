@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-14T18:01:57.042Z",
-  "run_id": "offline-2026-11-14T18-01-57.042Z-5845fd5c",
+  "date": "2026-11-14T18:57:49.210Z",
+  "run_id": "offline-2026-11-14T18-57-49.210Z-af90522f",
   "model": "gemini-3.5-flash-lite",
   "group": "offline",
   "provider_keys_present": {
@@ -10,16 +10,16 @@
   },
   "live_calls_made": 0,
   "test_summary": {
-    "tests": 241,
+    "tests": 252,
     "suites": 0,
-    "pass": 241,
+    "pass": 252,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
   },
   "status": "passed",
   "command_exit_code": 0,
-  "output_tail": "✔ topic recall does not recall the currently streaming turn (27.9706ms)\n✔ weather-on-Friday question shows no recall block (8.556ms)\n✔ a past date with no matching conversation is passed to the model as a zero-match fact (9.2663ms)\n✔ imports keep missing fields missing and mark an unknown generation date (6.2671ms)\n✔ an imported turn can have a display timestamp distinct from its generation timestamp (18.798ms)\n✔ transactional imports roll back the whole batch if a date is invalid (15.552ms)\n✔ boot sweep marks unfinished live turns interrupted and claim extraction failed (383.6962ms)\n✔ uses only compact recent-turn context and keeps each turn once (148.9256ms)\n✔ refreshes topic recall after a completed streaming answer (26.2064ms)\n✔ does not put marked demo history into recent model context (34.8212ms)\n✔ does not invent an imported generation date from its display timestamp (17.8747ms)\n✔ ordinary related topic questions do not emit a recall memory event (48.3947ms)\n✔ recall framing recognises ten natural references and ignores ordinary overlap (72.11ms)\n✔ does not silently substitute demo history from another date for weekday recall (45.6127ms)\n✔ same-day recall finds turns created earlier today (17.7703ms)\n✔ current-week recall finds turns created during the current week (13.6016ms)\n✔ resolves relative dates forward and backward with strict week bounds (53.6785ms)\n✔ store integrity check validates schema and foreign keys (8.98ms)\n✔ table-driven tests: month-only phrases (69.2446ms)\n✔ table-driven tests: relative expressions (90.5829ms)\n✔ table-driven tests: explicit date ranges (95.7803ms)\n✔ table-driven tests: negative guards and product names (19.8275ms)\n✔ table-driven tests: timezone boundaries near midnight (42.9033ms)\n✔ topic recall returns up to 3 relevant past turns ranked by BM25 scoring plus recency within budget (103.2878ms)\n✔ topic recall respects character budget config.maxContextChars (33.8053ms)\n✔ when 0 turns match a queried past date, explicitly return fact and never invent history (16.9675ms)\nℹ tests 241\nℹ suites 0\nℹ pass 241\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 46678.7373\n",
+  "output_tail": "✔ topic recall does not recall the currently streaming turn (32.8577ms)\n✔ weather-on-Friday question shows no recall block (19.796ms)\n✔ a past date with no matching conversation is passed to the model as a zero-match fact (9.2947ms)\n✔ imports keep missing fields missing and mark an unknown generation date (49.9745ms)\n✔ an imported turn can have a display timestamp distinct from its generation timestamp (26.1937ms)\n✔ transactional imports roll back the whole batch if a date is invalid (16.4778ms)\n✔ boot sweep marks unfinished live turns interrupted and claim extraction failed (214.5009ms)\n✔ uses only compact recent-turn context and keeps each turn once (100.7438ms)\n✔ refreshes topic recall after a completed streaming answer (18.2526ms)\n✔ does not put marked demo history into recent model context (31.2646ms)\n✔ does not invent an imported generation date from its display timestamp (23.9177ms)\n✔ ordinary related topic questions do not emit a recall memory event (91.4256ms)\n✔ recall framing recognises ten natural references and ignores ordinary overlap (109.1029ms)\n✔ does not silently substitute demo history from another date for weekday recall (19.6838ms)\n✔ same-day recall finds turns created earlier today (12.2892ms)\n✔ current-week recall finds turns created during the current week (18.5024ms)\n✔ resolves relative dates forward and backward with strict week bounds (25.8482ms)\n✔ store integrity check validates schema and foreign keys (10.0349ms)\n✔ table-driven tests: month-only phrases (73.5365ms)\n✔ table-driven tests: relative expressions (99.3142ms)\n✔ table-driven tests: explicit date ranges (49.1774ms)\n✔ table-driven tests: negative guards and product names (14.5863ms)\n✔ table-driven tests: timezone boundaries near midnight (18.7631ms)\n✔ topic recall returns up to 3 relevant past turns ranked by BM25 scoring plus recency within budget (29.7514ms)\n✔ topic recall respects character budget config.maxContextChars (18.5673ms)\n✔ when 0 turns match a queried past date, explicitly return fact and never invent history (13.0454ms)\nℹ tests 252\nℹ suites 0\nℹ pass 252\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 47814.0538\n",
   "offline_provider_calls": {
     "gemini": 0,
     "tavily_search": 0,

@@ -1,19 +1,30 @@
 # Proofline
 
+[![CI](https://github.com/Jagadeesh58/Proofline/actions/workflows/ci.yml/badge.svg)](https://github.com/Jagadeesh58/Proofline/actions/workflows/ci.yml)
+
 Proofline is a research chat agent built with Node.js 22 and native SQLite (`node:sqlite`). The language model has access to exactly one tool: `web_search`, while temporal reasoning, historical recall, factual extraction, and comparison cards stay in application code.
-
-## Live Deployment
-
-The service is deployed at [https://proofline.onrender.com](https://proofline.onrender.com). Because the free Render instance sleeps after inactivity, the first request after idle can take about a minute on the free host.
 
 ## Quickstart
 
 Requires Node.js 22.16.0 or later with zero runtime npm dependencies.
 
-1. Clone the repository and navigate into the project directory.
-2. Copy `.env.example` to `.env` and configure `GEMINI_API_KEY` and `TAVILY_API_KEY`.
-3. Start the application: `npm run dev`
-4. Open `http://127.0.0.1:3000` to interact with the web interface.
+To run the full interface and official prompts immediately without API keys:
+
+```bash
+npm install
+npm run demo
+```
+
+Open `http://127.0.0.1:3000` to interact with the recorded search corpus and live pipeline.
+
+## Live Deployment
+
+The service is deployed at [https://proofline.onrender.com](https://proofline.onrender.com). Because the free Render instance sleeps after inactivity, the first request after idle can take about a minute on the free host.
+
+To run locally with live provider keys:
+
+1. Copy `.env.example` to `.env` and configure `GEMINI_API_KEY` and `TAVILY_API_KEY`.
+2. Start the application: `npm run dev`
 
 ## Official Prompts
 
@@ -25,6 +36,7 @@ The system is evaluated against the three hiring challenge prompts:
 
 ## Evaluation
 
+- `npm run demo`: keyless local demonstration.
 - `npm test`: runs the offline test suite.
 - `npm run check`: runs syntax, linting, formatting, document verification, and multi-date simulations.
 - `npm run eval`: executes offline evaluation fixtures.
