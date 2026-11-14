@@ -86,3 +86,57 @@ test('decimal-aware splitSentences keeps decimal prices, percentages and version
   assert.ok(sentences.some((s) => s.includes('https://example.com/pricing')));
   assert.ok(!sentences.some((s) => s.startsWith('99 per user')));
 });
+
+test('sentence gate preserves inter-sentence whitespace and spaces after unverified figure markers', async () => {
+  let saved = '';
+  const tokens = [];
+  const gate = createSentenceGate({
+    send: (event, payload) => { if (event === 'token') tokens.push(payload.text); },
+    store: { appendAssistantText: (_id, value) => { saved += value; } },
+    turnId: 'turn-ws',
+    getContext: () => ({
+      userText: 'Check pricing',
+      recalled: [], cards: [], sources: [], entities: [{ name: 'HubSpot', key: 'hubspot', domain: 'hubspot.com' }],
+      claims: [],
+    }),
+  });
+
+  // Push sentence 1 containing unverified figure and sentence 2 progressively
+  gate.push('HubSpot Starter costs $99 per user per month. ');
+  gate.push('HubSpot also introduced new reporting features.');
+  const result = await gate.flush();
+
+  assert.ok(result.includes('(figure not verified) HubSpot also introduced'));
+  assert.doesNotMatch(result, /\(figure not verified\)HubSpot/);
+  assert.equal(saved, result);
+
+  // Push two sentences where the second has no leading space
+  let saved2 = '';
+  const gate2 = createSentenceGate({
+    send: () => {},
+    store: { appendAssistantText: (_id, value) => { saved2 += value; } },
+    turnId: 'turn-ws-2',
+    getContext: () => ({ userText: 'Check', recalled: [], cards: [], sources: [], entities: [], claims: [] }),
+  });
+  gate2.push('No pricing changes have been reported since last Tuesday.');
+  gate2.push('Official provider pages confirm this.');
+  const result2 = await gate2.flush();
+  assert.equal(result2, 'No pricing changes have been reported since last Tuesday. Official provider pages confirm this.');
+  assert.equal(saved2, result2);
+});
+
+test('sentenceEndIndex retains trailing citation markers attached to the sentence', async () => {
+  const { sentenceEndIndex } = await import('../src/evidence/answer-stream.mjs');
+
+  const textWithCitation = 'No changes since last Tuesday. [S1] Official provider pages were checked.';
+  const end1 = sentenceEndIndex(textWithCitation);
+  assert.equal(textWithCitation.slice(0, end1), 'No changes since last Tuesday. [S1]');
+
+  const textWithDirectCitation = 'No changes since last Tuesday.[S1] Official provider pages were checked.';
+  const end2 = sentenceEndIndex(textWithDirectCitation);
+  assert.equal(textWithDirectCitation.slice(0, end2), 'No changes since last Tuesday.[S1]');
+
+  const textWithMultipleCitations = 'Pricing confirmed. [S1, S2] Next paragraph starts here.';
+  const end3 = sentenceEndIndex(textWithMultipleCitations);
+  assert.equal(textWithMultipleCitations.slice(0, end3), 'Pricing confirmed. [S1, S2]');
+});

@@ -34,6 +34,16 @@ export function sentenceEndIndex(value) {
       nextPos += 1;
     }
 
+    // Trailing citation markers attached to the sentence end (e.g. . [S1] or .[S1] or . [S1, S2])
+    const tail = value.slice(nextPos);
+    const citationMatch = tail.match(/^(?:\s*\[S\d+(?:,\s*S\d+)*\])+/i);
+    if (citationMatch) {
+      nextPos += citationMatch[0].length;
+      while (nextPos < value.length && ['"', "'", ')', ']', '}'].includes(value[nextPos])) {
+        nextPos += 1;
+      }
+    }
+
     if (nextPos >= value.length || /\s/.test(value[nextPos])) {
       return nextPos;
     }
@@ -74,11 +84,19 @@ export function createSentenceGate({ send, store, turnId, getContext, extraction
       if (extractionPromise && hasFigureTokens(sentence)) {
         try { await extractionPromise; } catch { /* Failed extraction leaves claims unavailable. */ }
       }
+      const leadingWhitespace = sentence.match(/^\s*/)?.[0] || '';
       const checked = checkAnswerFigures(sentence, getContext());
-      if (checked.text) {
-        emitted += checked.text;
-        store.appendAssistantText(turnId, checked.text);
-        emitSafely(send, 'token', { text: checked.text });
+      let textToEmit = checked.text;
+      if (textToEmit) {
+        if (leadingWhitespace && !textToEmit.startsWith(leadingWhitespace)) {
+          textToEmit = leadingWhitespace + textToEmit;
+        }
+        if (emitted && !/\s$/.test(emitted) && !/^\s/.test(textToEmit)) {
+          textToEmit = ` ${textToEmit}`;
+        }
+        emitted += textToEmit;
+        store.appendAssistantText(turnId, textToEmit);
+        emitSafely(send, 'token', { text: textToEmit });
       }
       for (const marker of checked.markers) emitSafely(send, 'figure_marker', marker);
     });
