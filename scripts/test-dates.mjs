@@ -12,7 +12,7 @@ for (const date of dates) {
   process.stdout.write(`\n--- Running test suite with FAKE_NOW=${date} ---\n`);
   const result = spawnSync(
     process.execPath,
-    ['--import', './tests/fake-clock.mjs', '--test', ...testFiles],
+    ['--import', './tests/test-env.mjs', '--import', './tests/fake-clock.mjs', '--test', ...testFiles],
     {
       cwd: root,
       stdio: 'inherit',
