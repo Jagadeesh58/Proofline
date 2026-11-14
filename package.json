@@ -1,0 +1,28 @@
+{
+  "name": "proofline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-first research chat with one web_search tool, SQLite recall, quote-validated evidence and code-assigned comparisons.",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "eval:live": "node scripts/live-eval.mjs",
+    "eval:live:quick": "node scripts/live-eval.mjs --quick",
+    "dev": "node --watch src/main.mjs",
+    "start": "node src/main.mjs",
+    "lint": "node scripts/lint.mjs",
+    "format": "node scripts/format-check.mjs --write",
+    "check": "npm run syntax && npm run lint && npm run format:check && npm test",
+    "test": "node --test tests/*.test.mjs",
+    "test:dates": "node scripts/test-dates.mjs",
+    "eval": "node evals/run.mjs",
+    "import": "node scripts/import.mjs",
+    "db:reset": "node scripts/reset-db.mjs",
+    "format:check": "node scripts/format-check.mjs",
+    "syntax": "node scripts/verify.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "docs:check": "node scripts/document-check.mjs"
+  }
+}

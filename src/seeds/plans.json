@@ -1,0 +1,376 @@
+{
+  "hubspot": {
+    "domain_labels": [
+      "hubspot"
+    ],
+    "plan_aliases": {
+      "starter": "starter",
+      "crm starter": "starter",
+      "starter customer platform": "starter",
+      "professional": "professional",
+      "crm professional": "professional",
+      "enterprise": "enterprise"
+    }
+  },
+  "pipedrive": {
+    "domain_labels": [
+      "pipedrive"
+    ],
+    "plan_aliases": {
+      "essential": "essential",
+      "lite": "lite",
+      "advanced": "advanced",
+      "professional": "professional",
+      "power": "power",
+      "ultimate": "ultimate"
+    }
+  },
+  "zoho": {
+    "domain_labels": [
+      "zoho"
+    ],
+    "plan_aliases": {
+      "standard": "standard",
+      "professional": "professional",
+      "enterprise": "enterprise",
+      "ultimate": "ultimate"
+    },
+    "allowed_tlds": [
+      "in",
+      "eu"
+    ]
+  },
+  "zoho crm": {
+    "domain_labels": [
+      "zoho"
+    ],
+    "plan_aliases": {
+      "standard": "standard",
+      "professional": "professional",
+      "enterprise": "enterprise",
+      "ultimate": "ultimate"
+    },
+    "allowed_tlds": [
+      "in",
+      "eu"
+    ]
+  },
+  "monday": {
+    "domain_labels": [
+      "monday"
+    ],
+    "plan_aliases": {
+      "basic": "basic",
+      "standard": "standard",
+      "pro": "pro",
+      "enterprise": "enterprise"
+    }
+  },
+  "monday crm": {
+    "domain_labels": [
+      "monday"
+    ],
+    "plan_aliases": {
+      "basic": "basic",
+      "standard": "standard",
+      "pro": "pro",
+      "enterprise": "enterprise"
+    }
+  },
+  "less annoying crm": {
+    "domain_labels": [
+      "lessannoying"
+    ],
+    "plan_aliases": {
+      "single user": "single user",
+      "multi user": "multi user"
+    }
+  },
+  "neon": {
+    "domain_labels": [
+      "neon"
+    ],
+    "plan_aliases": {
+      "free": "free",
+      "launch": "launch",
+      "scale": "scale",
+      "business": "business"
+    }
+  },
+  "supabase": {
+    "domain_labels": [
+      "supabase"
+    ],
+    "plan_aliases": {
+      "free": "free",
+      "pro": "pro",
+      "team": "team",
+      "enterprise": "enterprise"
+    }
+  },
+  "github": {
+    "domain_labels": [
+      "github"
+    ],
+    "plan_aliases": {
+      "free": "free",
+      "team": "team",
+      "enterprise": "enterprise"
+    }
+  },
+  "vercel": {
+    "domain_labels": [
+      "vercel"
+    ],
+    "plan_aliases": {
+      "hobby": "hobby",
+      "pro": "pro",
+      "enterprise": "enterprise"
+    }
+  },
+  "aws rds": {
+    "domain_labels": [
+      "amazon",
+      "aws"
+    ],
+    "plan_aliases": {
+      "free tier": "free tier",
+      "standard": "standard",
+      "enterprise": "enterprise"
+    }
+  },
+  "freshsales": {
+    "domain_labels": [
+      "freshsales",
+      "freshworks"
+    ],
+    "plan_aliases": {
+      "growth": "growth",
+      "pro": "pro",
+      "enterprise": "enterprise"
+    }
+  },
+  "postgresql": {
+    "domain_labels": [
+      "postgresql"
+    ],
+    "plan_aliases": {}
+  },
+  "microsoft dynamics": {
+    "domain_labels": [
+      "microsoft"
+    ],
+    "plan_aliases": {}
+  },
+  "salesforce sales cloud": {
+    "domain_labels": [
+      "salesforce"
+    ]
+  },
+  "notion": {
+    "domain_labels": [
+      "notion"
+    ],
+    "allowed_tlds": [
+      "so"
+    ],
+    "plan_aliases": {}
+  },
+  "zoom": {
+    "domain_labels": [
+      "zoom"
+    ],
+    "allowed_tlds": [
+      "us"
+    ],
+    "plan_aliases": {}
+  },
+  "bitbucket": {
+    "domain_labels": [
+      "atlassian"
+    ]
+  },
+  "mysql": {
+    "domain_labels": [
+      "mysql"
+    ],
+    "plan_aliases": {}
+  },
+  "mongodb": {
+    "domain_labels": [
+      "mongodb"
+    ],
+    "plan_aliases": {}
+  },
+  "redis": {
+    "domain_labels": [
+      "redis"
+    ],
+    "plan_aliases": {}
+  },
+  "cockroachdb": {
+    "domain_labels": [
+      "cockroachdb"
+    ],
+    "plan_aliases": {}
+  },
+  "planetscale": {
+    "domain_labels": [
+      "planetscale"
+    ],
+    "plan_aliases": {}
+  },
+  "aws": {
+    "domain_labels": [
+      "aws",
+      "amazon"
+    ],
+    "plan_aliases": {}
+  },
+  "azure": {
+    "domain_labels": [
+      "azure",
+      "microsoft"
+    ],
+    "plan_aliases": {}
+  },
+  "google cloud": {
+    "domain_labels": [
+      "google",
+      "googlecloud"
+    ],
+    "plan_aliases": {}
+  },
+  "digitalocean": {
+    "domain_labels": [
+      "digitalocean"
+    ],
+    "plan_aliases": {}
+  },
+  "render": {
+    "domain_labels": [
+      "render"
+    ],
+    "plan_aliases": {}
+  },
+  "railway": {
+    "domain_labels": [
+      "railway"
+    ],
+    "plan_aliases": {}
+  },
+  "fly.io": {
+    "domain_labels": [
+      "fly"
+    ],
+    "plan_aliases": {}
+  },
+  "cloudflare": {
+    "domain_labels": [
+      "cloudflare"
+    ],
+    "plan_aliases": {}
+  },
+  "gitlab": {
+    "domain_labels": [
+      "gitlab"
+    ],
+    "plan_aliases": {}
+  },
+  "netlify": {
+    "domain_labels": [
+      "netlify"
+    ],
+    "plan_aliases": {}
+  },
+  "atlassian jira": {
+    "domain_labels": [
+      "atlassian"
+    ],
+    "plan_aliases": {}
+  },
+  "microsoft 365": {
+    "domain_labels": [
+      "microsoft"
+    ],
+    "plan_aliases": {}
+  },
+  "google workspace": {
+    "domain_labels": [
+      "google"
+    ],
+    "plan_aliases": {}
+  },
+  "figma": {
+    "domain_labels": [
+      "figma"
+    ],
+    "plan_aliases": {}
+  },
+  "canva": {
+    "domain_labels": [
+      "canva"
+    ],
+    "plan_aliases": {}
+  },
+  "discord": {
+    "domain_labels": [
+      "discord"
+    ],
+    "plan_aliases": {}
+  },
+  "spotify": {
+    "domain_labels": [
+      "spotify"
+    ],
+    "plan_aliases": {}
+  },
+  "trello": {
+    "domain_labels": [
+      "atlassian"
+    ]
+  },
+  "jira": {
+    "domain_labels": [
+      "atlassian"
+    ]
+  },
+  "confluence": {
+    "domain_labels": [
+      "atlassian"
+    ]
+  },
+  "dynamics 365": {
+    "domain_labels": [
+      "microsoft"
+    ]
+  },
+  "microsoft dynamics 365": {
+    "domain_labels": [
+      "microsoft"
+    ]
+  },
+  "sales cloud": {
+    "domain_labels": [
+      "salesforce"
+    ]
+  },
+  "turso": {
+    "allowed_tlds": [
+      "tech"
+    ]
+  },
+  "proton": {
+    "allowed_tlds": [
+      "me"
+    ]
+  },
+  "payu india": {
+    "domain_labels": [
+      "payu"
+    ],
+    "allowed_tlds": [
+      "in"
+    ]
+  }
+}
