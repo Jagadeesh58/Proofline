@@ -142,10 +142,10 @@ export function createServer(
 
   function hasAvailableBudget(sessionId) {
     const maxGlobal = globalDailyBudget !== null ? globalDailyBudget : (
-      Number(process.env.GLOBAL_DAILY_BUDGET) > 0 ? Number(process.env.GLOBAL_DAILY_BUDGET) : 500
+      Number(process.env.GLOBAL_DAILY_BUDGET) > 0 ? Number(process.env.GLOBAL_DAILY_BUDGET) : config.globalDailyBudget
     );
     const maxSession = sessionBudget !== null ? sessionBudget : (
-      Number(process.env.SESSION_BUDGET) > 0 ? Number(process.env.SESSION_BUDGET) : 20
+      Number(process.env.SESSION_BUDGET) > 0 ? Number(process.env.SESSION_BUDGET) : config.sessionBudget
     );
 
     const today = new Date().toISOString().slice(0, 10);

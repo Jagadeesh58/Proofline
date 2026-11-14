@@ -53,6 +53,8 @@ export const config = Object.freeze({
   maxRequestBytes: number('MAX_REQUEST_BYTES', 100_000),
   rateWindowMs: number('RATE_LIMIT_WINDOW_MS', 600_000),
   rateLimitMax: number('RATE_LIMIT_MAX', 30),
+  globalDailyBudget: number('GLOBAL_DAILY_BUDGET', 200),
+  sessionBudget: number('SESSION_BUDGET', 20),
   maxContextTurns: number('MAX_CONTEXT_TURNS', 8),
   maxContextChars: number('MAX_CONTEXT_CHARS', 1500),
   maxToolRounds: Math.min(3, number('MAX_TOOL_ROUNDS', 3)),
