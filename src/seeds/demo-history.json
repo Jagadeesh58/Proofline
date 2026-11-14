@@ -1,0 +1,20 @@
+[
+  {
+    "created_at": "2026-11-09T08:30:00.000Z",
+    "source_created_at": "2026-10-20T08:30:00.000Z",
+    "user_text": "On Monday we shortlisted 5 CRM tools for a 20-person sales team. Which should we compare first?",
+    "assistant_text": "The five tools shortlisted were HubSpot Starter at $20 per user per month, billed annually, Pipedrive Essential at $15 per user per month, billed annually, Zoho CRM Standard at $14 per user per month, billed annually, Monday CRM Basic at $12 per user per month, billed annually, and Freshsales Growth at $9 per user per month, billed annually. This is synthetic demo history, not a verified live pricing record."
+  },
+  {
+    "created_at": "2026-11-03T08:30:00.000Z",
+    "source_created_at": "2026-10-20T08:30:00.000Z",
+    "user_text": "How should I choose between managed PostgreSQL providers for a small backend project?",
+    "assistant_text": "Compare Neon Launch at $19 per month on usage billing and Supabase Pro at $25 per month flat fee, alongside branching, connection pooling, backups and region availability before selecting a host. This is synthetic demo history."
+  },
+  {
+    "created_at": "2026-11-10T08:30:00.000Z",
+    "source_created_at": "2026-10-20T08:30:00.000Z",
+    "user_text": "Which managed Postgres hosting options should we evaluate for our backend service?",
+    "assistant_text": "We compared Neon Launch at $19 per month on usage billing, Supabase Pro at $25 per month flat fee, and AWS RDS for PostgreSQL. This is synthetic demo history, not a verified live pricing record."
+  }
+]
