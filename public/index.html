@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fa">
+  <title>Proofline</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">P</div><div><strong>Proofline</strong><span>Evidence-first research chat</span></div></div>
+      <button class="new-chat" id="newChat" title="Memory is kept">Clear conversation view</button>
+      <div class="sidebar-label">LOCAL HISTORY</div>
+      <div id="historyList" class="history-list"></div>
+      <div class="sidebar-bottom">
+        <div class="privacy-note"><span class="dot"></span><span>History stays in your local SQLite database.</span></div>
+        <button class="text-button" id="demoHistory">Load demo history</button>
+        <button class="text-button" id="importToggle">Import conversation JSON</button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div><span class="eyebrow">WEB RESEARCH · LOCAL MEMORY</span><h1>Ask anything worth checking.</h1></div>
+        <div class="top-actions"><span class="model-chip" id="modelChip">Gemini 3.8 Flash</span><span class="status-indicator" id="statusIndicator"><i></i> Checking</span></div>
+      </header>
+      <div id="serverNotice" class="server-notice hidden" role="status" aria-live="polite"></div>
+      <section id="providerBanner" class="provider-banner hidden" aria-live="polite"></section>
+      <section id="importPanel" class="import-panel hidden">
+        <div class="panel-heading"><div><strong>Import conversation history</strong><p>Paste a JSON array. Each turn may contain user_text, assistant_text, created_at and timezone.</p></div><button class="icon-button" id="closeImport" aria-label="Close">×</button></div>
+        <textarea id="importJson" rows="5" placeholder='[{"user_text":"...","assistant_text":"...","created_at":"2026-11-01T09:00:00Z","timezone":"Asia/Kolkata"}]'></textarea>
+        <div class="panel-actions"><span id="importMessage"></span><button class="secondary-button" id="importButton">Import turns</button></div>
+      </section>
+
+      <section id="conversation" class="conversation">
+        <div class="welcome" id="welcome">
+          <div class="welcome-kicker">A research agent that checks its work</div>
+          <h2>Answers grounded in sources.<br><em>History grounded in facts.</em></h2>
+          <p>It searches when information can change, checks quoted evidence before saving claims, and remembers what you asked and when.</p>
+          <div class="demo-prompt-banner" id="emptyDemoAction">
+            <div class="demo-prompt-text">
+              <strong>Sample conversations ready to test</strong>
+              <span>Explore change detection on CRM pricing, Postgres hosting rechecks, and date recall across turns.</span>
+            </div>
+            <button type="button" class="demo-action-button" id="welcomeDemoHistory">Load demo history</button>
+          </div>
+          <p class="memory-note">Your earlier conversations are remembered across clears.</p>
+          <p class="demo-caption">For the three history examples, click <strong>Load demo history</strong> first.</p>
+          <div class="suggestions">
+            <button class="suggestion" data-prompt="On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?">Check the CRM shortlist <span>↗</span></button>
+            <button class="suggestion" data-prompt="What did I ask you on 3 November? Is your answer still correct today?">Recall 3 November <span>↗</span></button>
+            <button class="suggestion" data-prompt="Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?">Check Postgres hosting <span>↗</span></button>
+            <button class="suggestion" data-prompt="What is a database index, and when should I use a B-tree?">Explain a stable concept <span>↗</span></button>
+          </div>
+        </div>
+        <div id="messages" class="messages"></div>
+        <div id="memoryRegion"></div>
+        <div id="cardsRegion"></div>
+        <div id="sourcesRegion"></div>
+      </section>
+
+      <footer class="composer-wrap">
+        <div class="working-line" id="workingLine"><span class="spinner"></span><span id="workingText">Ready when you are.</span><button id="stopButton" class="stop-button hidden">Stop</button></div>
+        <form id="chatForm" class="composer">
+          <textarea id="messageInput" rows="1" maxlength="12000" placeholder="Ask a question, check a claim, or recall a conversation…" required></textarea>
+          <div class="composer-bottom"><span>Enter to send · Shift + Enter for a new line</span><button id="sendButton" type="submit" aria-label="Send message"><span>↑</span></button></div>
+        </form>
+        <div class="footer-meta"><span>Sources are checked, not assumed.</span><span id="timezoneLabel">Asia/Kolkata</span></div>
+      </footer>
+    </main>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
