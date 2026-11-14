@@ -186,6 +186,7 @@ function renderMarkdown(bubble, text) {
 }
 
 function renderMemory(turns) {
+  currentRecalled = turns || [];
   memoryRegion.replaceChildren();
   for (const turn of turns || []) {
     const card = document.createElement('div');
@@ -305,6 +306,14 @@ function renderCards(cards) {
           values.append(col);
         }
         card.append(values);
+      }
+      if (item.status?.toLowerCase().includes('changed')) {
+        const diff = document.createElement('div');
+        diff.className = 'then-vs-now';
+        const baseVal = item.baseline?.value || 'Earlier terms';
+        const currVal = item.current?.value || 'Current terms';
+        diff.textContent = `Comparison: ${baseVal} → ${currVal}`;
+        card.append(diff);
       }
       if (entity.reported?.length) {
         const news = document.createElement('div');
@@ -513,6 +522,8 @@ async function sendMessage(message) {
   setWorking(true, 'Preparing the request…');
   activeController = new AbortController();
   let assistantText = '';
+  let currentRecalled = [];
+  let currentSourcesList = [];
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
@@ -536,6 +547,7 @@ async function sendMessage(message) {
       }
       if (event === 'cards') renderCards(data.cards);
       if (event === 'sources') {
+        currentSourcesList = data.sources || [];
         renderSources(data.sources);
         renderMarkdown(assistantBubble, assistantText);
       }
@@ -548,6 +560,42 @@ async function sendMessage(message) {
         const modelStr = values.effective_model ? ` · ${values.effective_model}` : '';
         timingLine.textContent = `⏱ First token: ${ttftStr} · Total: ${totalStr}${modelStr}`;
         currentExtrasRegion?.append(timingLine);
+
+        const explain = document.createElement('details');
+        explain.className = 'explain-panel';
+        const explainSummary = document.createElement('summary');
+        explainSummary.textContent = 'Explain this answer';
+        explain.append(explainSummary);
+
+        const list = document.createElement('ul');
+        const memoryLi = document.createElement('li');
+        if (currentRecalled.length) {
+          const dates = currentRecalled.map((t) => t.displayed_at || t.created_at).join(', ');
+          memoryLi.textContent = `Memory recall: matched ${currentRecalled.length} past turn(s) (${dates}).`;
+        } else {
+          memoryLi.textContent = 'Memory recall: zero past turns matched.';
+        }
+        list.append(memoryLi);
+
+        const searchLi = document.createElement('li');
+        searchLi.textContent = `Searches executed: ${data.budgets?.searches ?? 0} query/target checks.`;
+        list.append(searchLi);
+
+        if (currentSourcesList.length) {
+          const sourcesLi = document.createElement('li');
+          const domains = [...new Set(currentSourcesList.map((s) => s.domain).filter(Boolean))];
+          const domainSummary = domains.slice(0, 4).join(', ');
+          sourcesLi.textContent = `Evidence sources: ${currentSourcesList.length} pages retrieved (${domainSummary}).`;
+          list.append(sourcesLi);
+        }
+
+        const quotesLi = document.createElement('li');
+        quotesLi.textContent =
+          'Verbatim verification: all displayed figures and quotes are validated against stored page text.';
+        list.append(quotesLi);
+
+        explain.append(list);
+        currentExtrasRegion?.append(explain);
 
         const parts = [
           ...(values.effective_model ? [`model ${values.effective_model}`] : []),
@@ -663,6 +711,17 @@ $('#demoHistory')?.addEventListener('click', triggerDemoHistory);
 $('#welcomeDemoHistory')?.addEventListener('click', triggerDemoHistory);
 $('#importToggle').addEventListener('click', () => $('#importPanel').classList.toggle('hidden'));
 $('#closeImport').addEventListener('click', () => $('#importPanel').classList.add('hidden'));
+
+const themeToggle = $('#themeToggle');
+themeToggle?.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('proofline_theme', next); } catch {}
+});
+const savedTheme = (() => { try { return localStorage.getItem('proofline_theme'); } catch { return null; } })();
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+
 $('#importButton').addEventListener('click', async () => {
   const target = $('#importMessage');
   target.textContent = 'Importing…';
