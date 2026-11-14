@@ -158,7 +158,7 @@ test('reports changed billing conditions as Can’t compare rather than Changed'
   store.close();
 });
 
-test('compares equal prices when commitment is unknown on both sides with an honest suffix', () => {
+test('compares equal prices when commitment is unknown on both sides with stated billing qualification', () => {
   const { store, cards } = compareFixture({
     baseline: { url: 'https://hubspot.com/pricing', amount: 20, commitment: 'unknown' },
     current: { url: 'https://hubspot.com/pricing', amount: 20, commitment: 'unknown' },
@@ -168,7 +168,7 @@ test('compares equal prices when commitment is unknown on both sides with an hon
   store.close();
 });
 
-test('compares changed prices when commitment is unknown on both sides with an honest suffix', () => {
+test('compares changed prices when commitment is unknown on both sides with stated billing qualification', () => {
   const { store, cards } = compareFixture({
     baseline: { url: 'https://hubspot.com/pricing', amount: 20, commitment: 'unknown' },
     current: { url: 'https://hubspot.com/pricing', amount: 24, commitment: 'unknown' },
