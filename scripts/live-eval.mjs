@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { config } from '../src/config.mjs';
 import { Store } from '../src/memory/store.mjs';
 import { runTurn } from '../src/agent/run-turn.mjs';
+import { normaliseEvidenceText } from '../src/evidence/claims.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../');
 const DB_PATH = process.env.LIVE_EVAL_DB_PATH || path.join(ROOT, 'data/live-eval.sqlite');
@@ -447,9 +448,12 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
       if (quote) {
         totalQuotes += 1;
         const fullSource = sourceId ? evalStore.getSource(sourceId) : null;
-        if (fullSource?.page_text && fullSource.page_text.includes(quote)) {
+        const page = fullSource?.page_text || '';
+        const snippet = fullSource?.snippet_text || '';
+        const normQuote = normaliseEvidenceText(quote);
+        if (page.includes(quote) || (page && normaliseEvidenceText(page).includes(normQuote))) {
           faithfulQuotes += 1;
-        } else if (fullSource?.snippet_text && fullSource.snippet_text.includes(quote)) {
+        } else if (snippet.includes(quote) || (snippet && normaliseEvidenceText(snippet).includes(normQuote))) {
           faithfulQuotes += 1;
         }
       }

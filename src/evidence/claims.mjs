@@ -43,6 +43,56 @@ export function normaliseEvidenceText(value) {
     .replace(/[`*_~>#]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
+export function findVerbatimSlice(pageText, candidateQuote) {
+  if (!pageText || !candidateQuote) return null;
+  const rawText = String(pageText);
+  const rawQuote = String(candidateQuote).trim();
+  if (!rawQuote) return null;
+
+  if (rawText.includes(rawQuote)) {
+    return rawQuote;
+  }
+
+  const lowerText = rawText.toLowerCase();
+  const lowerQuote = rawQuote.toLowerCase();
+  const directIdx = lowerText.indexOf(lowerQuote);
+  if (directIdx !== -1) {
+    return rawText.slice(directIdx, directIdx + rawQuote.length);
+  }
+
+  const words = rawQuote.match(/[^\s]+/g);
+  if (words && words.length > 0) {
+    const pattern = words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+    try {
+      const regex = new RegExp(pattern, 'i');
+      const match = rawText.match(regex);
+      if (match && match[0]) {
+        return match[0];
+      }
+    } catch {
+      // Ignore regex syntax errors.
+    }
+  }
+
+  const strippedWords = rawQuote.replace(/["'“”‘’]/g, '').match(/[A-Za-z0-9$€£₹.%+-]+/g);
+  if (strippedWords && strippedWords.length >= 3) {
+    const tokenPattern = strippedWords
+      .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('[^A-Za-z0-9$€£₹.%+-]+');
+    try {
+      const tokenRegex = new RegExp(tokenPattern, 'i');
+      const tokenMatch = rawText.match(tokenRegex);
+      if (tokenMatch && tokenMatch[0]) {
+        return tokenMatch[0];
+      }
+    } catch {
+      // Ignore pattern syntax errors.
+    }
+  }
+
+  return null;
+}
+
 function numberToken(value) {
   if (value === null || value === undefined || value === '') return null;
   const numeric = Number(String(value).replace(/,/g, ''));
@@ -319,11 +369,13 @@ export function validatePageClaims({ store, turnId, sourceItems, rawClaims, enti
     const sourceItem = pages.find(({ source }) => source.id === raw.source_id);
     if (!sourceItem) { rejected += 1; continue; }
     const { source, entity: hint } = sourceItem;
-    const quote = String(raw.evidence_quote || '').slice(0, 300);
-    if (!quote || !normaliseEvidenceText(source.page_text).includes(normaliseEvidenceText(quote))) {
+    const rawQuote = String(raw.evidence_quote || '').slice(0, 300);
+    const verbatim = findVerbatimSlice(source.page_text, rawQuote);
+    if (!verbatim) {
       rejected += 1;
       continue;
     }
+    const quote = verbatim;
     if (!quoteSupportsValueText(quote, raw.value_text) || !quoteContainsAmount(quote, raw.amount)) {
       rejected += 1;
       continue;

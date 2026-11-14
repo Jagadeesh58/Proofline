@@ -770,3 +770,55 @@ test('quote surrounded by "billed annually" within 200 chars resolves to annual;
   const pageWithoutBilling = 'Starter pricing details: Starter $20 per user per month with unlimited contacts.';
   assert.equal(commitmentFromQuote('', quote, pageWithoutBilling, 'Starter'), 'unknown');
 });
+
+test('findVerbatimSlice extracts exact verbatim substring from page text despite formatting differences', async () => {
+  const { findVerbatimSlice } = await import('../src/evidence/claims.mjs');
+  const page = 'HubSpot CRM Starter costs $20 per user per month with monthly billing.';
+
+  // Exact match
+  assert.equal(
+    findVerbatimSlice(page, 'costs $20 per user per month'),
+    'costs $20 per user per month'
+  );
+
+  // Case variation: model used uppercase "Costs"
+  assert.equal(
+    findVerbatimSlice(page, 'Costs $20 per user per month'),
+    'costs $20 per user per month'
+  );
+
+  // Whitespace variation in multiline page text
+  const multilinePage = 'Neon Launch costs $19\nper month on usage billing.';
+  const matched = findVerbatimSlice(multilinePage, 'Neon Launch costs $19 per month');
+  assert.ok(matched);
+  assert.ok(multilinePage.includes(matched));
+
+  // Completely ungrounded quote returns null
+  assert.equal(findVerbatimSlice(page, 'costs $999 per month for unlimited users'), null);
+});
+
+test('claims pipeline extracts verbatim quote directly matching stored page text with 100% faithfulness', () => {
+  const pageText = 'Pipedrive Essential costs $15 per user per month with no commitment.';
+  const { store, turn, source } = makePageStore(pageText);
+
+  // Model produced quote with slight casing difference
+  const modelClaim = rawPrice(source.id, {
+    evidence_quote: 'Pipedrive Essential Costs $15 Per User Per Month with no commitment.',
+    value_text: '$15 per user per month',
+    amount: 15,
+  });
+
+  const result = validatePageClaims({
+    store,
+    turnId: turn.id,
+    sourceItems: [{ source, entity: 'Pipedrive' }],
+    rawClaims: [modelClaim],
+  });
+
+  assert.equal(result.stored, 1);
+  assert.equal(result.rejected, 0);
+  const savedClaim = result.claims[0];
+  assert.ok(source.page_text.includes(savedClaim.evidence_quote));
+  store.close();
+});
+
