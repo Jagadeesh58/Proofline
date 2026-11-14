@@ -1,0 +1,43 @@
+{
+  "description": "Shared replay corpus retrieval stability and expected-evidence coverage fixtures (6 total).",
+  "cases": [
+    {
+      "id": "abl-01",
+      "kind": "retrieval-stability",
+      "query": "HubSpot Starter pricing",
+      "reworded_query": "What does HubSpot Starter cost?",
+      "expected_url": "https://hubspot.com/pricing"
+    },
+    {
+      "id": "abl-02",
+      "kind": "coverage",
+      "query": "Neon Launch pricing",
+      "expected_url": "https://neon.tech/pricing"
+    },
+    {
+      "id": "abl-03",
+      "kind": "coverage",
+      "query": "Supabase Pro pricing",
+      "expected_url": "https://supabase.com/pricing"
+    },
+    {
+      "id": "abl-04",
+      "kind": "coverage",
+      "query": "GitHub Team pricing",
+      "expected_url": "https://github.com/pricing"
+    },
+    {
+      "id": "abl-05",
+      "kind": "coverage",
+      "query": "Pipedrive Essential pricing",
+      "expected_url": "https://pipedrive.com/pricing"
+    },
+    {
+      "id": "abl-06",
+      "kind": "coverage",
+      "query": "Vercel Pro pricing",
+      "expected_url": "https://vercel.com/pricing"
+    }
+  ],
+  "case_count": 6
+}

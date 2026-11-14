@@ -1,0 +1,41 @@
+{
+  "fixture_notice": "All prices, limits, version values and announcements in this corpus are synthetic evaluation fixtures. They are not statements about the real vendors or their products.",
+  "pages": [
+    {
+      "id": "hubspot-pricing", "entity": "HubSpot", "topic": "general", "url": "https://hubspot.com/pricing", "title": "HubSpot CRM Starter pricing fixture", "published_date": "2026-10-20", "page_date_text": "Last updated: 20 October 2026", "content": "Synthetic fixture. HubSpot CRM Starter costs $20 per user per month with monthly billing and no annual commitment. The Starter plan includes 1,000 fixture contacts.", "page_text": "Synthetic fixture for evaluation only. HubSpot CRM Starter costs $20 per user per month with monthly billing and no annual commitment. The Starter plan includes 1,000 fixture contacts. Last updated: 20 October 2026."
+    },
+    {
+      "id": "hubspot-news", "entity": "HubSpot", "topic": "news", "url": "https://hubspot.com/changelog/fixture-2026-11-05", "title": "HubSpot CRM feature announcement fixture", "published_date": "2026-11-05", "page_date_text": "Published: 5 November 2026", "content": "Synthetic fixture. HubSpot announced a new shared inbox feature in this fictional evaluation update.", "page_text": "Synthetic fixture for evaluation only. HubSpot announced a new shared inbox feature in this fictional evaluation update. Published: 5 November 2026."
+    },
+    {
+      "id": "pipedrive-pricing", "entity": "Pipedrive", "topic": "general", "url": "https://pipedrive.com/pricing", "title": "Pipedrive CRM Essential pricing fixture", "published_date": "2026-10-30", "page_date_text": "Updated: 30 October 2026", "content": "Synthetic fixture. Pipedrive CRM Essential costs $15 per user per month, billed monthly with no commitment.", "page_text": "Synthetic fixture for evaluation only. Pipedrive CRM Essential costs $15 per user per month, billed monthly with no commitment. Updated: 30 October 2026."
+    },
+    {
+      "id": "pipedrive-seo", "entity": "Pipedrive", "topic": "general", "url": "https://pipedrive-pricing-explained.com/review", "title": "Pipedrive pricing explained review fixture", "published_date": "2026-10-28", "content": "Third-party synthetic review fixture. Pipedrive is discussed here but this is not an official product page.", "page_text": "Synthetic third-party fixture. Pipedrive is discussed here but this is not an official product page."
+    },
+    {
+      "id": "neon-pricing", "entity": "Neon", "topic": "general", "url": "https://neon.tech/pricing", "title": "Neon Postgres Launch pricing fixture", "published_date": "2026-10-21", "page_date_text": "Prices as of 21 October 2026", "content": "Synthetic fixture. Neon Launch costs $19 per month on usage billing. The fixture limit is 10 GB storage.", "page_text": "Synthetic fixture for evaluation only. Neon Launch costs $19 per month on usage billing. The fixture limit is 10 GB storage. Prices as of 21 October 2026."
+    },
+    {
+      "id": "neon-news", "entity": "Neon", "topic": "news", "url": "https://neon.tech/changelog/fixture-2026-11-08", "title": "Neon Postgres release note fixture", "published_date": "2026-11-08", "content": "Synthetic fixture. Neon reports a fixture change to read replicas in this fictional announcement.", "page_text": "Synthetic fixture for evaluation only. Neon reports a fixture change to read replicas in this fictional announcement."
+    },
+    {
+      "id": "supabase-pricing", "entity": "Supabase", "topic": "general", "url": "https://supabase.com/pricing", "title": "Supabase Pro pricing fixture", "published_date": "2026-10-22", "content": "Synthetic fixture. Supabase Pro costs $25 per month with a monthly commitment. The fixture database storage allowance is 8 GB.", "page_text": "Synthetic fixture for evaluation only. Supabase Pro costs $25 per month with a monthly commitment. The fixture database storage allowance is 8 GB."
+    },
+    {
+      "id": "github-pricing", "entity": "GitHub", "topic": "general", "url": "https://github.com/pricing", "title": "GitHub Team pricing fixture", "published_date": "2026-10-19", "content": "Synthetic fixture. GitHub Team costs $4 per user per month with monthly billing.", "page_text": "Synthetic fixture for evaluation only. GitHub Team costs $4 per user per month with monthly billing."
+    },
+    {
+      "id": "zoho-pricing", "entity": "Zoho CRM", "topic": "general", "url": "https://zoho.com/crm/pricing", "title": "Zoho CRM Standard pricing fixture", "published_date": "2026-10-26", "content": "Synthetic fixture. Zoho CRM Standard costs $14 per user per month.", "page_text": "Synthetic fixture for evaluation only. Zoho CRM Standard costs $14 per user per month."
+    },
+    {
+      "id": "vercel-pricing", "entity": "Vercel", "topic": "general", "url": "https://vercel.com/pricing", "title": "Vercel Pro pricing fixture", "published_date": "2026-10-25", "content": "Synthetic fixture. Vercel Pro costs $20 per user per month in this test corpus.", "page_text": "Synthetic fixture for evaluation only. Vercel Pro costs $20 per user per month in this test corpus."
+    },
+    {
+      "id": "postgres-version", "entity": "PostgreSQL", "topic": "general", "url": "https://postgresql.org/release-notes/fixture", "title": "PostgreSQL version fixture", "published_date": "2026-11-01", "content": "Synthetic fixture. PostgreSQL stable release version 18.2 is used only as a comparison test value.", "page_text": "Synthetic fixture for evaluation only. PostgreSQL stable release version 18.2 is used only as a comparison test value."
+    },
+    {
+      "id": "hubspot-aggregator", "entity": "HubSpot", "topic": "general", "url": "https://g2.com/products/hubspot/reviews", "title": "HubSpot aggregator review fixture", "published_date": "2026-11-02", "content": "Third-party synthetic aggregator fixture discussing CRM ratings and reviews.", "page_text": "Synthetic aggregator fixture. This is not a vendor-owned HubSpot page."
+    }
+  ]
+}
