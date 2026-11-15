@@ -228,11 +228,45 @@ export function buildComparisonCards({
         const baseline = baselineForEntity.find((claim) => (
           claim.attribute === attribute && plansMatch(claim.plan_key, current.plan_key)
         )) || null;
-        const result = verdict(current, baseline, store, plans);
         const currentSource = sourceFor(store, current);
         const trust = currentSource
           ? trustLabel(target.entity, currentSource.url, plans)
           : { label: USER_STRINGS.thirdParty };
+
+        if (baseline && (currentSource?.from_cache || page?.from_cache)) {
+          cards.push({
+            entity: target.entity,
+            attribute,
+            plan: current.plan_key,
+            status: USER_STRINGS.couldntConfirm,
+            reason: 'cached_page',
+            domain: currentSource?.registrable_domain || page?.domain || null,
+            trust_label: trust.label,
+            retrieved_at_utc: currentSource?.retrieved_at_utc || null,
+            from_cache: true,
+            current: {
+              value: current.value_text,
+              amount: current.amount,
+              currency: current.currency,
+              quote: current.evidence_quote,
+              source_id: current.source_id,
+              retrieved_at_utc: currentSource?.retrieved_at_utc || null,
+              from_cache: true,
+            },
+            baseline: baseline ? {
+              value: baseline.value_text,
+              amount: baseline.amount,
+              currency: baseline.currency,
+              quote: baseline.evidence_quote,
+              source_id: baseline.source_id,
+              observed_at_utc: baseline.observed_at_utc,
+              basis: baseline.baseline_basis,
+            } : null,
+          });
+          continue;
+        }
+
+        const result = verdict(current, baseline, store, plans);
         const unverifiedChange = [USER_STRINGS.changed, USER_STRINGS.sameAsBefore, USER_STRINGS.changedNewerVersion]
           .some((status) => result.status === status || result.status.startsWith(`${status} (`));
         const label = trust.label === USER_STRINGS.nameMatchedDomainNotVerified && unverifiedChange
@@ -247,12 +281,16 @@ export function buildComparisonCards({
           reason: result.reason,
           domain: currentSource?.registrable_domain || page?.domain || null,
           trust_label: trust.label,
+          retrieved_at_utc: currentSource?.retrieved_at_utc || null,
+          from_cache: Boolean(currentSource?.from_cache),
           current: {
             value: current.value_text,
             amount: current.amount,
             currency: current.currency,
             quote: current.evidence_quote,
             source_id: current.source_id,
+            retrieved_at_utc: currentSource?.retrieved_at_utc || null,
+            from_cache: Boolean(currentSource?.from_cache),
           },
           baseline: baseline ? {
             value: baseline.value_text,

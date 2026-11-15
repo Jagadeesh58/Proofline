@@ -45,6 +45,7 @@ export class Store {
           page_text_origin TEXT CHECK(page_text_origin IN ('extract','search_raw') OR page_text_origin IS NULL),
           page_date_text TEXT,
           retrieved_at_utc TEXT NOT NULL,
+          from_cache INTEGER NOT NULL DEFAULT 0,
           extraction_status TEXT NOT NULL DEFAULT 'ok'
         );
         CREATE INDEX sources_turn_idx ON sources(turn_id);
@@ -94,6 +95,17 @@ export class Store {
         + 'CREATE INDEX IF NOT EXISTS page_cache_expires_idx ON page_cache(expires_at_utc); '
         + 'PRAGMA user_version = 4;'
       );
+    }
+    const versionAfter4 = this.db.prepare('PRAGMA user_version').get().user_version;
+    if (versionAfter4 < 5) {
+      try {
+        this.db.exec(
+          'ALTER TABLE sources ADD COLUMN from_cache INTEGER NOT NULL DEFAULT 0; '
+          + 'PRAGMA user_version = 5;'
+        );
+      } catch {
+        this.db.exec('PRAGMA user_version = 5;');
+      }
     }
   }
 
@@ -173,6 +185,24 @@ export class Store {
       id, userVal, assistVal, displayCreated, sourceCreated,
       importedAt, timezone, localDate, item.demo ? 1 : 0
     );
+    if (item.claims && Array.isArray(item.claims) && item.claims.length) {
+      for (const claim of item.claims) {
+        this.addClaim({
+          turn_id: id,
+          entity_key: claim.entity_key || claim.entity,
+          attribute: claim.attribute || 'price',
+          plan_key: claim.plan_key || claim.plan || '',
+          value_text: claim.value_text || claim.value || '',
+          amount: typeof claim.amount === 'number' ? claim.amount : null,
+          currency: claim.currency || null,
+          price_unit: claim.price_unit || null,
+          period: claim.period || null,
+          commitment: claim.commitment || null,
+          evidence_quote: claim.evidence_quote || claim.quote || null,
+        });
+      }
+      this.db.prepare("UPDATE turns SET claims_status='done' WHERE id=?").run(id);
+    }
     this.refreshFts(id);
     return this.getTurn(id);
   }
@@ -220,13 +250,14 @@ export class Store {
     const id = source.id || randomUUID();
     const sql = 'INSERT INTO sources ('
       + 'id,turn_id,url,registrable_domain,title,provider_date,snippet_text,page_text,'
-      + 'retrieval_kind,page_text_origin,page_date_text,retrieved_at_utc,extraction_status'
-      + ') VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)';
+      + 'retrieval_kind,page_text_origin,page_date_text,retrieved_at_utc,extraction_status,from_cache'
+      + ') VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     this.db.prepare(sql).run(
       id, source.turnId, source.url, source.domain || 'unknown', source.title || source.url,
       source.providerDate || null, source.snippetText || '', source.pageText || null,
       source.retrievalKind || 'snippet', source.pageTextOrigin || null, source.pageDateText || null,
-      source.retrievedAt || new Date().toISOString(), source.extractionStatus || 'ok'
+      source.retrievedAt || new Date().toISOString(), source.extractionStatus || 'ok',
+      source.fromCache ? 1 : 0
     );
     const titles = this.db.prepare(
       'SELECT title FROM sources WHERE turn_id=? ORDER BY retrieved_at_utc'

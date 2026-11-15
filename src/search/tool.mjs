@@ -244,7 +244,9 @@ export function resolveTargetNewsSince(
   return { since: target.since, baselineSince: null, explicitSince: null, unavailableReason: null };
 }
 
-function makeSource(store, turnId, result, { pageText = null, origin = null, extractionStatus = 'ok' } = {}) {
+function makeSource(store, turnId, result, {
+  pageText = null, origin = null, extractionStatus = 'ok', fromCache = false, retrievedAt = null,
+} = {}) {
   const domain = registrableDomain(result.url);
   return store.addSource({
     id: randomUUID(), turnId, url: result.url, domain,
@@ -252,7 +254,8 @@ function makeSource(store, turnId, result, { pageText = null, origin = null, ext
     snippetText: result.content || '', pageText,
     retrievalKind: pageText ? 'page_text' : 'snippet', pageTextOrigin: origin,
     pageDateText: pageText ? extractPageDate(pageText) : null,
-    retrievedAt: new Date().toISOString(), extractionStatus,
+    retrievedAt: retrievedAt || new Date().toISOString(), extractionStatus,
+    fromCache,
   });
 }
 
@@ -269,6 +272,8 @@ async function extractOne({
   budget,
   signal,
   entity,
+  isCheckTarget = false,
+  useCache = false,
   searchFn = tavilySearch,
   extractFn = tavilyExtract,
   allowRawFallback = true,
@@ -285,7 +290,7 @@ async function extractOne({
     content: results?.content || candidate?.content || '',
     published_date: results?.published_date || candidate?.published_date || null,
   });
-  if (extractFn === tavilyExtract) {
+  if (!isCheckTarget && (extractFn === tavilyExtract || useCache)) {
     const cached = store?.getCachedPage?.(safeUrl);
     if (cached && cached.raw_content) {
       onTiming?.({ type: 'extract', url: safeUrl, duration_ms: 1, ok: true, cached: true });
@@ -297,6 +302,8 @@ async function extractOne({
       }, {
         pageText: cached.raw_content,
         origin: 'extract',
+        fromCache: true,
+        retrievedAt: cached.fetched_at_utc,
       });
     }
   }
@@ -308,15 +315,20 @@ async function extractOne({
     onTiming?.({ type: 'extract', url: safeUrl, duration_ms: Date.now() - extractStart, ok: true });
     const found = (response.results || []).find((item) => safeHttpUrl(item.url) === safeUrl && item.raw_content);
     if (found?.raw_content) {
-      store?.setCachedPage?.({
-        url: safeUrl,
-        title: sourceMeta(found).title,
-        content: sourceMeta(found).content,
-        raw_content: found.raw_content,
-      });
+      const fetchedAtUtc = new Date().toISOString();
+      if (extractFn === tavilyExtract || useCache) {
+        store?.setCachedPage?.({
+          url: safeUrl,
+          title: sourceMeta(found).title,
+          content: sourceMeta(found).content,
+          raw_content: found.raw_content,
+        });
+      }
       return makeSource(store, turnId, sourceMeta(found), {
         pageText: found.raw_content,
         origin: 'extract',
+        fromCache: false,
+        retrievedAt: fetchedAtUtc,
       });
     }
   } catch (error) {
@@ -400,6 +412,7 @@ export async function runWebSearch({
   plans = {},
   today = null,
   now = null,
+  useCache = false,
   searchFn = tavilySearch,
   extractFn = tavilyExtract,
   onTiming,
@@ -616,6 +629,13 @@ export async function runWebSearch({
         .find((claim) => claim.entity_key === context.entityKey)?.plan_key
       || '';
     let pageSource = null;
+    const isCheckTarget = Boolean(
+      context.baselineUrl
+      || context.since
+      || context.newsSince
+      || recalledClaims?.some((claim) => claim.entity_key === context.entityKey)
+      || (store?.getClaimsForEntities && store.getClaimsForEntities([context.entityKey]).length > 0)
+    );
     if (context.baselineUrl) {
       pageSource = await extractOne({
         url: context.baselineUrl,
@@ -624,6 +644,8 @@ export async function runWebSearch({
         budget,
         signal,
         entity: context.entity,
+        isCheckTarget: true,
+        useCache,
         searchFn,
         extractFn,
         allowRawFallback: false,
@@ -646,6 +668,8 @@ export async function runWebSearch({
           budget,
           signal,
           entity: context.entity,
+          isCheckTarget,
+          useCache,
           searchFn,
           extractFn,
           allowRawFallback: false,
@@ -694,6 +718,7 @@ export async function runWebSearch({
         turnId,
         budget,
         signal,
+        useCache,
         searchFn,
         extractFn,
         providerErrors,
