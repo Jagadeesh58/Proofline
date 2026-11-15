@@ -11,10 +11,13 @@ fs.mkdirSync(releaseDir, { recursive: true });
 
 const excludePatterns = [
   /^\.git(\\|\/|$)/,
-  /^\.env$/,
+  /^\.env(\..+)?$/,
   /^node_modules(\\|\/|$)/,
   /^data(\\|\/|$)/,
   /^release(\\|\/|$)/,
+  /^\.eval-tmp(\\|\/|$)/,
+  /^evals\/results\/scratch(\\|\/|$)/,
+  /\.sqlite(-wal|-shm)?$/,
   /\.log$/,
   /\.tmp$/,
   /\.DS_Store$/,
