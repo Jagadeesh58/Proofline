@@ -139,3 +139,74 @@ test('official prompt 3 runs in replay mode with relative date recall and host c
   assert.match(answerText, /\[S\d+\]/, 'Answer must contain citations');
   store.close();
 });
+
+test('non-official prompt in offline demo returns one-line message, zero cards, zero sources', async () => {
+  const store = new Store(':memory:');
+  const events = [];
+  let answerText = '';
+
+  const result = await runTurn({
+    userText: 'What is the capital of France and what is the weather like?',
+    timezone: 'Asia/Kolkata',
+    store,
+    send: (type, data) => {
+      events.push({ type, data });
+      if (type === 'token' && data?.text) answerText += data.text;
+    },
+  });
+
+  const cardsEvents = events.filter((e) => e.type === 'cards');
+  const sourcesEvents = events.filter((e) => e.type === 'sources');
+  assert.equal(cardsEvents.length, 0, 'Must not emit cards for non-official prompt in demo');
+  assert.equal(sourcesEvents.length, 0, 'Must not emit sources for non-official prompt in demo');
+  assert.equal(result.cards.length, 0);
+  assert.equal(result.sources.length, 0);
+  assert.match(
+    answerText,
+    /The offline demo only knows the three official prompts\. Add GEMINI_API_KEY and TAVILY_API_KEY to try anything else\./
+  );
+  store.close();
+});
+
+test('offline demo under fake dates Thu 12 Nov, Sun 15 Nov and Mon 16 Nov quotes matching turn', async () => {
+  const fakeDates = [
+    { dateStr: '2026-11-12T12:00:00Z', expectedTuesday: '10 November 2026' },
+    { dateStr: '2026-11-15T12:00:00Z', expectedTuesday: '10 November 2026' },
+    { dateStr: '2026-11-16T12:00:00Z', expectedTuesday: '10 November 2026' },
+  ];
+
+  for (const { dateStr, expectedTuesday } of fakeDates) {
+    const store = new Store(':memory:');
+    const fakeNow = new Date(dateStr);
+    store.importTurns(getSeededTurns('Asia/Kolkata'), 'Asia/Kolkata');
+
+    let answerText = '';
+    await runTurn({
+      userText: 'Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?',
+      timezone: 'Asia/Kolkata',
+      store,
+      send: (type, data) => {
+        if (type === 'token' && data?.text) answerText += data.text;
+      },
+    });
+
+    assert.doesNotMatch(answerText, /On 3 November/i, `Prompt 3 on ${dateStr} must never quote 3 November turn`);
+    assert.match(answerText, /Neon|Supabase/i, `Prompt 3 on ${dateStr} must discuss Postgres hosts`);
+    store.close();
+  }
+});
+
+test('forbidden phrases do not appear in user-facing source strings', () => {
+  const checkPaths = [
+    'src/agent/run-turn.mjs',
+    'src/http/server.mjs',
+    'src/llm/replay-provider.mjs',
+    'public/index.html',
+    'public/app.js',
+  ];
+  for (const rel of checkPaths) {
+    const content = fs.readFileSync(path.join(root, rel), 'utf8');
+    assert.doesNotMatch(content, /recorded search(?:es| corpus)/i, `Forbidden phrase in ${rel}`);
+    assert.doesNotMatch(content, /live pipeline/i, `Forbidden phrase in ${rel}`);
+  }
+});

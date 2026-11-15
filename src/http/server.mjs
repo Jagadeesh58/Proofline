@@ -199,9 +199,9 @@ export function createServer(
 
       if (request.method === 'GET' && pathname === '/api/config') {
         const isReplay = config.demoMode || config.searchBackend === 'replay';
-        const replayMsg = 'Replay mode: recorded searches, live pipeline';
+        const replayMsg = 'Offline demo: scripted example answers. No AI model and no web search are used.';
         return json(response, 200, {
-          model: isReplay && !config.geminiKey ? 'Replay Mode' : config.geminiModel,
+          model: isReplay && !config.geminiKey ? 'offline-demo' : config.geminiModel,
           timezone: config.timezone,
           demoMode: Boolean(config.demoMode),
           searchBackend: config.searchBackend,

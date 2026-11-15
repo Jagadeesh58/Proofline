@@ -162,6 +162,12 @@ function appendInline(parent, tokens) {
 
 function renderMarkdown(bubble, text) {
   bubble.replaceChildren();
+  if (isDemoActive) {
+    const tag = document.createElement('div');
+    tag.className = 'demo-answer-tag';
+    tag.textContent = 'Offline demo (scripted)';
+    bubble.append(tag);
+  }
   for (const block of parseMarkdown(text)) {
     if (block.type === 'code-block') {
       const pre = document.createElement('pre');
@@ -209,10 +215,25 @@ function renderMemory(turns) {
   scrollToBottom();
 }
 
+let isDemoActive = false;
+
+function formatFetchAge(isoString, fromCache) {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return '';
+  const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  const mins = Math.max(0, Math.round((Date.now() - date.getTime()) / 60000));
+  if (fromCache) {
+    return `from cache, fetched ${mins} min ago`;
+  }
+  return timeStr ? `Page fetched ${timeStr}, ${mins} min ago` : `Page fetched ${mins} min ago`;
+}
+
 const REASON_LABELS = {
   baseline_pending: 'Earlier data is still being processed',
   stale_page: 'This page is older than the saved baseline',
   terms_unknown: 'Billing terms could not be confirmed',
+  cached_page: 'Page was served from cache; re-check requires fresh fetch',
   different_source_sites: 'The sources refer to different websites',
   third_party_source: 'This information comes from a third-party website',
   no_results: 'No matching results were found',
@@ -281,9 +302,24 @@ function renderCards(cards) {
         && entity.explicit_since !== entity.baseline_since
         ? `Requested since ${entity.explicit_since}; baseline from ${entity.baseline_since}` : '';
       const reasonLabel = formatReason(item.reason);
-      meta.textContent = [item.domain, item.trust_label, reasonLabel ? `Reason: ${reasonLabel}` : '', dateContext]
-        .filter(Boolean).join(' · ');
+      const fetchAge = formatFetchAge(
+        item.retrieved_at_utc || item.current?.retrieved_at_utc,
+        item.from_cache ?? item.current?.from_cache
+      );
+      meta.textContent = [
+        item.domain,
+        item.trust_label,
+        fetchAge,
+        reasonLabel ? `Reason: ${reasonLabel}` : '',
+        dateContext,
+      ].filter(Boolean).join(' · ');
       card.append(meta);
+      if (isDemoActive || item.demo_label) {
+        const demoTag = document.createElement('div');
+        demoTag.className = 'demo-card-tag';
+        demoTag.textContent = 'Offline demo (scripted)';
+        card.append(demoTag);
+      }
       if (item.current || item.baseline) {
         const values = document.createElement('div');
         values.className = 'comparison-values';
@@ -384,7 +420,8 @@ function renderSources(sources) {
     const dateDesc = source.page_date_text ? ` · page date: ${source.page_date_text}` : ' · page shows no date';
     const domainDesc = source.domain || 'unknown domain';
     const trustDesc = source.trust_label || source.retrieval_kind || 'source';
-    const retrievedDesc = source.retrieved_at_utc ? ` · retrieved ${source.retrieved_at_utc}` : '';
+    const fetchAge = formatFetchAge(source.retrieved_at_utc, source.from_cache);
+    const retrievedDesc = fetchAge ? ` · ${fetchAge}` : '';
     detail.textContent = `${domainDesc} · ${trustDesc}${retrievedDesc}${dateDesc}${extractionStatus}`;
     section.append(detail);
     const disclosure = document.createElement('details');
@@ -411,9 +448,21 @@ async function loadConfig() {
     const response = await fetch('/api/config');
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
+    isDemoActive = Boolean(data.demoMode || data.searchBackend === 'replay');
     setServerNotice('');
-    $('#modelChip').textContent = data.model;
+    $('#modelChip').textContent = isDemoActive ? 'offline-demo' : data.model;
     $('#timezoneLabel').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || data.timezone;
+    const modeBadge = $('#modeBadge');
+    if (modeBadge) {
+      if (isDemoActive) {
+        modeBadge.textContent =
+          'Offline demo: scripted example answers. No AI model and no web search are used.';
+        modeBadge.className = 'mode-badge offline-demo';
+      } else {
+        modeBadge.textContent = 'Live';
+        modeBadge.className = 'mode-badge live';
+      }
+    }
     providerBanner.replaceChildren();
     if (data.messages?.length) {
       providerBanner.classList.remove('hidden');
@@ -711,6 +760,13 @@ $('#demoHistory')?.addEventListener('click', triggerDemoHistory);
 $('#welcomeDemoHistory')?.addEventListener('click', triggerDemoHistory);
 $('#importToggle').addEventListener('click', () => $('#importPanel').classList.toggle('hidden'));
 $('#closeImport').addEventListener('click', () => $('#importPanel').classList.add('hidden'));
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && activeController) {
+    activeController.abort();
+    setWorking(false, 'Stopped by user.');
+  }
+});
 
 const themeToggle = $('#themeToggle');
 themeToggle?.addEventListener('click', () => {

@@ -23,8 +23,16 @@
 
     <main class="main-panel">
       <header class="topbar">
-        <div><span class="eyebrow">WEB RESEARCH · LOCAL MEMORY</span><h1>Ask anything worth checking.</h1></div>
-        <div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</button><span class="model-chip" id="modelChip">Gemini 3.8 Flash</span><span class="status-indicator" id="statusIndicator"><i></i> Checking</span></div>
+        <div>
+          <span class="eyebrow">WEB RESEARCH · LOCAL MEMORY</span>
+          <h1>Ask anything worth checking.</h1>
+          <div id="modeBadge" class="mode-badge" role="status"></div>
+        </div>
+        <div class="top-actions">
+          <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</button>
+          <span class="model-chip" id="modelChip">Gemini 3.8 Flash</span>
+          <span class="status-indicator" id="statusIndicator"><i></i> Checking</span>
+        </div>
       </header>
       <div id="serverNotice" class="server-notice hidden" role="status" aria-live="polite"></div>
       <section id="providerBanner" class="provider-banner hidden" aria-live="polite"></section>
@@ -55,9 +63,9 @@
             <button class="suggestion" data-prompt="What is a database index, and when should I use a B-tree?">Explain a stable concept <span>↗</span></button>
           </div>
         </div>
-        <div id="messages" class="messages"></div>
+        <div id="messages" class="messages" aria-live="polite"></div>
         <div id="memoryRegion"></div>
-        <div id="cardsRegion"></div>
+        <div id="cardsRegion" aria-live="polite"></div>
         <div id="sourcesRegion"></div>
       </section>
 
