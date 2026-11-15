@@ -6,8 +6,10 @@ import path from 'node:path';
 process.env.SEARCH_BACKEND = 'replay';
 process.env.GEMINI_API_KEY = 'test-key';
 
-const [{ executeLiveEvaluation }] = await Promise.all([
+const [{ executeLiveEvaluation }, { deterministicChecks }, { USER_STRINGS }] = await Promise.all([
   import('../scripts/live-eval.mjs'),
+  import('../evals/official-prompts.mjs'),
+  import('../src/strings.mjs'),
 ]);
 
 test('live-eval writes timestamped file and preserves success in live-latest.json', async () => {
@@ -78,4 +80,94 @@ test('live-eval writes timestamped file and preserves success in live-latest.jso
     globalThis.fetch = previousFetch;
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
+});
+
+test('deterministicChecks evaluates fixed fake run objects for official prompts', () => {
+  const validOfficial1 = {
+    id: 'official-1',
+    prompt: 'On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?',
+    answer: 'Here is the CRM comparison for HubSpot, Pipedrive, Zoho, Monday and Freshsales.',
+    cards: [
+      { entity: 'HubSpot', status: USER_STRINGS.sameAsBefore, domain: 'hubspot.com' },
+      { entity: 'Pipedrive', status: USER_STRINGS.changed, domain: 'pipedrive.com' },
+      { entity: 'Zoho', status: USER_STRINGS.changed, domain: 'zoho.com' },
+      { entity: 'Monday', status: USER_STRINGS.changed, domain: 'monday.com' },
+      { entity: 'Freshsales', status: USER_STRINGS.changed, domain: 'freshsales.io' },
+    ],
+  };
+  const res1 = deterministicChecks(validOfficial1, { promptId: 'official-1' });
+  assert.equal(res1.passed, true);
+
+  const missingTool1 = {
+    ...validOfficial1,
+    cards: validOfficial1.cards.slice(0, 4),
+  };
+  assert.equal(deterministicChecks(missingTool1, { promptId: 'official-1' }).passed, false);
+
+  const noDomain1 = {
+    ...validOfficial1,
+    cards: [
+      { entity: 'HubSpot', status: USER_STRINGS.sameAsBefore, domain: null },
+      ...validOfficial1.cards.slice(1),
+    ],
+  };
+  assert.equal(deterministicChecks(noDomain1, { promptId: 'official-1' }).passed, false);
+
+  const validOfficial2 = {
+    id: 'official-2',
+    prompt: 'What did I ask you on 3 November? Is your answer still correct today?',
+    answer: 'On 3 November you asked: How should I choose between two hosted PostgreSQL providers for a student side project? Same as my earlier answer, branching and pooling remain key.',
+  };
+  const res2 = deterministicChecks(validOfficial2, { promptId: 'official-2' });
+  assert.equal(res2.passed, true);
+
+  const noDate2 = {
+    ...validOfficial2,
+    answer: 'You asked: How should I choose between two hosted PostgreSQL providers for a student side project? Same as my earlier answer.',
+  };
+  assert.equal(deterministicChecks(noDate2, { promptId: 'official-2' }).passed, false);
+
+  const noFragment2 = {
+    ...validOfficial2,
+    answer: 'On 3 November you asked about databases. Same as my earlier answer, it is correct.',
+  };
+  assert.equal(deterministicChecks(noFragment2, { promptId: 'official-2' }).passed, false);
+
+  const noStatus2 = {
+    ...validOfficial2,
+    answer: 'On 3 November you asked: How should I choose between two hosted PostgreSQL providers for a student side project? I think it is fine.',
+  };
+  assert.equal(deterministicChecks(noStatus2, { promptId: 'official-2' }).passed, false);
+
+  const clock = new Date('2026-11-15T10:00:00.000Z');
+  const validOfficial3 = {
+    id: 'official-3',
+    prompt: 'Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?',
+    answer: 'Comparing Neon and Supabase pricing for Postgres hosting since last Tuesday.',
+    resolvedDate: '2026-11-10',
+    cards: [
+      { entity: 'Neon', status: USER_STRINGS.sameAsBefore, domain: 'neon.tech' },
+      { entity: 'Supabase', status: USER_STRINGS.sameAsBefore, domain: 'supabase.com' },
+    ],
+  };
+  const res3 = deterministicChecks(validOfficial3, { promptId: 'official-3', timezone: 'Asia/Kolkata', clock });
+  assert.equal(res3.passed, true);
+
+  const wrongDate3 = {
+    ...validOfficial3,
+    resolvedDate: '2026-11-03',
+  };
+  assert.equal(deterministicChecks(wrongDate3, { promptId: 'official-3', timezone: 'Asia/Kolkata', clock }).passed, false);
+
+  const missingCard3 = {
+    ...validOfficial3,
+    cards: [{ entity: 'Neon', status: USER_STRINGS.sameAsBefore, domain: 'neon.tech' }],
+  };
+  assert.equal(deterministicChecks(missingCard3, { promptId: 'official-3', timezone: 'Asia/Kolkata', clock }).passed, false);
+
+  const missingName3 = {
+    ...validOfficial3,
+    answer: 'Comparing Neon pricing for Postgres hosting since last Tuesday.',
+  };
+  assert.equal(deterministicChecks(missingName3, { promptId: 'official-3', timezone: 'Asia/Kolkata', clock }).passed, false);
 });

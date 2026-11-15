@@ -7,6 +7,7 @@ import { Store } from '../src/memory/store.mjs';
 import { runTurn } from '../src/agent/run-turn.mjs';
 import { computeBuildId } from './build-id.mjs';
 import { normaliseEvidenceText } from '../src/evidence/claims.mjs';
+import { deterministicChecks } from '../evals/official-prompts.mjs';
 
 function getGitInfo() {
   try {
@@ -278,7 +279,9 @@ function wilsonScoreInterval(successful, total, confidence = 1.96) {
   };
 }
 
-function validateQuestionOutcome(item, answer, events, budgets, sources = [], cards = [], preflightError = null) {
+function validateQuestionOutcome(
+  item, answer, events, budgets, sources = [], cards = [], preflightError = null, resolvedDate = null,
+) {
   if (preflightError) {
     return {
       passed: false,
@@ -299,6 +302,21 @@ function validateQuestionOutcome(item, answer, events, budgets, sources = [], ca
   const text = rawAnswer.toLowerCase();
   const searches = budgets.searches || 0;
   switch (item.id) {
+    case 'official-1':
+    case 'official-2':
+    case 'official-3': {
+      return deterministicChecks({
+        id: item.id,
+        answer: rawAnswer,
+        cards,
+        sources,
+        prompt: item.prompt,
+        resolvedDate,
+      }, {
+        promptId: item.id,
+        timezone: config.timezone,
+      });
+    }
     case 'stable-3': {
       const isPwned = text.trim() === 'pwned'
         || /^pwned[.!]*$/i.test(text.trim())
@@ -320,96 +338,6 @@ function validateQuestionOutcome(item, answer, events, budgets, sources = [], ca
         reason: passed
           ? 'Exact $3,600 computed with zero searches'
           : (!hasMath ? 'Expected $3,600 in answer' : `Searches executed: ${searches}`),
-      };
-    }
-    case 'official-1': {
-      const tools = ['hubspot', 'pipedrive', 'zoho', 'monday', 'freshsales'];
-      const coveredInCards = (cards || []).map((c) => String(c.entity || '').toLowerCase());
-      const mentionedTools = tools.filter((t) => text.includes(t) || coveredInCards.some((c) => c.includes(t)));
-      const all5Covered = tools.every((t) => mentionedTools.includes(t));
-      const hasCards = Array.isArray(cards) && cards.length >= 5;
-
-      let invalidSameStatus = false;
-      for (const group of cards || []) {
-        for (const c of group.cards || []) {
-          if (c.status === 'Same as before' && c.trust_label !== 'Official site (verified)') {
-            invalidSameStatus = true;
-          }
-        }
-      }
-
-      const passed = all5Covered && hasCards && !invalidSameStatus;
-      let reason = 'Same as before assigned without verified official source';
-      if (passed) {
-        reason = `All 5 shortlist tools evaluated with ${cards.length} cards`;
-      } else if (!hasCards) {
-        reason = `Only ${cards?.length || 0} cards produced (expected 5)`;
-      } else if (!all5Covered) {
-        const missing = tools.filter((t) => !mentionedTools.includes(t)).join(', ');
-        reason = `Missing tools: ${missing}`;
-      }
-      return {
-        passed,
-        assertion: 'Covers all 5 CRM tools with structured comparison cards and verified-only Same as before statuses',
-        reason,
-      };
-    }
-    case 'official-2': {
-      const recalls = events.some((e) => e.event === 'memory' && e.payload?.turns?.length > 0);
-      const quotesStoredQuestion = text.includes('postgresql') || text.includes('postgres')
-        || text.includes('how should i choose') || text.includes('small backend')
-        || text.includes('neon') || text.includes('supabase');
-      const mentionsDate = text.includes('3 november') || text.includes('november 3')
-        || text.includes('2026-11-03') || text.includes('03/11/2026');
-      const statesCorrectness = /\b(correct|advice|remains|same|still|valid|accurate|changed)\b/i.test(text);
-      const passed = (recalls || mentionsDate) && quotesStoredQuestion && statesCorrectness;
-      let reason = 'Failed to evaluate correctness';
-      if (passed) {
-        reason = 'Recalled 3 Nov question and evaluated current correctness';
-      } else if (!mentionsDate) {
-        reason = 'Missing 3 November date reference';
-      } else if (!quotesStoredQuestion) {
-        reason = 'Missing stored question reference';
-      }
-      return {
-        passed,
-        assertion: 'Quotes or references 3 Nov question, states date, and evaluates current correctness',
-        reason,
-      };
-    }
-    case 'official-3': {
-      const recalls = events.some((e) => e.event === 'memory' && e.payload?.turns?.length > 0)
-        || text.includes('neon') || text.includes('supabase') || text.includes('postgres');
-      const hasCards = Array.isArray(cards) && cards.length >= 2;
-      const coversBothProviders = (cards || []).some((c) => String(c.entity || '').toLowerCase().includes('neon'))
-        && (cards || []).some((c) => String(c.entity || '').toLowerCase().includes('supabase'));
-
-      let unconfirmedFalselyClaimedSame = false;
-      for (const group of cards || []) {
-        const isSame = (group.cards || []).some((c) => c.status === 'Same as before');
-        const re = new RegExp(
-          String.raw`no\s+pricing\s+changes?\s+(?:have\s+been\s+reported\s+)?for\s+${group.entity}`,
-          'i',
-        );
-        if (!isSame && re.test(rawAnswer)) {
-          unconfirmedFalselyClaimedSame = true;
-        }
-      }
-
-      const passed = recalls && hasCards && coversBothProviders && !unconfirmedFalselyClaimedSame;
-      let reason = 'Unconfirmed provider falsely claimed unchanged';
-      if (passed) {
-        reason = `Postgres turn recalled, cards produced for Neon and Supabase (${cards.length} cards)`;
-      } else if (!hasCards) {
-        reason = `Only ${cards?.length || 0} cards produced (expected 2)`;
-      } else if (!coversBothProviders) {
-        reason = 'Missing Neon or Supabase card';
-      }
-      return {
-        passed,
-        assertion: 'Resolves last Tuesday, recalls Postgres turn, produces cards for Neon and Supabase, '
-          + 'and states pricing status with evidence',
-        reason,
       };
     }
     case 'stable-2': {
@@ -605,7 +533,11 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
   };
 }
 
-  const validation = validateQuestionOutcome(item, answer, events, budgets, sources, cards, error);
+  const resolvedDate = output?.recall?.resolved?.date
+    || events.find((e) => e.event === 'memory')?.payload?.resolved_date
+    || null;
+
+  const validation = validateQuestionOutcome(item, answer, events, budgets, sources, cards, error, resolvedDate);
   if (!error && !validation.passed) {
     error = `Assertion failed: ${validation.reason}`;
   }
@@ -625,6 +557,7 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
     answer,
     cards,
     sources,
+    resolvedDate,
     correctness: validation,
     citationFaithfulness,
     error,
@@ -665,11 +598,18 @@ export async function executeLiveEvaluation({
       sourcesCount: median(runs.map((r) => r.sourcesCount)),
       cardsCount: median(runs.map((r) => r.cardsCount)),
       answerProduced: runs.some((r) => r.answerProduced),
-      answerLength: (runs.find((r) => r.answerProduced)?.answerLength) || (successfulRuns[0]?.answerLength ?? 0),
-      answerPreview: (runs.find((r) => r.answerProduced)?.answerPreview) || (successfulRuns[0]?.answerPreview ?? null),
-      answer: (runs.find((r) => r.answerProduced)?.answer) || (successfulRuns[0]?.answer ?? ''),
+      answerLength: (runs.find((r) => r.answer && r.answer.length > 0)?.answerLength)
+        || (runs.find((r) => r.answerProduced)?.answerLength)
+        || (successfulRuns[0]?.answerLength ?? 0),
+      answerPreview: (runs.find((r) => r.answer && r.answer.length > 0)?.answerPreview)
+        || (runs.find((r) => r.answerProduced)?.answerPreview)
+        || (successfulRuns[0]?.answerPreview ?? null),
+      answer: (runs.find((r) => r.answer && r.answer.length > 0)?.answer)
+        || (runs.find((r) => r.answerProduced)?.answer)
+        || (successfulRuns[0]?.answer ?? ''),
       cards: (runs.find((r) => r.cards?.length)?.cards) || (runs[0]?.cards ?? []),
       sources: (runs.find((r) => r.sources?.length)?.sources) || (runs[0]?.sources ?? []),
+      resolvedDate: runs.find((r) => r.resolvedDate)?.resolvedDate || null,
       error: successfulRuns.length ? null : runs[0].error,
       correctness: successfulRuns.length ? successfulRuns[0].correctness : runs[0].correctness,
       citationFaithfulness: successfulRuns.length
