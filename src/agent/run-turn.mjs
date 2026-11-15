@@ -15,6 +15,7 @@ import { trustLabel } from '../seeds/domains.mjs';
 import { getReplayCorpus } from '../search/replay.mjs';
 import PLANS from '../seeds/plans.json' with { type: 'json' };
 import { USER_STRINGS } from '../strings.mjs';
+import { matchOfficialPrompt } from '../llm/replay-provider.mjs';
 
 function cleanTimezone(value) { return isValidTimezone(value) ? value : config.timezone; }
 function safeText(value) { return String(value || '').trim().slice(0, 12_000); }
@@ -95,6 +96,7 @@ function serialiseSources(store, turnId, sourceTrust, claims = []) {
     id: source.id, citation_id: `S${index + 1}`, title: source.title, url: source.url,
     domain: source.registrable_domain, trust_label: sourceTrust[source.id] || USER_STRINGS.thirdParty,
     provider_date: source.provider_date, retrieved_at_utc: source.retrieved_at_utc,
+    from_cache: Boolean(source.from_cache),
     retrieval_kind: source.retrieval_kind, page_text_origin: source.page_text_origin,
     extraction_status: source.extraction_status,
     page_date_text: source.page_date_text, snippet_text: source.snippet_text,
@@ -152,7 +154,7 @@ export async function runTurn({
   const contents = conversationContents(modelContext.contextTurns, userText);
   const systemInstruction = `${SYSTEM_PROMPT}\n\n${modelContext.systemText}`;
   const searchReady = isSearchReady(config);
-  const replayActive = Boolean(config.demoMode || config.searchBackend === 'replay') && !config.geminiKey;
+  const replayActive = Boolean(config.demoMode) || (config.searchBackend === 'replay' && !config.geminiKey);
   const missing = { gemini: !config.geminiKey && !replayActive, tavily: !searchReady };
   if (missing.gemini) {
     store.updateTurn(turn.id, { status: 'failed', claims_status: 'failed', timings_json: timings });
@@ -160,8 +162,31 @@ export async function runTurn({
     emit(send, 'done', { timings: { ...timings, total_ms: Date.now() - started }, budgets: budget });
     return;
   }
+  let finalText = '';
+  if (replayActive && matchOfficialPrompt(userText) === 0) {
+    const fallback =
+      'The offline demo only knows the three official prompts. '
+      + 'Add GEMINI_API_KEY and TAVILY_API_KEY to try anything else.';
+    emit(send, 'token', { text: fallback });
+    finalText = fallback;
+    store.updateTurn(turn.id, { assistant_text: fallback, status: 'completed', claims_status: 'not_applicable' });
+    emit(send, 'done', {
+      timings: { ...timings, total_ms: Date.now() - started, effective_model: 'offline-demo' },
+      budgets: budget,
+    });
+    return {
+      turnId: turn.id,
+      text: fallback,
+      recall,
+      sources: [],
+      cards: [],
+      timings: { ...timings, total_ms: Date.now() - started, effective_model: 'offline-demo' },
+      budgets: budget,
+    };
+  }
+
   const initialStatus = replayActive
-    ? 'Replay mode: recorded searches, live pipeline'
+    ? 'Offline demo: scripted example answers'
     : (missing.tavily
       ? 'Model ready; web search is not configured.'
       : 'Reasoning about the request…');
@@ -175,7 +200,6 @@ export async function runTurn({
   let lastEmittedCards = null;
   let activeTargets = [];
   let lastToolPayload = null;
-  let finalText = '';
   let errorMessage = null;
   let providerError = null;
   let firstTokenTime = null;
@@ -237,6 +261,7 @@ export async function runTurn({
       result = await generateStream({
         contents, systemInstruction, toolDeclaration: canCallTools ? webSearchDeclaration : null,
         signal,
+        recall,
         onStatus: (text) => emit(send, 'status', { text }),
         onRetry: () => { budget.providerRetries = (budget.providerRetries || 0) + 1; },
         onTiming,
@@ -452,24 +477,27 @@ export async function runTurn({
               }
 
               const nonTargetSources = pageSources.filter((item) => !item.entity);
-              let nonTargetClaims = [];
-              const requiredCalls = claimExtractionBatchCount(nonTargetSources);
-              if (requiredCalls) {
+              if (nonTargetSources.length) {
+                const requiredCalls = claimExtractionBatchCount(nonTargetSources);
                 if (budget.geminiCalls + requiredCalls > config.maxGeminiCalls) {
                   timings.extraction_skipped_budget = true;
                 } else {
-                  const result = await extractPageClaims({
-                    store,
-                    turnId: turn.id,
-                    sourceItems: nonTargetSources,
-                    budget,
-                    plans: PLANS,
-                    onTiming,
-                  });
-                  nonTargetClaims = result.claims;
+                  try {
+                    const result = await extractPageClaims({
+                      store,
+                      turnId: turn.id,
+                      sourceItems: nonTargetSources,
+                      budget,
+                      plans: PLANS,
+                      onTiming,
+                    });
+                    targetClaims.push(...result.claims);
+                  } catch {
+                    // non-target extraction failures do not block card presentation
+                  }
                 }
               }
-              return [...targetClaims, ...nonTargetClaims];
+              return targetClaims;
             }
             const outcome = await extractPageClaims({
               store, turnId: turn.id, sourceItems: pageSources, budget, plans: PLANS, onTiming,

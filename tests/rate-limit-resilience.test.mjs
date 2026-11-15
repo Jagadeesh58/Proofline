@@ -219,3 +219,34 @@ test('three-target check turn batches claim extraction into at most 3 Gemini cal
     gemini.resetThrottle();
   }
 });
+
+test('no throttle wait occurs before the first 429 response', async () => {
+  gemini.resetThrottle();
+  const previousFetch = globalThis.fetch;
+  let throttleWait = 0;
+
+  globalThis.fetch = async (url) => {
+    const urlStr = String(url);
+    if (urlStr.includes('streamGenerateContent')) {
+      return sseResponse([{ text: 'Instant response without waiting.' }]);
+    }
+    return jsonResponse({});
+  };
+
+  try {
+    const start = Date.now();
+    const result = await gemini.generateStream({
+      contents: [{ role: 'user', parts: [{ text: 'Hello' }] }],
+      onTiming: (t) => {
+        if (t.throttle_wait_ms) throttleWait += t.throttle_wait_ms;
+      },
+    });
+
+    assert.equal(throttleWait, 0, 'No throttle wait before first 429');
+    assert.equal(result.text, 'Instant response without waiting.');
+    assert.ok(Date.now() - start < 1000, 'Request should finish without artificial delay');
+  } finally {
+    globalThis.fetch = previousFetch;
+    gemini.resetThrottle();
+  }
+});

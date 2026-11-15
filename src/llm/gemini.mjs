@@ -44,7 +44,8 @@ export function resetThrottle() {
 }
 
 async function throttle(signal, onWait) {
-  const limit = Math.max(1, config.geminiRequestsPerMinute || 8);
+  const limit = config.geminiRequestsPerMinute;
+  if (!limit || limit <= 0) return;
   while (true) {
     if (signal?.aborted) throw signal.reason || new Error('Aborted');
     const now = Date.now();
@@ -61,12 +62,12 @@ async function throttle(signal, onWait) {
   }
 }
 
-function generationConfig({ json = false } = {}) {
+function generationConfig({ json = false, thinkingLevel = null } = {}) {
   const value = { maxOutputTokens: 8192 };
   if (json) {
     value.responseMimeType = 'application/json';
   }
-  const level = (config.geminiThinkingLevel || '').toLowerCase();
+  const level = (thinkingLevel || config.geminiThinkingLevel || '').toLowerCase();
   if (level === 'off') {
     value.thinkingConfig = { thinkingBudget: 0 };
   } else if (level === 'high' || level === 'low') {
@@ -179,13 +180,14 @@ export async function generateStream({
   systemInstruction,
   toolDeclaration,
   signal,
+  recall,
   onText,
   onRetry,
   onStatus,
   onTiming,
 }) {
   if (isReplayModelActive(config)) {
-    return replayStreamExecution({ contents, toolDeclaration, signal, onText, onTiming });
+    return replayStreamExecution({ contents, systemInstruction, toolDeclaration, signal, recall, onText, onTiming });
   }
   if (!config.geminiKey) throw new ProviderError('Gemini API key is missing.', 0, 'missing_key');
   const candidateModels = getCandidateModels();
@@ -200,7 +202,7 @@ export async function generateStream({
     const body = {
       contents,
       ...(systemInstruction ? { systemInstruction: { parts: [{ text: systemInstruction }] } } : {}),
-      generationConfig: generationConfig(),
+      generationConfig: generationConfig({ thinkingLevel: toolDeclaration ? 'low' : null }),
     };
     if (toolDeclaration) {
       body.tools = [{ functionDeclarations: [toolDeclaration] }];
@@ -392,7 +394,7 @@ export async function generateJson({ prompt, schema, signal, onRetry, onStatus, 
     const activeModel = candidateModels[mIdx];
     const body = {
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { ...generationConfig({ json: true }), responseSchema: schema },
+      generationConfig: { ...generationConfig({ json: true, thinkingLevel: 'low' }), responseSchema: schema },
     };
 
     let attempt = 0;

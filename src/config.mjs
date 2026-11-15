@@ -40,7 +40,7 @@ export const config = Object.freeze({
   geminiModels: configuredModels,
   geminiModel: configuredModels[0] || configuredPrimary,
   geminiFallbackModel: configuredModels[1] || configuredFallback,
-  geminiRequestsPerMinute: number('GEMINI_REQUESTS_PER_MINUTE', 8),
+  geminiRequestsPerMinute: process.env.GEMINI_REQUESTS_PER_MINUTE ? number('GEMINI_REQUESTS_PER_MINUTE', 0) : 0,
   geminiThinkingLevel: (process.env.GEMINI_THINKING_LEVEL || 'low').toLowerCase(),
   geminiTemperature: process.env.GEMINI_TEMPERATURE === undefined || process.env.GEMINI_TEMPERATURE === ''
     ? null : Number(process.env.GEMINI_TEMPERATURE),
