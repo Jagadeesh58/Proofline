@@ -1,52 +1,46 @@
 # Proofline
 
-[![CI](https://github.com/Jagadeesh58/Proofline/actions/workflows/ci.yml/badge.svg)](https://github.com/Jagadeesh58/Proofline/actions/workflows/ci.yml)
-
-Proofline is a research chat agent built with Node.js 22 and native SQLite (`node:sqlite`). The language model has access to exactly one tool: `web_search`, while temporal reasoning, historical recall, factual extraction, and comparison cards stay in application code.
+Proofline is a research chat agent built with Node.js 22 and SQLite where web search is the only model-visible tool, while memory recall and evidence verification stay in code.
 
 ## Quickstart
 
-Requires Node.js 22.16.0 or later with zero runtime npm dependencies.
-
-To run the full interface and official prompts immediately without API keys:
+Run the following commands to install dependencies, configure environment variables, and start the development server:
 
 ```bash
 npm install
-npm run demo
+cp .env.example .env
+npm run dev
 ```
 
-Open `http://127.0.0.1:3000` to interact with the recorded search corpus and live pipeline.
+## Keys
 
-## Live Deployment
-
-The service is deployed at [https://proofline.onrender.com](https://proofline.onrender.com). Because the free Render instance sleeps after inactivity, the first request after idle can take about a minute on the free host.
-
-To run locally with live provider keys:
-
-1. Copy `.env.example` to `.env` and configure `GEMINI_API_KEY` and `TAVILY_API_KEY`.
-2. Start the application: `npm run dev`
+Configure two API keys in `.env`:
+- `GEMINI_API_KEY`: obtain from [Google AI Studio](https://aistudio.google.com).
+- `TAVILY_API_KEY`: obtain from [Tavily](https://tavily.com).
 
 ## Official Prompts
 
-The system is evaluated against the three hiring challenge prompts:
-
+The three official challenge prompts are accessible as one-click starter buttons in the browser interface:
 1. "On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?"
 2. "What did I ask you on 3 November? Is your answer still correct today?"
 3. "Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?"
 
-## Evaluation
+## Performance
 
-- `npm run demo`: keyless local demonstration.
-- `npm test`: runs the offline test suite.
-- `npm run check`: runs syntax, linting, formatting, document verification, and multi-date simulations.
-- `npm run eval`: executes offline evaluation fixtures.
-- `npm run eval:live`: runs the live evaluation questions.
-- `npm run eval:live:quick`: runs the three official prompts live.
+Measured live on the Gemini free tier:
 
-## Repository Layout
+| Prompt | Time to first token | Total latency | Full transcript |
+| :--- | ---: | ---: | :--- |
+| CRM check | 21.5 s | 26.9 s | [official-1.md](evals/transcripts/official-1.md) |
+| 3 November recall | 18.0 s | 18.4 s | [official-2.md](evals/transcripts/official-2.md) |
+| Postgres check | 26.9 s | 27.1 s | [official-3.md](evals/transcripts/official-3.md) |
 
-- `src/`: core server, search orchestration, temporal resolver, and claim comparison.
-- `evals/`: evaluation cases, replay corpus, and benchmark results.
-- `tests/`: offline test suite.
+## Offline Demo
 
-For architectural decisions, request flow, and benchmark results, see [DESIGN.md](DESIGN.md).
+Run `npm run demo` to start the scripted offline demo without API keys, where no AI model and no web search are used.
+
+## Deployment and Results
+
+Proofline is hosted at [https://proofline.onrender.com](https://proofline.onrender.com). Because the free Render instance sleeps after inactivity, the initial cold request can take around a minute to wake up.
+
+Complete evaluation metrics and per-stage latency breakdowns are recorded in [live-latest.json](evals/results/live-latest.json). Architecture and verification decisions are detailed in [DESIGN.md](DESIGN.md).

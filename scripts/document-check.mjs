@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { computeBuildId } from './build-id.mjs';
 
 const root = path.resolve('.');
 const documents = ['README.md', 'DESIGN.md'];
@@ -10,6 +11,10 @@ const americanSpellings = new Set([
   'organize', 'organized', 'organizing', 'analyze', 'analyzed', 'analyzing', 'catalog',
   'canceled', 'canceling', 'labeled', 'labeling', 'traveling', 'traveled', 'licensee',
 ]);
+const bannedPhrases = [
+  '100%', 'guarantee', 'flawless', 'seamless', 'robust',
+  'bulletproof', 'world-class', 'state-of-the-art', 'zero-risk',
+];
 const failures = [];
 const contentByFile = new Map();
 
@@ -38,6 +43,12 @@ for (const filename of documents) {
       failures.push(`${filename}: American spelling "${match[0]}"; use British English.`);
     }
   }
+  for (const phrase of bannedPhrases) {
+    const re = new RegExp(`\\b${phrase.replace('%', '\\%')}\\b`, 'i');
+    if (re.test(plain)) {
+      failures.push(`${filename}: Contains banned promotional phrase "${phrase}".`);
+    }
+  }
   for (const match of text.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
     const destination = match[1].split(/[?#]/, 1)[0];
     const fragment = match[1].includes('#') ? match[1].slice(match[1].indexOf('#') + 1) : '';
@@ -63,8 +74,8 @@ for (const filename of documents) {
 
 const design = contentByFile.get('DESIGN.md') || '';
 const designWords = (stripCode(design).match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
-if (designWords < 1100 || designWords > 1300) {
-  failures.push(`DESIGN.md: ${designWords} words is outside the required 1,100 to 1,300 word range.`);
+if (designWords > 550) {
+  failures.push(`DESIGN.md: ${designWords} words exceeds the 550 word limit.`);
 }
 
 const readme = contentByFile.get('README.md') || '';
@@ -102,6 +113,21 @@ if (fs.existsSync(liveLatestPath)) {
   const quotes = liveLatest.citationFaithfulness?.totalQuotes;
   if (quotes && !design.includes(`${quotes}/${quotes} quotes`)) {
     failures.push(`DESIGN.md must cite citation faithfulness "${quotes}/${quotes} quotes" from live-latest.json.`);
+  }
+
+  const expectedBuildId = liveLatest.build_id || liveLatest.environment?.build_id;
+  if (expectedBuildId) {
+    const buildIdRegex = /\bbuild(?:\s+id)?[:\s]+`?([a-f0-9]{12})`?/gi;
+    for (const [docName, docText] of contentByFile.entries()) {
+      for (const match of docText.matchAll(buildIdRegex)) {
+        if (match[1] !== expectedBuildId) {
+          failures.push(
+            `${docName} cites build id "${match[1]}" that does not match `
+            + `live-latest.json (${expectedBuildId}).`
+          );
+        }
+      }
+    }
   }
 }
 

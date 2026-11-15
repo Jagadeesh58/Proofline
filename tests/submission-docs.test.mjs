@@ -10,11 +10,11 @@ test('submission documents record the required architecture, lifecycle, and limi
   const design = read('DESIGN.md');
   const requiredHeadings = [
     '# Proofline: design',
-    '## How a message flows',
-    '## Why it\'s built like this',
+    '## How it works',
+    '## Why it is built this way',
     '## Considered and rejected',
     '## With another week',
-    '## Evals',
+    '## Measured',
   ];
   let lastIndex = -1;
   for (const heading of requiredHeadings) {
@@ -25,7 +25,7 @@ test('submission documents record the required architecture, lifecycle, and limi
 
   assert.ok(design.includes('flowchart TD'), 'DESIGN.md must contain a mermaid diagram');
   const designWords = (design.replace(/```[\s\S]*?```/g, ' ').replace(/`[^`]*`/g, ' ').replace(/https?:\/\/\S+/g, ' ').match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
-  assert.ok(designWords >= 1100 && designWords <= 1300, `DESIGN.md word count (${designWords}) must be 1100-1300`);
+  assert.ok(designWords <= 550, `DESIGN.md word count (${designWords}) must be at most 550 words`);
 
   // Verify config defaults agreement with DESIGN.md
   assert.ok(design.includes('20 requests per session'), 'DESIGN.md must state session quota of 20');
@@ -34,11 +34,12 @@ test('submission documents record the required architecture, lifecycle, and limi
   const readme = read('README.md');
   const readmeHeadings = [
     '# Proofline',
-    '## Live Deployment',
     '## Quickstart',
+    '## Keys',
     '## Official Prompts',
-    '## Evaluation',
-    '## Repository Layout',
+    '## Performance',
+    '## Offline Demo',
+    '## Deployment and Results',
   ];
   for (const heading of readmeHeadings) {
     assert.ok(readme.includes(heading), `README.md must contain heading: ${heading}`);

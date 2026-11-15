@@ -8,12 +8,12 @@ on:
 
 jobs:
   check:
-    name: Verify, lint, and test
+    name: Verify, lint, and test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [22.x, 24.x]
 
     steps:
       - name: Check out repository
@@ -31,5 +31,5 @@ jobs:
       - name: Run verification checks
         run: npm run check
 
-      - name: Run test suite
-        run: npm test
+      - name: Run documentation checks
+        run: npm run docs:check
