@@ -1,37 +1,71 @@
 # Proofline: design
 
-In Proofline, application code owns dates, recall, evidence and status. The language model decides when to search and writes commentary on checked findings.
+In Proofline, application code owns dates, recall, evidence extraction, and comparison verdicts. The language model decides when to search and writes natural commentary explaining checked findings.
 
 ## How it works
 
-When a message arrives, I inspect session cookies and enforce rate limits of 20 requests per session and 200 requests per day. My date resolver maps phrases like "last Tuesday" to calendar dates in the user's timezone. SQLite with BM25 retrieves past turns before model invocation. The model receives one external tool: `web_search`. When searches return pages, deterministic code extracts quotes, checks candidate domains against a known registry, and compares new prices against historical baselines on matching domains. While commentary streams, a sentence gate holds numbers until supported by extracted quotes.
+The lifecycle resolves dates and memory deterministically before invoking model tools:
+
+1. Ingress validates cookies and enforces budgets of 20 requests per session and 200 requests per day.
+2. The date resolver converts relative phrases to calendar dates in the user timezone.
+3. SQLite FTS5 retrieves relevant prior turns before model invocation.
+4. The model receives one external tool: `web_search`.
+5. Web searches execute through Tavily, recording URL, domain, snippet, and page text.
+6. Code extracts structured claims and verifies quotes against stored page text.
+7. The comparison engine evaluates prices against baselines on matching domains.
+8. While commentary streams, a sentence gate holds numeric statements until verified.
 
 ```mermaid
 flowchart TD
-  User["User Message"] --> Ingress["Ingress & Quotas"]
-  Ingress --> Resolver["Date & Memory Resolver"]
+  User["User Message"] --> Ingress["Ingress and Quotas"]
+  Ingress --> Resolver["Date and Memory Resolver"]
   Resolver --> Model["Model (web_search only)"]
-  Model --> Tool["Tavily Tool & Cache"]
-  Tool --> Claims["Claim Extraction & Card Compare"]
+  Tool["Tavily Tool and Cache"] --> Claims["Claim Extraction and Compare"]
+  Model --> Tool
   Claims --> Gate["Sentence Gate"]
-  Gate --> SSE["SSE Stream & UI Cards"]
+  Gate --> SSE["SSE Stream and UI Cards"]
 ```
+
+Prompt handling:
+- Prompt 1: Maps Monday to a calendar date, searches candidate CRMs, and compares retrieved tiers against stored baselines.
+- Prompt 2: Locates the 3 November turn, reproduces advice, and checks provider pages for changes.
+- Prompt 3: Establishes the baseline date for Postgres providers, executes fresh checks, and compares plans on identical domains.
+
+Comparison cards represent code-evaluated per-entity verdicts, and sources represent unique web pages retrieved during the turn.
 
 ## Why it is built this way
 
-I gave the model exactly one tool to prevent multi-tool decision loops and hallucinated arguments. Calendar arithmetic happens in code because language models frequently slip days around month boundaries. I enforce verbatim string containment against stored page text so that no model can invent quotes. For status assignment, absence of search results yields "Couldn't confirm", never "Same as before". Progressive sentence gating streams text immediately while holding numeric sentences until verified. I chose native `node:sqlite` in WAL mode to eliminate external runtime dependencies while maintaining concurrency.
+I gave the model exactly one tool to prevent multi-tool routing loops. When multiple tools are exposed, models oscillate between memory search and web queries; keeping memory in code keeps interaction focused on fresh evidence retrieval.
+
+Calendar arithmetic happens in deterministic code to establish explicit calendar bounds in the user timezone. Resolving dates before model invocation ensures consistent week and month boundaries regardless of sampling variance.
+
+I enforce verbatim string containment against stored page text to verify quote provenance. Every numerical claim and plan attribute must match actual text extracted from the retrieved document before a status is assigned.
+
+For status assignment, lack of fresh search results produces "Couldn't confirm", never "Same as before". An unchanged status requires positive evidence from an authoritative domain matching the historical baseline.
+
+Progressive sentence gating streams introductory text immediately while holding numeric sentences until verified. I chose native `node:sqlite` in WAL mode to eliminate external runtime dependencies while maintaining concurrency.
 
 ## Considered and rejected
 
-I rejected vector databases because SQLite with BM25 provided exact date filtering and zero npm dependencies. I rejected exposing memory search as a model tool because pre-retrieving context in code guarantees that history is always available before the first token. I rejected multi-agent pipelines because coordinating multiple model roles increased latency and token cost without improving accuracy. I rejected cross-domain price comparisons because comparing third-party aggregators against vendor pages caused false change reports; all comparisons stay restricted to identical parent domains.
+- Vector databases: rejected for SQLite FTS5 with BM25 to retain exact calendar filtering and zero npm dependencies.
+- Memory as a model tool: rejected for pre-retrieving context in code to preserve the single-tool constraint.
+- Multi-agent architecture: rejected for a single coordinator loop to keep execution traces inspectable and avoid latency.
+- Cross-domain comparisons: rejected because comparing across distinct domains conflates third-party summaries with vendor plans.
+- Provider-side grounding: rejected for application-controlled search to ensure quote containment and independent comparisons.
 
 ## With another week
 
-I would add a headless browser fallback for JavaScript-rendered pricing tables that return empty static markup. I would expand the verified domain registry with automated certificate transparency logs. I would also add structured parsing for complex multi-seat tiered pricing matrices. The offline demo is scripted so it runs without keys; it is not evidence of live behaviour.
+- Headless browser rendering for client-side JavaScript pricing tables that return empty static markup.
+- Automated certificate transparency lookups to expand the verified brand registry.
+- Structured parsing for multi-tier volume matrices with dynamic slider tiers.
+- Cross-session persistence across sleeping free-tier containers.
+- The offline demo is scripted so it runs without keys; it is not evidence of live behaviour.
 
 ## Measured
 
-On 2026-11-14 with build id 31ef6a0fbdf1 on Node 22:
+<!-- measured:start -->
+On 2026-11-15 with build id 31ef6a0fbdf1 on Node 22:
 - 258 tests pass in the offline fixture-based suite (`latest.json`).
-- Live run (`live-latest.json`, n=3 official prompts, free tier): first token median 21.5 s, total latency median 26.9 s, citation faithfulness 17/17 quotes, 0 false unchanged statuses.
+- Live run (`live-latest.json`, n=3 official prompts, free tier): first token median 21.5 s, total latency median 26.9 s, citation faithfulness 17/17 quotes.
 - Cold container boot from idle and third-party scraping blocks are not measured in CI.
+<!-- measured:end -->

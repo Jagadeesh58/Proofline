@@ -1,6 +1,6 @@
 # Proofline
 
-Proofline is a research chat agent built with Node.js 22 and SQLite where web search is the only model-visible tool, while memory recall and evidence verification stay in code.
+Proofline is a research chat agent built with Node.js 22 and native SQLite where web search is the only model-visible tool, while memory recall and evidence verification stay in deterministic application code.
 
 ## Quickstart
 
@@ -12,11 +12,15 @@ cp .env.example .env
 npm run dev
 ```
 
+The server starts at `http://127.0.0.1:3000` with session isolation and daily quotas enabled.
+
 ## Keys
 
 Configure two API keys in `.env`:
-- `GEMINI_API_KEY`: obtain from [Google AI Studio](https://aistudio.google.com).
-- `TAVILY_API_KEY`: obtain from [Tavily](https://tavily.com).
+- `GEMINI_API_KEY`: obtain from Google AI Studio.
+- `TAVILY_API_KEY`: obtain from Tavily.
+
+Free tier keys are sufficient for evaluation runs.
 
 ## Official Prompts
 
@@ -27,20 +31,14 @@ The three official challenge prompts are accessible as one-click starter buttons
 
 ## Performance
 
-Measured live on the Gemini free tier:
-
-| Prompt | Time to first token | Total latency | Full transcript |
-| :--- | ---: | ---: | :--- |
-| CRM check | 21.5 s | 26.9 s | [official-1.md](evals/transcripts/official-1.md) |
-| 3 November recall | 18.0 s | 18.4 s | [official-2.md](evals/transcripts/official-2.md) |
-| Postgres check | 26.9 s | 27.1 s | [official-3.md](evals/transcripts/official-3.md) |
+Live performance benchmarks and stage latency breakdowns across the official prompts are recorded in [DESIGN.md](DESIGN.md#measured) and [live-latest.json](evals/results/live-latest.json).
 
 ## Offline Demo
 
-Run `npm run demo` to start the scripted offline demo without API keys, where no AI model and no web search are used.
+Run `npm run demo` to start the scripted offline demo without API keys. The demo uses bundled mock responses to illustrate interface interaction and date recall, but does not provide evidence of live model behaviour.
 
 ## Deployment and Results
 
-Proofline is hosted at [https://proofline-znhc.onrender.com](https://proofline-znhc.onrender.com). Because the free Render instance sleeps after inactivity, the initial cold request can take around a minute to wake up.
+Proofline is hosted at [https://proofline-znhc.onrender.com](https://proofline-znhc.onrender.com). Because the free Render instance sleeps after inactivity, the initial cold request takes around one minute to wake up.
 
-Complete evaluation metrics and per-stage latency breakdowns are recorded in [live-latest.json](evals/results/live-latest.json). Architecture and verification decisions are detailed in [DESIGN.md](DESIGN.md).
+Architecture and verification decisions are detailed in [DESIGN.md](DESIGN.md).
