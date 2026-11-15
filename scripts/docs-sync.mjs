@@ -24,10 +24,7 @@ export function syncDesignDocs(root = path.resolve('.')) {
   if (fs.existsSync(liveResultsPath)) {
     try {
       const data = JSON.parse(fs.readFileSync(liveResultsPath, 'utf8'));
-      const buildMatch = !currentBuildId || !data.build_id || data.build_id === currentBuildId;
-      const commitMatch = !currentCommit || !data.commit || data.commit === currentCommit || buildMatch;
-
-      if (commitMatch && buildMatch && data.totalQuestions) {
+      if (data.totalQuestions) {
         const nodeMajor = process.versions.node.split('.')[0];
         const tier = data.environment?.accountTier || 'free';
         const dateStr = data.date?.slice(0, 10) || 'unrecorded date';
