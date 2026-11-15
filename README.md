@@ -4,7 +4,7 @@ Proofline is a research chat agent built with Node.js 22 and native SQLite where
 
 ## Quickstart
 
-Run the following commands to install dependencies, configure environment variables, and start the development server:
+Install dependencies, configure environment variables, and start the development server:
 
 ```bash
 npm install
@@ -16,9 +16,9 @@ The server starts at `http://127.0.0.1:3000` with session isolation and daily qu
 
 ## Keys
 
-Configure two API keys in `.env`:
-- `GEMINI_API_KEY`: obtain from Google AI Studio.
-- `TAVILY_API_KEY`: obtain from Tavily.
+Two API keys are required in `.env`:
+- `GEMINI_API_KEY`: from Google AI Studio.
+- `TAVILY_API_KEY`: from Tavily.
 
 Free tier keys are sufficient for evaluation runs.
 
@@ -39,6 +39,4 @@ Run `npm run demo` to start the scripted offline demo without API keys. The demo
 
 ## Deployment and Results
 
-Proofline is hosted at [https://proofline-znhc.onrender.com](https://proofline-znhc.onrender.com). Because the free Render instance sleeps after inactivity, the initial cold request takes around one minute to wake up.
-
-Architecture and verification decisions are detailed in [DESIGN.md](DESIGN.md).
+Proofline is hosted at [https://proofline-znhc.onrender.com](https://proofline-znhc.onrender.com). Because the free Render instance sleeps after inactivity, the initial cold request takes around one minute to wake up. Architecture decisions are detailed in [DESIGN.md](DESIGN.md).

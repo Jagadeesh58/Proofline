@@ -636,12 +636,16 @@ async function sendMessage(message) {
           const domainSummary = domains.slice(0, 4).join(', ');
           sourcesLi.textContent = `Evidence sources: ${currentSourcesList.length} pages retrieved (${domainSummary}).`;
           list.append(sourcesLi);
-        }
 
-        const quotesLi = document.createElement('li');
-        quotesLi.textContent =
-          'Verbatim verification: all displayed figures and quotes are validated against stored page text.';
-        list.append(quotesLi);
+          const quotesLi = document.createElement('li');
+          quotesLi.textContent =
+            'Verbatim verification: all displayed figures and quotes are validated against stored page text.';
+          list.append(quotesLi);
+        } else {
+          const directLi = document.createElement('li');
+          directLi.textContent = 'Direct answer: answered without external web search.';
+          list.append(directLi);
+        }
 
         explain.append(list);
         currentExtrasRegion?.append(explain);

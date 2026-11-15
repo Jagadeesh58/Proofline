@@ -140,3 +140,17 @@ test('sentenceEndIndex retains trailing citation markers attached to the sentenc
   const end3 = sentenceEndIndex(textWithMultipleCitations);
   assert.equal(textWithMultipleCitations.slice(0, end3), 'Pricing confirmed. [S1, S2]');
 });
+
+test('checkAnswerFigures preserves multiline markdown lists and paragraph newlines', async () => {
+  const { checkAnswerFigures } = await import('../src/evidence/figure-check.mjs');
+  const input = 'Here is the summary:\n\n- HubSpot: unchanged.\n- Pipedrive: unchanged.\n- Zoho: unchanged.';
+  const result = checkAnswerFigures(input, {
+    userText: 'Check CRM tools',
+    recalled: [],
+    claims: [],
+    sources: [],
+    entities: [],
+    cards: [],
+  });
+  assert.equal(result.text, input);
+});

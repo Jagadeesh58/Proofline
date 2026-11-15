@@ -1,5 +1,5 @@
 import { USER_STRINGS } from '../strings.mjs';
-import { splitSentences } from './answer-stream.mjs';
+import { splitSentences, splitSentencesWithSpacing } from './answer-stream.mjs';
 import { evaluateSearchPolicy } from '../agent/search-policy.mjs';
 
 const MONTH_NAME_PATTERN = [
@@ -398,12 +398,12 @@ export function checkAnswerFigures(text, context) {
   if (context?.skipFigureCheck || context?.isDemo) {
     return { text: String(text || ''), markers: [] };
   }
-  const sentences = splitSentences(text);
+  const segments = splitSentencesWithSpacing(text);
   const output = [];
   const markers = [];
-  for (let index = 0; index < sentences.length; index += 1) {
-    const sentence = sentences[index];
-    const separator = index < sentences.length - 1 ? ' ' : '';
+  for (let index = 0; index < segments.length; index += 1) {
+    const { sentence, spacing } = segments[index];
+    const separator = spacing || (index < segments.length - 1 ? ' ' : '');
     const figures = sentenceFigures(sentence);
     if (!figures.length) { output.push(sentence + separator); continue; }
     const todayParts = context.today ? context.today.split('-') : [];

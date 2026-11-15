@@ -69,6 +69,27 @@ export function splitSentences(value) {
   return sentences.length ? sentences : [text];
 }
 
+export function splitSentencesWithSpacing(value) {
+  const text = String(value || '');
+  if (!text) return [];
+  const items = [];
+  let pending = text;
+  let end = sentenceEndIndex(pending);
+  while (end > 0) {
+    const sentence = pending.slice(0, end);
+    const rest = pending.slice(end);
+    const spacingMatch = rest.match(/^\s*/);
+    const spacing = spacingMatch ? spacingMatch[0] : '';
+    items.push({ sentence, spacing });
+    pending = rest.slice(spacing.length);
+    end = sentenceEndIndex(pending);
+  }
+  if (pending) {
+    items.push({ sentence: pending, spacing: '' });
+  }
+  return items.length ? items : [{ sentence: text, spacing: '' }];
+}
+
 function emitSafely(send, type, payload) {
   try { send(type, payload); } catch { /* A disconnected browser must not interrupt persistence. */ }
 }
