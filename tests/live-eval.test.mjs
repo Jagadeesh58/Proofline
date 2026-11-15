@@ -171,3 +171,55 @@ test('deterministicChecks evaluates fixed fake run objects for official prompts'
   };
   assert.equal(deterministicChecks(missingName3, { promptId: 'official-3', timezone: 'Asia/Kolkata', clock }).passed, false);
 });
+
+test('live-eval retries failing grader once and reports unevaluated runs without failing', async () => {
+  const tmpDir = path.resolve('data/test-grader-retry');
+  fs.mkdirSync(tmpDir, { recursive: true });
+
+  let graderCalls = 0;
+  const throwingGrader = async () => {
+    graderCalls += 1;
+    throw new Error('Simulated grader outage');
+  };
+
+  const previousFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    const payload = 'data: ' + JSON.stringify({
+      candidates: [{ content: { parts: [{ text: 'Calculated annual spend is $3,600.' }] } }],
+    }) + '\n\ndata: [DONE]\n\n';
+    return new Response(payload, {
+      status: 200,
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  };
+
+  try {
+    const testQuestions = [
+      {
+        id: 'stable-1',
+        category: 'stable_concept',
+        prompt: 'If a sales team has 20 seats and each seat costs $15 per month billed annually, what is the annual spend?',
+        expectedType: 'arithmetic',
+      },
+    ];
+
+    const result = await executeLiveEvaluation({
+      questionsList: testQuestions,
+      outDir: tmpDir,
+      runsPerQuestion: 1,
+      writeLatest: false,
+      graderFn: throwingGrader,
+    });
+
+    assert.equal(graderCalls, 2, 'Grader must be called and retried once on failure');
+    assert.equal(result.summary.successful, 1, 'Run must succeed when deterministic check passes');
+    assert.equal(result.summary.failed, 0, 'Grader error must not count as failed');
+    assert.equal(result.summary.unevaluated, 1, 'Failing grader must report as unevaluated');
+    const q0 = result.summary.results[0];
+    assert.equal(q0.rubric?.status, 'unevaluated');
+    assert.ok(q0.answer.includes('3,600'), 'Real answer text must be retained in result entry');
+  } finally {
+    globalThis.fetch = previousFetch;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});

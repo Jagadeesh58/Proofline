@@ -8,6 +8,7 @@ import { runTurn } from '../src/agent/run-turn.mjs';
 import { computeBuildId } from './build-id.mjs';
 import { normaliseEvidenceText } from '../src/evidence/claims.mjs';
 import { deterministicChecks } from '../evals/official-prompts.mjs';
+import { gradeGeneralResearch } from '../evals/grader.mjs';
 
 function getGitInfo() {
   try {
@@ -452,7 +453,26 @@ function validateQuestionOutcome(
   }
 }
 
-async function runSingleQuestion(item) {
+export async function gradeWithRetry({ prompt, answer, sources = [] }, graderFn = null) {
+  const hasGraderConfig = Boolean(config.graderKey && config.graderModel && config.graderBaseUrl);
+  const grader = graderFn || (hasGraderConfig ? gradeGeneralResearch : null);
+  if (!grader) {
+    return { status: 'unevaluated' };
+  }
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const res = await grader({ prompt, answer, sources });
+      return res || { status: 'unevaluated' };
+    } catch {
+      if (attempt === 1) {
+        return { status: 'unevaluated' };
+      }
+    }
+  }
+  return { status: 'unevaluated' };
+}
+
+async function runSingleQuestion(item, graderFn = null) {
   const start = performance.now();
   let firstTokenTime = null;
   const events = [];
@@ -543,6 +563,11 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
   }
   const citationFaithfulness = verifyCitationFaithfulness(store, sources, cards);
 
+  let rubric = { status: 'unevaluated' };
+  if (answer && answer.length > 0) {
+    rubric = await gradeWithRetry({ prompt: item.prompt, answer, sources }, graderFn);
+  }
+
   return {
     firstTokenMs: output?.timings?.first_token_ms ?? (firstTokenTime !== null ? Math.round(firstTokenTime) : null),
     totalTimeMs: output?.timings?.total_ms ?? Math.round(totalTime),
@@ -560,6 +585,7 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
     resolvedDate,
     correctness: validation,
     citationFaithfulness,
+    rubric,
     error,
     doneEvent,
     timings: output?.timings || timingsPayload.timings || {},
@@ -572,6 +598,7 @@ export async function executeLiveEvaluation({
   runsPerQuestion = RUNS_PER_QUESTION,
   writeLatest = !process.env.LIVE_EVAL_OUT_DIR,
   allowDirty = false,
+  graderFn = null,
 } = {}) {
   const activeQuestions = questionsList || (LIMIT > 0 ? EVAL_QUESTIONS.slice(0, LIMIT) : EVAL_QUESTIONS);
   const results = [];
@@ -581,7 +608,7 @@ export async function executeLiveEvaluation({
     const runs = [];
     for (let i = 0; i < runsPerQuestion; i += 1) {
       if (index > 0 || i > 0) await sleep(DELAY_MS);
-      runs.push(await runSingleQuestion(item));
+      runs.push(await runSingleQuestion(item, graderFn));
     }
     const firstTokens = runs.map((r) => r.firstTokenMs).filter((v) => v !== null && v !== undefined);
     const totalTimes = runs.map((r) => r.totalTimeMs);
@@ -610,6 +637,9 @@ export async function executeLiveEvaluation({
       cards: (runs.find((r) => r.cards?.length)?.cards) || (runs[0]?.cards ?? []),
       sources: (runs.find((r) => r.sources?.length)?.sources) || (runs[0]?.sources ?? []),
       resolvedDate: runs.find((r) => r.resolvedDate)?.resolvedDate || null,
+      rubric: runs.find((r) => r.rubric && r.rubric.status !== 'unevaluated')?.rubric
+        || runs[0]?.rubric
+        || { status: 'unevaluated' },
       error: successfulRuns.length ? null : runs[0].error,
       correctness: successfulRuns.length ? successfulRuns[0].correctness : runs[0].correctness,
       citationFaithfulness: successfulRuns.length
@@ -653,6 +683,8 @@ export async function executeLiveEvaluation({
 
   const successfulCount = results.filter((r) => r.correctness?.passed).length;
   const totalCount = results.length;
+  const failedCount = totalCount - successfulCount;
+  const unevaluatedCount = results.filter((r) => r.rubric?.status === 'unevaluated').length;
   const passRate = totalCount > 0 ? Number((successfulCount / totalCount).toFixed(3)) : 0;
   const wilsonInterval = wilsonScoreInterval(successfulCount, totalCount);
 
@@ -701,7 +733,8 @@ export async function executeLiveEvaluation({
     },
     totalQuestions: totalCount,
     successful: successfulCount,
-    failed: totalCount - successfulCount,
+    failed: failedCount,
+    unevaluated: unevaluatedCount,
     passRate,
     wilsonInterval95: wilsonInterval,
     firstProgress: {
