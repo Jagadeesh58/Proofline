@@ -284,12 +284,24 @@ async function extractOne({
   if (!safeUrl) return null;
   if (budget.extracts >= config.maxExtracts) return null;
   budget.extracts += 1;
-  const sourceMeta = (candidate) => ({
-    url: safeHttpUrl(candidate?.url) || safeUrl,
-    title: results?.title || candidate?.title || safeUrl,
-    content: results?.content || candidate?.content || '',
-    published_date: results?.published_date || candidate?.published_date || null,
-  });
+  const sourceMeta = (candidate) => {
+    const candidateUrl = safeHttpUrl(candidate?.url);
+    const isSameUrl = candidateUrl && safeUrl && candidateUrl === safeUrl;
+    if (!isSameUrl && candidateUrl) {
+      return {
+        url: candidateUrl,
+        title: candidate.title || candidateUrl,
+        content: candidate.content || candidate.snippet || '',
+        published_date: candidate.published_date || null,
+      };
+    }
+    return {
+      url: candidateUrl || safeUrl,
+      title: candidate?.title || results?.title || safeUrl,
+      content: candidate?.content || results?.content || '',
+      published_date: candidate?.published_date || results?.published_date || null,
+    };
+  };
   if (!isCheckTarget && (extractFn === tavilyExtract || useCache)) {
     const cached = store?.getCachedPage?.(safeUrl);
     if (cached && cached.raw_content) {

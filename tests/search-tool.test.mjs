@@ -291,3 +291,55 @@ test('demo history uses its generation date for a since window and reports a lat
     store.close();
   }
 });
+
+test('fallback extraction preserves candidate metadata and does not leak original search result metadata', async () => {
+  await withStore(async (store, turn) => {
+    const originalUrl = 'https://example.com/pricing';
+    const fallbackUrl = 'https://example.com/plans';
+    const fallbackTitle = 'Actual Plans and Pricing';
+    const fallbackContent = 'Accurate plans snippet text.';
+    const fallbackDate = '2026-11-01';
+
+    const result = await runWebSearch({
+      rawInput: { queries: [{ q: 'example product pricing' }] },
+      store,
+      turnId: turn.id,
+      timezone: 'UTC',
+      budget: { searches: 0, extracts: 0, geminiCalls: 0 },
+      searchFn: async ({ q, includeRawContent }) => {
+        if (includeRawContent) {
+          return {
+            results: [{
+              url: fallbackUrl,
+              title: fallbackTitle,
+              content: fallbackContent,
+              published_date: fallbackDate,
+              raw_content: 'Extracted raw content from fallback page that is long enough. '.repeat(5),
+            }],
+          };
+        }
+        return {
+          results: [{
+            url: originalUrl,
+            title: 'Outdated Search Snippet Title',
+            content: 'Outdated snippet from search result',
+            published_date: '2025-01-01',
+          }],
+        };
+      },
+      extractFn: async () => {
+        return { results: [] };
+      },
+    });
+
+    const fallbackSource = result.sources.find((s) => s.url === fallbackUrl);
+    assert.ok(fallbackSource, 'fallback source must be recorded');
+    assert.equal(fallbackSource.url, fallbackUrl);
+    assert.equal(fallbackSource.title, fallbackTitle);
+    assert.equal(fallbackSource.snippet, fallbackContent);
+    assert.equal(fallbackSource.provider_date, fallbackDate);
+    assert.notEqual(fallbackSource.title, 'Outdated Search Snippet Title');
+    assert.notEqual(fallbackSource.provider_date, '2025-01-01');
+    store.close();
+  });
+});
