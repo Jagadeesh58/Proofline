@@ -843,3 +843,14 @@ test('recalled turn timestamps are supported dates and do not trigger figure not
   assert.doesNotMatch(result.text, /figure not verified/);
 });
 
+test('supports a recalled turn date in the user timezone, not the UTC day', () => {
+  const context = {
+    userText: 'Any change?',
+    recalled: [{ user_text: 'x', assistant_text: 'y', created_at_utc: '2026-11-08T19:30:00.000Z' }],
+    sources: [], claims: [], cards: [], entities: [], today: '2026-11-15', timezone: 'Asia/Kolkata',
+  };
+  assert.equal(checkAnswerFigures('You asked on 9 November 2026.', context).markers.length, 0);
+  assert.equal(checkAnswerFigures('You asked on 8 November 2026.', context).markers.length, 1);
+});
+
+

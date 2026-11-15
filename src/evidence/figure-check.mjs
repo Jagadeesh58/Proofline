@@ -1,6 +1,7 @@
 import { USER_STRINGS } from '../strings.mjs';
 import { splitSentences, splitSentencesWithSpacing } from './answer-stream.mjs';
 import { evaluateSearchPolicy } from '../agent/search-policy.mjs';
+import { localDateFromUtc } from '../time/resolve.mjs';
 
 const MONTH_NAME_PATTERN = [
   String.raw`(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|`,
@@ -71,38 +72,30 @@ function dateMentions(text) {
     .filter((item) => item.parsed));
 }
 
+function formatRecalledDate(raw, timezone = 'UTC') {
+  const out = [String(raw)];
+  try {
+    const iso = /^\d{4}-\d{2}-\d{2}$/.test(String(raw)) ? String(raw) : localDateFromUtc(raw, timezone);
+    const dt = new Date(`${iso}T00:00:00Z`);
+    if (Number.isNaN(dt.getTime())) return out;
+    for (const [locale, month] of [['en-GB', 'short'], ['en-GB', 'long'], ['en-US', 'short'], ['en-US', 'long']]) {
+      out.push(new Intl.DateTimeFormat(locale, { day: 'numeric', month, year: 'numeric', timeZone: 'UTC' }).format(dt));
+    }
+  } catch { /* An unparseable stored date adds no supported forms. */ }
+  return out;
+}
+
 function dateSupported(token, context) {
   const wanted = parseDateToken(token);
   if (!wanted) return false;
   const recalledText = (context.recalled || []).flatMap((turn) => [
     turn.user_text || '', turn.assistant_text || '',
   ]);
-  const recalledDates = (context.recalled || []).flatMap((turn) => {
-    const raw = [turn.local_date, turn.created_at_utc, turn.source_created_at_utc].filter(Boolean);
-    const formatted = [];
-    for (const d of raw) {
-      formatted.push(d);
-      try {
-        const dt = new Date(d);
-        if (!Number.isNaN(dt.getTime())) {
-          const gbShort = new Intl.DateTimeFormat('en-GB', {
-            day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
-          }).format(dt);
-          const gbLong = new Intl.DateTimeFormat('en-GB', {
-            day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
-          }).format(dt);
-          const usShort = new Intl.DateTimeFormat('en-US', {
-            day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
-          }).format(dt);
-          const usLong = new Intl.DateTimeFormat('en-US', {
-            day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
-          }).format(dt);
-          formatted.push(gbShort, gbLong, usShort, usLong);
-        }
-      } catch (_) {}
-    }
-    return formatted;
-  });
+  const recalledDates = (context.recalled || []).flatMap((turn) => (
+    [turn.local_date, turn.created_at_utc, turn.source_created_at_utc]
+      .filter(Boolean)
+      .flatMap((raw) => formatRecalledDate(raw, context.timezone))
+  ));
   const sourceDates = (context.sources || []).flatMap((source) => [
     source.provider_date || '', source.page_date_text || '',
     source.excerpt_text || source.excerpt || '',
