@@ -31,7 +31,7 @@ export function makeTranscripts(resultsPath = 'evals/results/live-latest.json', 
       `- **Commit**: \`${data.commit || 'head'}\``,
       `- **Prompt**: "${entry.prompt}"`,
       `- **Model**: \`${data.environment?.model || 'gemini-3.5-flash-lite'}\` `
-        + `(${data.environment?.accountTier || 'free'} tier)`,
+        + `(${data.environment?.account_tier || data.environment?.accountTier || 'free'} tier)`,
       `- **Time to first token**: ${firstToken}`,
       `- **Total duration**: ${total}`,
       `- **Cards**: ${cards} comparison cards`,

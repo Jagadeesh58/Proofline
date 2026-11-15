@@ -26,8 +26,8 @@ export function syncDesignDocs(root = path.resolve('.')) {
       const data = JSON.parse(fs.readFileSync(liveResultsPath, 'utf8'));
       if (data.totalQuestions) {
         const nodeMajor = process.versions.node.split('.')[0];
-        const tier = data.environment?.accountTier || 'free';
-        const dateStr = data.date?.slice(0, 10) || 'unrecorded date';
+        const tier = data.environment?.account_tier || data.environment?.accountTier || 'free';
+        const dateStr = (data.timestamp || data.date)?.slice(0, 10) || 'unrecorded date';
         const ttftMed = ((data.ttft?.medianMs || 0) / 1000).toFixed(1);
         const ttftMax = ((data.ttft?.maxMs || 0) / 1000).toFixed(1);
         const latMed = ((data.totalLatency?.medianMs || 0) / 1000).toFixed(1);
