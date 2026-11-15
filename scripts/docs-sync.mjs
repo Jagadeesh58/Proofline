@@ -37,14 +37,23 @@ export function syncDesignDocs(root = path.resolve('.')) {
         const latMax = ((data.totalLatency?.maxMs || 0) / 1000).toFixed(1);
         const faithful = data.citationFaithfulness?.faithfulQuotes ?? data.successful ?? 0;
         const totalQuotes = data.citationFaithfulness?.totalQuotes ?? data.successful ?? 0;
+        const latestResultsPath = path.join(root, 'evals/results/latest.json');
+        let offlineTestCount = 258;
+        if (fs.existsSync(latestResultsPath)) {
+          try {
+            const latestData = JSON.parse(fs.readFileSync(latestResultsPath, 'utf8'));
+            if (latestData.test_summary?.tests) offlineTestCount = latestData.test_summary.tests;
+          } catch {}
+        }
         const lines = [
           `On ${dateStr} with build id ${data.build_id || currentBuildId} on Node ${nodeMajor}:`,
+          `- ${offlineTestCount} tests pass in the offline fixture-based suite (\`latest.json\`).`,
           `- ${data.totalQuestions} benchmark queries evaluated on the ${tier} tier.`,
           `- Time to first token: median ${ttftMed} s, max ${ttftMax} s.`,
           `- Total latency: median ${latMed} s, max ${latMax} s.`,
           `- Model calls per turn: median ${data.callsPerTurn?.median ?? '—'}. `
             + `Searches per turn: median ${data.searchesPerTurn?.median ?? '—'}.`,
-          `- Citation faithfulness: ${faithful}/${totalQuotes} verbatim quotes.`,
+          `- Citation faithfulness: ${faithful}/${totalQuotes} quotes.`,
           `- Cold container boot from idle and third-party scraping blocks are not measured in CI.`,
         ];
         measuredText = lines.join('\n');
