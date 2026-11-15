@@ -282,3 +282,27 @@
   outline: 2px solid #0969da;
   outline-offset: 2px;
 }
+
+.sources-wrap summary.sources-summary {
+  cursor: pointer;
+  user-select: none;
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #9aa2ac;
+  margin-bottom: 0;
+  outline: none;
+}
+
+.sources-wrap[open] summary.sources-summary {
+  margin-bottom: 12px;
+}
+
+.sources-list {
+  margin-top: 10px;
+}
+
+[data-theme="dark"] .sources-wrap summary.sources-summary {
+  color: #8b949e;
+}

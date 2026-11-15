@@ -390,18 +390,66 @@ function resetFigureMarkers() {
   figureDetails = null;
 }
 
+function canonicalSourceUrl(url) {
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.replace(/\/+$/, '') || '/';
+    return `${parsed.protocol}//${parsed.host}${path}${parsed.search}`;
+  } catch {
+    return String(url || '').trim().replace(/\/+$/, '');
+  }
+}
+
 function renderSources(sources) {
   sourceMap = new Map((sources || []).map((source) => [source.citation_id, source]));
   sourcesRegion.replaceChildren();
   if (!sources?.length) return;
-  const section = document.createElement('div');
+
+  const validSources = (sources || []).filter((s) => /^https?:\/\//i.test(s?.url));
+  if (!validSources.length) return;
+
+  const groups = new Map();
+  for (const source of validSources) {
+    const key = canonicalSourceUrl(source.url);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(source);
+  }
+
+  const displayItems = [];
+  for (const group of groups.values()) {
+    const citationIds = Array.from(new Set(group.map((s) => s.citation_id).filter(Boolean)));
+    const citationLabel = citationIds.join(', ');
+    const best = [...group].sort((a, b) => {
+      const scoreA = (a.evidence_quote ? 10 : 0)
+        + (a.retrieval_kind === 'page_text' ? 5 : 0)
+        + (a.page_text_origin ? 2 : 0)
+        + (a.snippet_text ? 1 : 0);
+      const scoreB = (b.evidence_quote ? 10 : 0)
+        + (b.retrieval_kind === 'page_text' ? 5 : 0)
+        + (b.page_text_origin ? 2 : 0)
+        + (b.snippet_text ? 1 : 0);
+      return scoreB - scoreA;
+    })[0];
+    const evidenceQuote = group.find((s) => s.evidence_quote)?.evidence_quote || best.evidence_quote || null;
+    displayItems.push({
+      ...best,
+      citation_id: citationLabel || best.citation_id,
+      evidence_quote: evidenceQuote,
+    });
+  }
+
+  const section = document.createElement('details');
   section.className = 'sources-wrap';
-  const label = document.createElement('div');
-  label.className = 'section-label';
-  label.textContent = 'SOURCES · RETRIEVED THIS TURN';
-  section.append(label);
-  for (const source of sources) {
-    if (!/^https?:\/\//i.test(source.url)) continue;
+  const summary = document.createElement('summary');
+  summary.className = 'section-label sources-summary';
+  summary.textContent = `SOURCES · ${displayItems.length} UNIQUE PAGES RETRIEVED (CLICK TO EXPAND)`;
+  section.append(summary);
+
+  const list = document.createElement('div');
+  list.className = 'sources-list';
+  section.append(list);
+
+  for (const source of displayItems) {
     const link = document.createElement('a');
     link.className = 'source-chip';
     link.href = source.url;
@@ -412,7 +460,8 @@ function renderSources(sources) {
     const title = document.createElement('span');
     title.textContent = source.title || source.domain;
     link.append(id, title);
-    section.append(link);
+    list.append(link);
+
     const detail = document.createElement('div');
     detail.className = 'source-detail';
     const extractionStatus = source.extraction_status && source.extraction_status !== 'ok'
@@ -423,24 +472,24 @@ function renderSources(sources) {
     const fetchAge = formatFetchAge(source.retrieved_at_utc, source.from_cache);
     const retrievedDesc = fetchAge ? ` · ${fetchAge}` : '';
     detail.textContent = `${domainDesc} · ${trustDesc}${retrievedDesc}${dateDesc}${extractionStatus}`;
-    section.append(detail);
+    list.append(detail);
+
     const disclosure = document.createElement('details');
     disclosure.className = 'source-evidence';
     const originDesc = source.retrieval_kind === 'page_text'
       ? `page text via ${source.page_text_origin || 'provider'}`
       : 'search snippet';
-    const summary = document.createElement('summary');
-    summary.textContent = `Evidence details · ${originDesc}`;
-    disclosure.append(summary);
+    const evidenceSummary = document.createElement('summary');
+    evidenceSummary.textContent = `Evidence details · ${originDesc}`;
+    disclosure.append(evidenceSummary);
     const evidence = document.createElement('p');
     evidence.textContent = source.evidence_quote
       ? `Validated quote: “${source.evidence_quote}”`
       : (source.snippet_text || 'No excerpt is available.');
     disclosure.append(evidence);
-    section.append(disclosure);
+    list.append(disclosure);
   }
   sourcesRegion.append(section);
-  scrollToBottom();
 }
 
 async function loadConfig() {
