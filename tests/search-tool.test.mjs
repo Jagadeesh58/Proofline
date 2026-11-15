@@ -343,3 +343,25 @@ test('fallback extraction preserves candidate metadata and does not leak origina
     store.close();
   });
 });
+
+test('selects the turn matching the referenced date when multiple turns exist for the same entity', () => {
+  const turns = [
+    {
+      origin: 'imported', user_text: 'HubSpot overview', assistant_text: 'HubSpot was discussed earlier.',
+      created_at_utc: '2026-10-15T10:00:00.000Z', source_created_at_utc: '2026-10-15T10:00:00.000Z',
+    },
+    {
+      origin: 'imported', user_text: 'HubSpot shortlist', assistant_text: 'HubSpot Starter is $20.',
+      created_at_utc: '2026-11-09T10:00:00.000Z', source_created_at_utc: '2026-10-20T10:00:00.000Z',
+    },
+  ];
+  const resolved = resolveTargetNewsSince(
+    { entity: 'HubSpot', checks: ['news'], since: '2026-11-09' },
+    turns,
+    'Asia/Kolkata',
+    '2026-11-13',
+    { explicitSince: '2026-11-09' },
+  );
+  assert.equal(resolved.since, '2026-10-20');
+  assert.match(resolved.generationGapText, /20 Oct \(24 days ago\)/);
+});

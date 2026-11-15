@@ -184,9 +184,43 @@ export function resolveTargetNewsSince(
       const text = normaliseEntity(`${turn.user_text || ''} ${turn.assistant_text || ''}`);
       return candidateKeys.some((k) => text.includes(k));
     });
-  const earlierGeneration = matchingTurns.map((turn) => ({ turn, generatedAt: generationTime(turn) }))
-    .filter((item) => item.generatedAt)
-    .sort((a, b) => a.generatedAt.localeCompare(b.generatedAt))[0] || null;
+  const targetDate = (options.explicitSince && validDate(options.explicitSince))
+    ? options.explicitSince
+    : ((target.since && validDate(target.since)) ? target.since : null);
+
+  const turnLocalDate = (turn) => turn.local_date
+    || (turn.created_at_utc ? localDateFromUtc(turn.created_at_utc, timezone) : null);
+
+  const turnItems = matchingTurns.map((turn) => {
+    const genAt = generationTime(turn);
+    const genDate = genAt ? localDateFromUtc(genAt, timezone) : null;
+    const dispDate = turnLocalDate(turn);
+    return { turn, generatedAt: genAt, generatedDate: genDate, displayDate: dispDate };
+  }).filter((item) => item.generatedAt);
+
+  let earlierGeneration = null;
+  if (targetDate && turnItems.length > 0) {
+    const exactMatches = turnItems.filter((i) => i.displayDate === targetDate || i.generatedDate === targetDate);
+    if (exactMatches.length > 0) {
+      exactMatches.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+      earlierGeneration = exactMatches[0];
+    } else {
+      const beforeMatches = turnItems.filter((i) => (
+        (i.displayDate && i.displayDate <= targetDate)
+        || (i.generatedDate && i.generatedDate <= targetDate)
+      ));
+      if (beforeMatches.length > 0) {
+        beforeMatches.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+        earlierGeneration = beforeMatches[0];
+      } else {
+        turnItems.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+        earlierGeneration = turnItems[0];
+      }
+    }
+  } else if (turnItems.length > 0) {
+    turnItems.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+    earlierGeneration = turnItems[0];
+  }
 
   if (options.explicitSince) {
     if (!validDate(options.explicitSince) || options.explicitSince > todayLocal) {
