@@ -641,8 +641,9 @@ export async function extractAnswerBaseline({
     if (turn?.id) store.updateTurn(turn.id, { claims_status: 'done' });
     return { stored: 0, rejected: 0, claims: [] };
   }
-  if (store.getClaimsForTurn(turn.id).length) {
-    return { stored: 0, rejected: 0, claims: store.getClaimsForTurn(turn.id) };
+  const existing = store.getClaimsForTurn(turn.id);
+  if (turn.claims_status === 'done' && existing.length) {
+    return { stored: 0, rejected: 0, claims: existing };
   }
   if (budget.geminiCalls >= config.maxGeminiCalls) {
     throw new Error('Gemini call budget exhausted before earlier-answer extraction.');

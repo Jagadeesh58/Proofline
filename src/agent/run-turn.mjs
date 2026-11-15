@@ -55,13 +55,13 @@ function importBaselinePromise({ recall, store, budget, onTiming }) {
   if (!candidates.length) return Promise.resolve([]);
   return Promise.all(candidates.map(async (turn) => {
     const existing = store.getClaimsForTurn(turn.id);
-    if (existing.length) return existing;
+    if (existing.length && turn.claims_status === 'done') return existing;
     try {
       const result = await extractAnswerBaseline({ store, turn, budget, plans: PLANS, onTiming });
-      return result.claims;
+      return result.claims.length ? result.claims : existing;
     } catch {
       try { store.updateTurn(turn.id, { claims_status: 'failed' }); } catch { /* Ignore if store closed */ }
-      return [];
+      return existing;
     }
   })).then((results) => results.flat());
 }

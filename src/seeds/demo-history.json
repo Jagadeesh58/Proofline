@@ -40,6 +40,30 @@
         "period": "month",
         "commitment": "annual",
         "evidence_quote": "Zoho CRM Standard at $14 per user per month, billed annually"
+      },
+      {
+        "entity_key": "monday",
+        "attribute": "price",
+        "plan_key": "basic",
+        "value_text": "$12 per user per month, billed annually",
+        "amount": 12,
+        "currency": "USD",
+        "price_unit": "per_seat",
+        "period": "month",
+        "commitment": "annual",
+        "evidence_quote": "Monday CRM Basic at $12 per user per month, billed annually"
+      },
+      {
+        "entity_key": "freshsales",
+        "attribute": "price",
+        "plan_key": "growth",
+        "value_text": "$9 per user per month, billed annually",
+        "amount": 9,
+        "currency": "USD",
+        "price_unit": "per_seat",
+        "period": "month",
+        "commitment": "annual",
+        "evidence_quote": "Freshsales Growth at $9 per user per month, billed annually"
       }
     ]
   },
