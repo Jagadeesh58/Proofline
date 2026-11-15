@@ -35,11 +35,11 @@ Comparison cards represent code-evaluated per-entity verdicts, and sources repre
 
 ## Why it is built this way
 
-I gave the model exactly one tool to prevent multi-tool routing loops. When multiple tools are exposed, models oscillate between memory search and web queries; keeping memory in code keeps interaction focused on fresh evidence retrieval.
+I gave the model one tool to prevent routing loops. Exposing multiple tools causes oscillation between memory search and web queries; keeping memory in code focuses the model on fresh evidence retrieval.
 
 Calendar arithmetic happens in deterministic code to establish explicit calendar bounds in the user timezone. Resolving dates before model invocation ensures consistent week and month boundaries regardless of sampling variance.
 
-I enforce verbatim string containment against stored page text to verify quote provenance. Every numerical claim and plan attribute must match actual text extracted from the retrieved document before a status is assigned.
+I enforce verbatim string containment against stored page text to verify quote provenance. Numerical claims and plan attributes must match extracted document text before status assignment.
 
 For status assignment, lack of fresh search results produces "Couldn't confirm", never "Same as before". An unchanged status requires positive evidence from an authoritative domain matching the historical baseline.
 
@@ -47,7 +47,7 @@ Progressive sentence gating streams introductory text immediately while holding 
 
 ## Considered and rejected
 
-- Vector databases: rejected for SQLite FTS5 with BM25 to retain exact calendar filtering and zero npm dependencies.
+- Vector databases: rejected for SQLite FTS5 with BM25 to retain calendar filtering and zero npm dependencies.
 - Memory as a model tool: rejected for pre-retrieving context in code to preserve the single-tool constraint.
 - Multi-agent architecture: rejected for a single coordinator loop to keep execution traces inspectable and avoid latency.
 - Cross-domain comparisons: rejected because comparing across distinct domains conflates third-party summaries with vendor plans.
@@ -64,12 +64,14 @@ Progressive sentence gating streams introductory text immediately while holding 
 ## Measured
 
 <!-- measured:start -->
-On 2026-11-15 with build id 07c2367d0f73 on Node 24:
-- 265 tests pass in the offline fixture-based suite (`latest.json`).
+On 2026-11-15 with build id ee922328e97d on Node 24:
+- 279 tests pass in the offline fixture-based suite (`latest.json`).
 - 3 benchmark queries evaluated on the free tier.
-- Time to first token: median 29.3 s, max 33.4 s.
-- Total latency: median 29.6 s, max 34.3 s.
+- Official prompts passing deterministic checks: 3 of 3 runs (3 unevaluated).
+- Time to first token: median 0.1 s, max 0.1 s.
+- First model-written token: median 2.1 s, max 3.4 s.
+- Total latency: median 23.6 s, max 24.1 s.
 - Model calls per turn: median 5. Searches per turn: median 4.
-- Citation faithfulness: 7/7 quotes.
+- Citation faithfulness: 13/13 quotes.
 - Cold container boot from idle and third-party scraping blocks are not measured in CI.
 <!-- measured:end -->

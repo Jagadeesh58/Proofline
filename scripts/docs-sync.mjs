@@ -47,6 +47,10 @@ export function syncDesignDocs(root = path.resolve('.')) {
           `On ${dateStr} with build id ${data.build_id || currentBuildId} on Node ${nodeMajor}:`,
           `- ${offlineTestCount} tests pass in the offline fixture-based suite (\`latest.json\`).`,
           `- ${data.totalQuestions} benchmark queries evaluated on the ${tier} tier.`,
+          ...(data.successful !== undefined ? [
+            `- Official prompts passing deterministic checks: ${data.successful} of `
+            + `${data.totalQuestions} runs${data.unevaluated ? ` (${data.unevaluated} unevaluated)` : ''}.`,
+          ] : []),
           `- Time to first token: median ${ttftMed} s, max ${ttftMax} s.`,
           ...(data.firstModelToken ? [
             `- First model-written token: median ${fmtSec(data.firstModelToken.medianMs)} s, `
