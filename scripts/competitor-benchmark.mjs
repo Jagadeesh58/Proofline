@@ -2,13 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { config } from '../src/config.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../');
 const COMPETITOR_DIR = 'E:/competitor_audits/11';
 const OUT_PATH = path.join(ROOT, 'evals/results/competitor-benchmark.json');
 const PORT = 3088;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
-const RUNS_PER_PROMPT = 5;
+const RUNS_PER_PROMPT = process.argv.includes('--quick') ? 1 : Number(process.env.COMP_RUNS || 3);
 
 const PROMPTS = [
   {
@@ -90,12 +91,10 @@ async function streamCompetitorChat(url, message) {
       try {
         const parsed = JSON.parse(jsonStr);
         const elapsed = Math.round(performance.now() - start);
-        if (parsed.type === 'token' && parsed.text) {
+        if ((parsed.type === 'text' && parsed.delta) || (parsed.type === 'token' && parsed.text) || parsed.delta) {
+          const delta = parsed.delta || parsed.text;
           if (firstTokenTime === null) firstTokenTime = elapsed;
-          answer += parsed.text;
-        } else if (parsed.text && firstTokenTime === null) {
-          firstTokenTime = elapsed;
-          answer += parsed.text;
+          answer += delta;
         }
         if (parsed.type === 'error') {
           hadError = true;
@@ -138,8 +137,8 @@ async function runBenchmark() {
       env: {
         ...process.env,
         PORT: String(PORT),
-        GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
-        GEMINI_FAST_MODEL: process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
+        GEMINI_MODEL: 'models/gemini-3.5-flash-lite',
+        GEMINI_FAST_MODEL: 'models/gemini-3.5-flash-lite',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     },

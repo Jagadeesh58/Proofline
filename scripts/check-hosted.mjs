@@ -70,6 +70,8 @@ async function streamChatSSE(url, message, cookie) {
   const decoder = new TextDecoder();
   let buffer = '';
 
+  let currentEvent = 'message';
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -78,22 +80,26 @@ async function streamChatSSE(url, message, cookie) {
     buffer = lines.pop() || '';
 
     for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-      const jsonStr = line.slice(6).trim();
+      if (line.startsWith('event:')) {
+        currentEvent = line.slice(6).trim();
+        continue;
+      }
+      if (!line.startsWith('data:')) continue;
+      const jsonStr = line.slice(5).trim();
       if (!jsonStr || jsonStr === '[DONE]') continue;
       try {
         const parsed = JSON.parse(jsonStr);
         const elapsed = Math.round(performance.now() - start);
-        if (firstStatusTime === null && (parsed.event === 'status' || parsed.event === 'memory')) {
+        if (firstStatusTime === null && (currentEvent === 'status' || currentEvent === 'memory')) {
           firstStatusTime = elapsed;
         }
-        if (parsed.event === 'token' && parsed.payload?.text) {
+        if (currentEvent === 'token' && parsed.text && typeof parsed.text === 'string') {
           if (firstTokenTime === null) firstTokenTime = elapsed;
-          answer += parsed.payload.text;
+          answer += parsed.text;
         }
-        if (parsed.event === 'error') {
+        if (currentEvent === 'error') {
           hadError = true;
-          errorMessage = parsed.payload?.message || 'Unknown error event';
+          errorMessage = parsed.message || parsed.error || 'Unknown error event';
         }
       } catch {
         // Skip unparseable lines
@@ -155,21 +161,33 @@ async function checkHosted() {
     }
 
     // 4. Run each official prompt RUNS_PER_PROMPT times over SSE
+    const delayMs = Number(process.env.HOSTED_DELAY_MS || 8000);
     const promptResults = [];
     for (const item of OFFICIAL_PROMPTS) {
       process.stdout.write(`\nTesting ${item.id} (${RUNS_PER_PROMPT} runs)...\n`);
       const runs = [];
       for (let i = 0; i < RUNS_PER_PROMPT; i += 1) {
         if (i > 0 || promptResults.length > 0) {
-          process.stdout.write('Waiting 5s between requests...\n');
-          await sleep(5000);
+          process.stdout.write(`Waiting ${Math.round(delayMs / 1000)}s between requests...\n`);
+          await sleep(delayMs);
         }
         process.stdout.write(`  Run ${i + 1}/${RUNS_PER_PROMPT}: `);
-        const result = await streamChatSSE(targetUrl, item.prompt, cookie);
-        process.stdout.write(
-          `status=${result.status_code}, TTFT=${result.first_token_ms}ms, total=${result.total_ms}ms\n`
-        );
-        runs.push(result);
+        try {
+          const result = await streamChatSSE(targetUrl, item.prompt, cookie);
+          process.stdout.write(
+            `status=${result.status_code}, TTFT=${result.first_token_ms}ms, total=${result.total_ms}ms\n`
+          );
+          runs.push(result);
+        } catch (err) {
+          process.stdout.write(`FAILED: ${err.message}\n`);
+          runs.push({
+            status_code: 500,
+            first_status_ms: null,
+            first_token_ms: null,
+            total_ms: null,
+            error: err.message,
+          });
+        }
       }
 
       const firstStatuses = runs.map((r) => r.first_status_ms).filter((v) => v !== null);
