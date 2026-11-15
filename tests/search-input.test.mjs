@@ -57,7 +57,7 @@ test('overwrites a model-supplied display date with an imported turn real genera
 });
 
 test('uses the local generation date for a live recalled turn', () => {
-  const result = resolveTargetNewsSince({ checks: ['news'], since: '2026-11-01' }, [{
+  const result = resolveTargetNewsSince({ checks: ['news'], since: '2026-11-15' }, [{
     origin: 'live', created_at_utc: '2026-11-11T20:00:00Z', source_created_at_utc: null,
   }], 'Asia/Kolkata');
   assert.equal(result.since, '2026-11-12');
