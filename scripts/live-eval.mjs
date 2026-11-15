@@ -19,7 +19,25 @@ function getGitInfo() {
 }
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../');
-const DB_PATH = process.env.LIVE_EVAL_DB_PATH || path.join(ROOT, 'data/live-eval.sqlite');
+const EVAL_TMP_DIR = path.join(ROOT, '.eval-tmp');
+if (!fs.existsSync(EVAL_TMP_DIR)) {
+  fs.mkdirSync(EVAL_TMP_DIR, { recursive: true });
+}
+const DB_PATH = process.env.LIVE_EVAL_DB_PATH
+  ? path.resolve(ROOT, process.env.LIVE_EVAL_DB_PATH)
+  : path.join(EVAL_TMP_DIR, 'live-eval.sqlite');
+
+const normalizedDbPath = path.resolve(DB_PATH);
+const normalizedConfigDb = path.resolve(ROOT, config.dbPath);
+const normalizedDataDir = path.resolve(ROOT, 'data');
+if (
+  normalizedDbPath === normalizedConfigDb
+  || normalizedDbPath === path.join(normalizedDataDir, 'proofline.db')
+  || normalizedDbPath === path.join(normalizedDataDir, 'chat-agent.sqlite')
+) {
+  throw new Error(`Refusing to run live-eval against production database path: ${DB_PATH}`);
+}
+
 const RUNS_PER_QUESTION = Math.max(1, Number(process.env.LIVE_EVAL_RUNS || 1));
 const DELAY_MS = Math.max(0, Number(process.env.LIVE_EVAL_DELAY_MS || 2000));
 const LIMIT = Math.max(0, Number(process.env.LIVE_EVAL_LIMIT || 0));
@@ -583,7 +601,7 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
   return {
     totalQuotes,
     faithfulQuotes,
-    faithfulnessRate: totalQuotes > 0 ? Number((faithfulQuotes / totalQuotes).toFixed(2)) : 1.0,
+    faithfulnessRate: totalQuotes > 0 ? Number((faithfulQuotes / totalQuotes).toFixed(2)) : null,
   };
 }
 
@@ -604,6 +622,9 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
     answerProduced: Boolean(answer && answer.length > 0),
     answerLength: answer.length,
     answerPreview: answer.slice(0, 180).replace(/[\r\n]+/g, ' '),
+    answer,
+    cards,
+    sources,
     correctness: validation,
     citationFaithfulness,
     error,
@@ -644,8 +665,11 @@ export async function executeLiveEvaluation({
       sourcesCount: median(runs.map((r) => r.sourcesCount)),
       cardsCount: median(runs.map((r) => r.cardsCount)),
       answerProduced: runs.some((r) => r.answerProduced),
-      answerLength: successfulRuns.length ? successfulRuns[0].answerLength : 0,
-      answerPreview: successfulRuns.length ? successfulRuns[0].answerPreview : null,
+      answerLength: (runs.find((r) => r.answerProduced)?.answerLength) || (successfulRuns[0]?.answerLength ?? 0),
+      answerPreview: (runs.find((r) => r.answerProduced)?.answerPreview) || (successfulRuns[0]?.answerPreview ?? null),
+      answer: (runs.find((r) => r.answerProduced)?.answer) || (successfulRuns[0]?.answer ?? ''),
+      cards: (runs.find((r) => r.cards?.length)?.cards) || (runs[0]?.cards ?? []),
+      sources: (runs.find((r) => r.sources?.length)?.sources) || (runs[0]?.sources ?? []),
       error: successfulRuns.length ? null : runs[0].error,
       correctness: successfulRuns.length ? successfulRuns[0].correctness : runs[0].correctness,
       citationFaithfulness: successfulRuns.length
@@ -685,7 +709,7 @@ export async function executeLiveEvaluation({
   const totalFaithfulQuotes = results.reduce((sum, r) => sum + (r.citationFaithfulness?.faithfulQuotes || 0), 0);
   const overallFaithfulness = totalCheckedQuotes > 0
     ? Number((totalFaithfulQuotes / totalCheckedQuotes).toFixed(2))
-    : 1.0;
+    : null;
 
   const successfulCount = results.filter((r) => r.correctness?.passed).length;
   const totalCount = results.length;

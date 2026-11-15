@@ -41,7 +41,7 @@ export function makeTranscripts(resultsPath = 'evals/results/live-latest.json', 
       '',
       '## Answer',
       '',
-      entry.answerPreview || entry.answer || '(No answer text recorded)',
+      entry.answer || entry.answerPreview || '(No answer text recorded)',
       '',
     ].join('\n');
 
