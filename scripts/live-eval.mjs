@@ -570,6 +570,7 @@ function verifyCitationFaithfulness(evalStore, sources = [], cards = []) {
 
   return {
     firstTokenMs: output?.timings?.first_token_ms ?? (firstTokenTime !== null ? Math.round(firstTokenTime) : null),
+    first_model_token_ms: output?.timings?.first_model_token_ms ?? null,
     totalTimeMs: output?.timings?.total_ms ?? Math.round(totalTime),
     searchesRun: budgets.searches || 0,
     extractsRun: budgets.extracts || 0,
@@ -611,6 +612,7 @@ export async function executeLiveEvaluation({
       runs.push(await runSingleQuestion(item, graderFn));
     }
     const firstTokens = runs.map((r) => r.firstTokenMs).filter((v) => v !== null && v !== undefined);
+    const firstModelTokens = runs.map((r) => r.first_model_token_ms).filter((v) => v !== null && v !== undefined);
     const totalTimes = runs.map((r) => r.totalTimeMs);
     const successfulRuns = runs.filter((r) => !r.error);
     const aggregated = {
@@ -618,6 +620,7 @@ export async function executeLiveEvaluation({
       category: item.category,
       prompt: item.prompt,
       firstTokenMs: firstTokens.length ? median(firstTokens) : null,
+      first_model_token_ms: firstModelTokens.length ? median(firstModelTokens) : null,
       totalTimeMs: median(totalTimes),
       searchesRun: median(runs.map((r) => r.searchesRun)),
       extractsRun: median(runs.map((r) => r.extractsRun)),
@@ -689,6 +692,8 @@ export async function executeLiveEvaluation({
   const wilsonInterval = wilsonScoreInterval(successfulCount, totalCount);
 
   const firstTokenValues = results.map((r) => r.firstTokenMs).filter((v) => v !== null && v !== undefined);
+  const firstModelTokenValues = results.map((r) => r.first_model_token_ms)
+    .filter((v) => v !== null && v !== undefined);
   const totalTimeValues = results.map((r) => r.totalTimeMs);
   const firstStatusValues = results.map((r) => r.timings?.first_status_ms)
     .filter((v) => v !== null && v !== undefined);
@@ -747,6 +752,11 @@ export async function executeLiveEvaluation({
       p90Ms: p90(firstTokenValues),
       maxMs: max(firstTokenValues),
     },
+    firstModelToken: firstModelTokenValues.length ? {
+      medianMs: median(firstModelTokenValues),
+      p90Ms: p90(firstModelTokenValues),
+      maxMs: max(firstModelTokenValues),
+    } : null,
     totalLatency: {
       medianMs: median(totalTimeValues),
       p90Ms: p90(totalTimeValues),

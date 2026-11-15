@@ -42,11 +42,16 @@ export function syncDesignDocs(root = path.resolve('.')) {
             if (latestData.test_summary?.tests) offlineTestCount = latestData.test_summary.tests;
           } catch {}
         }
+        const fmtSec = (ms) => (ms != null ? (ms / 1000).toFixed(1) : '0.0');
         const lines = [
           `On ${dateStr} with build id ${data.build_id || currentBuildId} on Node ${nodeMajor}:`,
           `- ${offlineTestCount} tests pass in the offline fixture-based suite (\`latest.json\`).`,
           `- ${data.totalQuestions} benchmark queries evaluated on the ${tier} tier.`,
           `- Time to first token: median ${ttftMed} s, max ${ttftMax} s.`,
+          ...(data.firstModelToken ? [
+            `- First model-written token: median ${fmtSec(data.firstModelToken.medianMs)} s, `
+            + `max ${fmtSec(data.firstModelToken.maxMs)} s.`,
+          ] : []),
           `- Total latency: median ${latMed} s, max ${latMax} s.`,
           `- Model calls per turn: median ${data.callsPerTurn?.median ?? '—'}. `
             + `Searches per turn: median ${data.searchesPerTurn?.median ?? '—'}.`,

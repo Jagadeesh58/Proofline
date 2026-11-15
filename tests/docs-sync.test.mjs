@@ -24,13 +24,14 @@ test('syncDesignDocs reads date and tier from new and old result schemas', () =>
 
     fs.writeFileSync(path.join(tmpDir, 'DESIGN.md'), designTemplate, 'utf8');
 
-    // Test new schema (timestamp, account_tier)
+    // Test new schema (timestamp, account_tier, firstModelToken)
     const newSchema = {
       timestamp: '2026-11-15T12:00:00.000Z',
       build_id: 'build-new',
       totalQuestions: 3,
       environment: { account_tier: 'free' },
       ttft: { medianMs: 1500, maxMs: 2000 },
+      firstModelToken: { medianMs: 2500, maxMs: 3500 },
       totalLatency: { medianMs: 3000, maxMs: 4000 },
       successful: 3,
     };
@@ -40,6 +41,7 @@ test('syncDesignDocs reads date and tier from new and old result schemas', () =>
     const updatedNew = fs.readFileSync(path.join(tmpDir, 'DESIGN.md'), 'utf8');
     assert.match(updatedNew, /On 2026-11-15/);
     assert.match(updatedNew, /evaluated on the free tier/);
+    assert.match(updatedNew, /First model-written token: median 2\.5 s, max 3\.5 s\./);
 
     // Test old schema (date, accountTier)
     const oldSchema = {
