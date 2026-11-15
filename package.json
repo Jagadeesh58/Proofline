@@ -11,6 +11,8 @@
     "demo": "node scripts/demo.mjs",
     "eval:live": "node scripts/live-eval.mjs",
     "eval:live:quick": "node scripts/live-eval.mjs --quick",
+    "eval:live:full": "node scripts/live-eval.mjs --full",
+    "eval:cold": "node scripts/cold-eval.mjs",
     "dev": "node --watch src/main.mjs",
     "start": "node src/main.mjs",
     "lint": "node scripts/lint.mjs",

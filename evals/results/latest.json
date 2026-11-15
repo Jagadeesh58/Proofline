@@ -10,9 +10,9 @@
   },
   "live_calls_made": 0,
   "test_summary": {
-    "tests": 252,
+    "tests": 258,
     "suites": 0,
-    "pass": 252,
+    "pass": 258,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
