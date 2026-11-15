@@ -1,12 +1,28 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 import { config } from '../src/config.mjs';
 import { Store } from '../src/memory/store.mjs';
 import { runTurn } from '../src/agent/run-turn.mjs';
+import { computeBuildId } from './build-id.mjs';
+
+function getGitInfo() {
+  try {
+    const commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+    const status = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
+    return { commit, dirty: status.length > 0 };
+  } catch {
+    return { commit: 'unknown', dirty: false };
+  }
+}
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../');
-const DB_PATH = path.join(ROOT, 'data/latency-profile.sqlite');
+const EVAL_TMP_DIR = path.join(ROOT, '.eval-tmp');
+if (!fs.existsSync(EVAL_TMP_DIR)) {
+  fs.mkdirSync(EVAL_TMP_DIR, { recursive: true });
+}
+const DB_PATH = path.join(EVAL_TMP_DIR, 'latency-profile.sqlite');
 const OUT_PATH = path.join(ROOT, 'evals/results/latency-breakdown.json');
 
 for (const suffix of ['', '-wal', '-shm']) {
@@ -33,6 +49,13 @@ const PROMPTS = [
     prompt: 'Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?',
   },
 ];
+
+function median(values) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+}
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -149,21 +172,66 @@ async function profilePrompt(item) {
 }
 
 async function main() {
-  process.stdout.write('Starting latency breakdown profiling for 3 official prompts...\n');
+  const isQuick = process.argv.includes('--quick');
+  const runsPerPrompt = Number(process.env.RUNS_PER_PROMPT || (isQuick ? 1 : 5));
+  process.stdout.write(
+    `Starting latency breakdown profiling for 3 official prompts (${runsPerPrompt} runs each)...\n`,
+  );
+
+  const gitInfo = getGitInfo();
+  const buildId = computeBuildId();
   const results = [];
+
   for (const item of PROMPTS) {
-    const data = await profilePrompt(item);
-    results.push(data);
-    // Cool down for 10s to respect free tier 15 RPM
-    process.stdout.write('Waiting 10s for free-tier RPM cooling...\n');
-    await sleep(10000);
+    const promptRuns = [];
+    for (let i = 0; i < runsPerPrompt; i += 1) {
+      if (results.length > 0 || i > 0) {
+        process.stdout.write('Waiting 5s before next run...\n');
+        await sleep(5000);
+      }
+      process.stdout.write(`Run ${i + 1}/${runsPerPrompt} for ${item.id}...\n`);
+      const data = await profilePrompt(item);
+      promptRuns.push(data);
+    }
+    const firstTokens = promptRuns.map((r) => r.milestones.first_token_ms).filter((v) => v !== null);
+    const totals = promptRuns.map((r) => r.milestones.total_time_ms);
+    const firstProgresses = promptRuns.map((r) => r.milestones.first_progress_ms).filter((v) => v !== null);
+
+    results.push({
+      id: item.id,
+      prompt: item.prompt,
+      runs_count: runsPerPrompt,
+      median_milestones: {
+        first_progress_ms: firstProgresses.length ? median(firstProgresses) : null,
+        first_token_ms: firstTokens.length ? median(firstTokens) : null,
+        total_time_ms: median(totals),
+      },
+      latest_run: promptRuns[promptRuns.length - 1],
+      all_runs: promptRuns.map((r) => ({
+        milestones: r.milestones,
+        gemini_calls_count: r.gemini_calls.length,
+        searches_count: r.searches.length,
+        extracts_count: r.extracts.length,
+      })),
+    });
   }
 
   const payload = {
     timestamp: new Date().toISOString(),
-    account_tier: 'Free Tier (15 RPM)',
-    model: config.geminiModel,
-    fallback_model: config.geminiFallbackModel,
+    commit: gitInfo.commit,
+    clean_tree: !gitInfo.dirty,
+    dirty: gitInfo.dirty,
+    build_id: buildId,
+    environment: {
+      node_version: process.version,
+      model: config.geminiModel,
+      fallback_model: config.geminiFallbackModel,
+      search_backend: config.searchBackend,
+      account_tier: process.env.GEMINI_TIER || 'free',
+      build_id: buildId,
+      commit: gitInfo.commit,
+      clean_tree: !gitInfo.dirty,
+    },
     profiles: results,
     summary: {
       finding: 'First token equals total duration primarily because Round 1 streaming text is buffered '
@@ -173,7 +241,7 @@ async function main() {
   };
 
   fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
-  fs.writeFileSync(OUT_PATH, JSON.stringify(payload, null, 2), 'utf8');
+  fs.writeFileSync(OUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   process.stdout.write(`\nLatency breakdown written to ${OUT_PATH}\n`);
 }
 

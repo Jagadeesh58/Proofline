@@ -737,20 +737,27 @@ export async function executeLiveEvaluation({
     }
   }
 
+  const total429Count = results.reduce((sum, r) => sum + (r.timings?.count_429 || 0), 0);
+  const totalRetryCount = results.reduce((sum, r) => sum + (r.timings?.provider_retries || 0), 0);
+
   const summary = {
-    date: new Date().toISOString(),
+    timestamp: new Date().toISOString(),
     commit: gitInfo.commit,
+    clean_tree: !gitInfo.dirty,
     dirty: gitInfo.dirty,
     build_id: buildId,
     environment: {
-      node: process.version,
+      node_version: process.version,
       model: config.geminiModel,
-      fallbackModel: config.geminiFallbackModel,
-      searchBackend: config.searchBackend,
-      accountTier: process.env.GEMINI_TIER || 'free',
+      fallback_model: config.geminiFallbackModel,
+      search_backend: config.searchBackend,
+      account_tier: process.env.GEMINI_TIER || 'free',
+      eval_delay_ms: DELAY_MS,
       build_id: buildId,
       commit: gitInfo.commit,
-      dirty: gitInfo.dirty,
+      clean_tree: !gitInfo.dirty,
+      count_429: total429Count,
+      retry_count: totalRetryCount,
     },
     totalQuestions: totalCount,
     successful: successfulCount,
