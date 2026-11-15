@@ -44,7 +44,7 @@ test('submission documents record the required architecture, lifecycle, and limi
   for (const heading of readmeHeadings) {
     assert.ok(readme.includes(heading), `README.md must contain heading: ${heading}`);
   }
-  assert.ok(readme.includes('https://proofline.onrender.com'), 'README.md must link to live deployment');
+  assert.ok(readme.includes('https://proofline-znhc.onrender.com'), 'README.md must link to live deployment');
   assert.ok(readme.includes('DESIGN.md'), 'README.md must link to DESIGN.md');
   const readmeWords = (readme.replace(/```[\s\S]*?```/g, ' ').replace(/`[^`]*`/g, ' ').replace(/https?:\/\/\S+/g, ' ').match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
   assert.ok(readmeWords >= 180 && readmeWords <= 300, `README.md word count (${readmeWords}) must be 180-300`);

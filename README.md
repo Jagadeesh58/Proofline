@@ -41,6 +41,6 @@ Run `npm run demo` to start the scripted offline demo without API keys, where no
 
 ## Deployment and Results
 
-Proofline is hosted at [https://proofline.onrender.com](https://proofline.onrender.com). Because the free Render instance sleeps after inactivity, the initial cold request can take around a minute to wake up.
+Proofline is hosted at [https://proofline-znhc.onrender.com](https://proofline-znhc.onrender.com). Because the free Render instance sleeps after inactivity, the initial cold request can take around a minute to wake up.
 
 Complete evaluation metrics and per-stage latency breakdowns are recorded in [live-latest.json](evals/results/live-latest.json). Architecture and verification decisions are detailed in [DESIGN.md](DESIGN.md).

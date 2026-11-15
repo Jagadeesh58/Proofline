@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-15T04:46:51.433Z",
+  "build_id": "31ef6a0fbdf1",
+  "hosted_url": "https://proofline-znhc.onrender.com",
+  "samples": [
+    {
+      "firstStatusMs": null,
+      "firstTokenMs": null,
+      "totalMs": 1411,
+      "error": null
+    },
+    {
+      "firstStatusMs": null,
+      "firstTokenMs": null,
+      "totalMs": 1981,
+      "error": null
+    },
+    {
+      "firstStatusMs": null,
+      "firstTokenMs": null,
+      "totalMs": 723,
+      "error": null
+    },
+    {
+      "firstStatusMs": null,
+      "firstTokenMs": null,
+      "totalMs": 1014,
+      "error": null
+    },
+    {
+      "firstStatusMs": null,
+      "firstTokenMs": null,
+      "totalMs": 982,
+      "error": null
+    }
+  ]
+}

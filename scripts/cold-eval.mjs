@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { computeBuildId } from './build-id.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../');
-const HOSTED_URL = process.env.HOSTED_URL || 'https://proofline.onrender.com';
+const HOSTED_URL = process.env.HOSTED_URL || 'https://proofline-znhc.onrender.com';
 const SAMPLE_COUNT = Math.max(1, Number(process.env.COLD_SAMPLES || 5));
 const OUT_DIR = path.join(ROOT, 'evals/results');
 
