@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 function loadDotEnv(file = path.resolve('.env')) {
+  if (process.env.PROOFLINE_SKIP_DOTENV === '1') return;
   if (!fs.existsSync(file)) return;
   const content = fs.readFileSync(file, 'utf8');
   for (const line of content.split(/\r?\n/)) {

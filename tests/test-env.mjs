@@ -1,3 +1,4 @@
+process.env.PROOFLINE_SKIP_DOTENV = '1';
 if (!process.env.GEMINI_API_KEY) {
   process.env.GEMINI_API_KEY = 'test-stub-gemini-key';
 }

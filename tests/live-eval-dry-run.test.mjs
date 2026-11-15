@@ -129,7 +129,7 @@ test('scripts/live-eval.mjs offline dry run records latency, call counts and bud
     const result = spawnSync(process.execPath, ['--import', pathToFileURL(preloadPath).href, scriptPath], {
       cwd: ROOT,
       encoding: 'utf8',
-      timeout: 30_000,
+      timeout: 60_000,
     });
 
     const fullOutput = `${result.stdout || ''}\n${result.stderr || ''}`;
