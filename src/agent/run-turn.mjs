@@ -4,6 +4,7 @@ import { SYSTEM_PROMPT } from './prompts.mjs';
 import { buildSystemContext, conversationContents } from './context.mjs';
 import { evaluateSearchPolicy } from './search-policy.mjs';
 import { recallForTurn } from './recall.mjs';
+import { buildRecallPreface } from './recall-preface.mjs';
 import { claimExtractionBatchCount, extractAnswerBaseline, extractPageClaims } from '../evidence/claims.mjs';
 import { buildComparisonCards } from '../evidence/compare.mjs';
 import { checkAnswerFigures, hasMutableFactSignal } from '../evidence/figure-check.mjs';
@@ -154,7 +155,7 @@ export async function runTurn({
   timings.memory_ms = Date.now() - recallStarted;
   const modelContext = buildSystemContext({ timezone, recall, store, sessionId });
   const contents = conversationContents(modelContext.contextTurns, userText);
-  const systemInstruction = `${SYSTEM_PROMPT}\n\n${modelContext.systemText}`;
+  let systemInstruction = `${SYSTEM_PROMPT}\n\n${modelContext.systemText}`;
   const searchReady = isSearchReady(config);
   const replayActive = Boolean(config.demoMode) || (config.searchBackend === 'replay' && !config.geminiKey);
   const missing = { gemini: !config.geminiKey && !replayActive, tavily: !searchReady };
@@ -205,6 +206,7 @@ export async function runTurn({
   let errorMessage = null;
   let providerError = null;
   let firstTokenTime = null;
+  let firstModelTokenTime = null;
   let sentenceGate = null;
   let directDraft = '';
   let forcedSearch = false;
@@ -220,6 +222,22 @@ export async function runTurn({
   );
   if (isZeroMatchDateQuery) {
     searchPolicy.shouldSearch = false;
+  }
+  const recallPreface = buildRecallPreface({
+    recall,
+    timezone,
+    willSearch: searchPolicy.shouldSearch,
+  });
+  if (recallPreface) {
+    emit(send, 'token', { text: recallPreface });
+    store.appendAssistantText(turn.id, recallPreface);
+    if (firstTokenTime === null) {
+      firstTokenTime = Date.now() - started;
+      timings.first_token_ms = firstTokenTime;
+    }
+    systemInstruction += '\n\nOpening sentence note: The response opening has already quoted the earlier question'
+      + ' and stated the follow-up check. Do not repeat or restate that opening sentence;'
+      + ' begin directly with the substantive findings.\n';
   }
   let streamedDirectly = false;
 
@@ -270,6 +288,7 @@ export async function runTurn({
         onTiming,
         onText: (chunk) => {
           roundChunks.push(chunk);
+          if (firstModelTokenTime === null) firstModelTokenTime = Date.now() - started;
           if (streamGate) {
             if (firstTokenTime === null) firstTokenTime = Date.now() - started;
             streamGate.push(chunk);
@@ -580,6 +599,7 @@ export async function runTurn({
       timings.scanner_buffering_ms = (timings.scanner_buffering_ms || 0) + (Date.now() - scannerStart);
       finalText = checked.text;
       if (finalText) {
+        if (firstModelTokenTime === null) firstModelTokenTime = Date.now() - started;
         if (firstTokenTime === null) firstTokenTime = Date.now() - started;
         store.appendAssistantText(turn.id, finalText);
         if (!streamedDirectly) {
@@ -738,6 +758,7 @@ export async function runTurn({
   }
   const sources = serialiseSources(store, turn.id, sourceTrust, currentClaims);
   timings.first_token_ms = firstTokenTime ?? null;
+  timings.first_model_token_ms = firstModelTokenTime ?? null;
   timings.scanner_buffering_ms = timings.scanner_buffering_ms || 0;
   timings.gemini_calls = turnDetails.gemini_calls;
   timings.gemini_backoff_ms = turnDetails.gemini_calls.reduce((sum, c) => sum + (c.backoff_wait_ms || 0), 0);
