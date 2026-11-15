@@ -1,11 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 import { config } from '../src/config.mjs';
 import { Store } from '../src/memory/store.mjs';
 import { runTurn } from '../src/agent/run-turn.mjs';
 import { computeBuildId } from './build-id.mjs';
 import { normaliseEvidenceText } from '../src/evidence/claims.mjs';
+
+function getGitInfo() {
+  try {
+    const commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+    const status = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
+    return { commit, dirty: status.length > 0 };
+  } catch {
+    return { commit: 'unknown', dirty: false };
+  }
+}
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../');
 const DB_PATH = process.env.LIVE_EVAL_DB_PATH || path.join(ROOT, 'data/live-eval.sqlite');
@@ -606,6 +617,7 @@ export async function executeLiveEvaluation({
   outDir = OUT_DIR,
   runsPerQuestion = RUNS_PER_QUESTION,
   writeLatest = !process.env.LIVE_EVAL_OUT_DIR,
+  allowDirty = false,
 } = {}) {
   const activeQuestions = questionsList || (LIMIT > 0 ? EVAL_QUESTIONS.slice(0, LIMIT) : EVAL_QUESTIONS);
   const results = [];
@@ -650,11 +662,24 @@ export async function executeLiveEvaluation({
     );
   }
 
+  const allowDirtyResolved = allowDirty
+    || process.argv.includes('--allow-dirty')
+    || process.env.ALLOW_DIRTY === '1'
+    || Boolean(process.env.LIVE_EVAL_LIMIT)
+    || Boolean(questionsList);
+  const isScratch = process.argv.includes('--scratch');
+  const gitInfo = getGitInfo();
+  if (gitInfo.dirty && !allowDirtyResolved && !isScratch) {
+    process.stderr.write('Live evaluation refused: working tree is dirty. Commit or pass --allow-dirty.\n');
+    process.exit(1);
+  }
+
   const buildId = computeBuildId();
-  fs.mkdirSync(outDir, { recursive: true });
+  const targetOutDir = isScratch ? path.join(outDir, 'scratch') : outDir;
+  fs.mkdirSync(targetOutDir, { recursive: true });
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const timestampedPath = path.join(outDir, `live-${buildId}-${timestamp}.json`);
-  const latestPath = path.join(outDir, 'live-latest.json');
+  const timestampedPath = path.join(targetOutDir, `live-${buildId}-${timestamp}.json`);
+  const latestPath = path.join(targetOutDir, 'live-latest.json');
 
   const totalCheckedQuotes = results.reduce((sum, r) => sum + (r.citationFaithfulness?.totalQuotes || 0), 0);
   const totalFaithfulQuotes = results.reduce((sum, r) => sum + (r.citationFaithfulness?.faithfulQuotes || 0), 0);
@@ -669,7 +694,8 @@ export async function executeLiveEvaluation({
 
   const firstTokenValues = results.map((r) => r.firstTokenMs).filter((v) => v !== null && v !== undefined);
   const totalTimeValues = results.map((r) => r.totalTimeMs);
-  const firstStatusValues = results.map((r) => r.timings?.first_status_ms).filter((v) => v !== null && v !== undefined);
+  const firstStatusValues = results.map((r) => r.timings?.first_status_ms)
+    .filter((v) => v !== null && v !== undefined);
   const geminiCallsValues = results.map((r) => r.geminiCalls);
   const searchesValues = results.map((r) => r.searchesRun);
   const extractsValues = results.map((r) => r.extractsRun);
@@ -689,14 +715,18 @@ export async function executeLiveEvaluation({
 
   const summary = {
     date: new Date().toISOString(),
+    commit: gitInfo.commit,
+    dirty: gitInfo.dirty,
     build_id: buildId,
     environment: {
       node: process.version,
       model: config.geminiModel,
       fallbackModel: config.geminiFallbackModel,
       searchBackend: config.searchBackend,
-      accountTier: 'free',
+      accountTier: process.env.GEMINI_TIER || 'free',
       build_id: buildId,
+      commit: gitInfo.commit,
+      dirty: gitInfo.dirty,
     },
     totalQuestions: totalCount,
     successful: successfulCount,
@@ -773,7 +803,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToP
       questionsList: questionsToRun,
       runsPerQuestion: runsCount,
     });
-    process.stdout.write(`Live evaluation completed and recorded to: ${timestampedPath}\n`);
+    process.stdout.write(`Live evaluation recorded to: ${timestampedPath}\n`);
     process.stdout.write(
       `Summary: ${summary.successful}/${summary.totalQuestions} succeeded | `
       + `Median TTFT: ${summary.ttft.medianMs}ms | Median Total: ${summary.totalLatency.medianMs}ms | `

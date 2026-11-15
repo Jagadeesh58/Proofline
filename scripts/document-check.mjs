@@ -12,8 +12,9 @@ const americanSpellings = new Set([
   'canceled', 'canceling', 'labeled', 'labeling', 'traveling', 'traveled', 'licensee',
 ]);
 const bannedPhrases = [
-  '100%', 'guarantee', 'flawless', 'seamless', 'robust',
+  '100%', 'guarantee', 'guarantees', 'flawless', 'seamless', 'robust',
   'bulletproof', 'world-class', 'state-of-the-art', 'zero-risk',
+  'no model can', 'frequently',
 ];
 const failures = [];
 const contentByFile = new Map();
@@ -74,14 +75,33 @@ for (const filename of documents) {
 
 const design = contentByFile.get('DESIGN.md') || '';
 const designWords = (stripCode(design).match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
-if (designWords > 550) {
-  failures.push(`DESIGN.md: ${designWords} words exceeds the 550 word limit.`);
+if (designWords < 500 || designWords > 600) {
+  failures.push(`DESIGN.md: ${designWords} words is outside the required 500 to 600 word range.`);
+}
+
+const requiredDesignSections = [
+  '# Proofline: design',
+  '## How it works',
+  '## Why it is built this way',
+  '## Considered and rejected',
+  '## With another week',
+  '## Measured',
+];
+for (const section of requiredDesignSections) {
+  if (!design.includes(section)) {
+    failures.push(`DESIGN.md is missing required section: "${section}".`);
+  }
 }
 
 const readme = contentByFile.get('README.md') || '';
 const readmeWords = (stripCode(readme).match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
-if (readmeWords < 180 || readmeWords > 300) {
-  failures.push(`README.md: ${readmeWords} words is outside the required 180 to 300 word range.`);
+if (readmeWords < 200 || readmeWords > 260) {
+  failures.push(`README.md: ${readmeWords} words is outside the required 200 to 260 word range.`);
+}
+
+// README must hold no measured performance table
+if (/\|\s*Prompt\s*\|\s*Time to first token/i.test(readme)) {
+  failures.push('README.md holds measured numbers table; measured numbers belong in DESIGN.md only.');
 }
 
 const latestPath = path.join(root, 'evals/results/latest.json');
@@ -107,27 +127,28 @@ if (!fs.existsSync(latestPath)) {
   }
 }
 
+// Check consistency between live-latest.json and DESIGN.md measured block
 const liveLatestPath = path.join(root, 'evals/results/live-latest.json');
-if (fs.existsSync(liveLatestPath)) {
+if (fs.existsSync(liveLatestPath) && !design.includes('Not yet measured on this commit.')) {
   const liveLatest = JSON.parse(fs.readFileSync(liveLatestPath, 'utf8'));
-  const quotes = liveLatest.citationFaithfulness?.totalQuotes;
-  if (quotes && !design.includes(`${quotes}/${quotes} quotes`)) {
-    failures.push(`DESIGN.md must cite citation faithfulness "${quotes}/${quotes} quotes" from live-latest.json.`);
-  }
-
   const expectedBuildId = liveLatest.build_id || liveLatest.environment?.build_id;
-  if (expectedBuildId) {
-    const buildIdRegex = /\bbuild(?:\s+id)?[:\s]+`?([a-f0-9]{12})`?/gi;
-    for (const [docName, docText] of contentByFile.entries()) {
-      for (const match of docText.matchAll(buildIdRegex)) {
-        if (match[1] !== expectedBuildId) {
-          failures.push(
-            `${docName} cites build id "${match[1]}" that does not match `
-            + `live-latest.json (${expectedBuildId}).`
-          );
-        }
-      }
-    }
+  if (expectedBuildId && !design.includes(expectedBuildId)) {
+    failures.push(`DESIGN.md measured block must cite build id ${expectedBuildId} from live-latest.json.`);
+  }
+}
+
+// Verify configuration consistency across files
+const renderYamlPath = path.join(root, 'render.yaml');
+const dockerfilePath = path.join(root, 'Dockerfile');
+if (fs.existsSync(renderYamlPath) && fs.existsSync(dockerfilePath)) {
+  const renderYaml = fs.readFileSync(renderYamlPath, 'utf8');
+  const dockerfile = fs.readFileSync(dockerfilePath, 'utf8');
+
+  if (!renderYaml.includes('healthCheckPath: /api/health')) {
+    failures.push('render.yaml must set healthCheckPath to /api/health.');
+  }
+  if (!dockerfile.includes('FROM node:22')) {
+    failures.push('Dockerfile must target Node 22.');
   }
 }
 

@@ -1,0 +1,38 @@
+[
+  {
+    "file": "src/agent/run-turn.mjs",
+    "pattern": "complete this request",
+    "reason": "User-facing error message describing failed request state"
+  },
+  {
+    "file": "src/config.mjs",
+    "pattern": "request could not be completed",
+    "reason": "User-facing error message describing failed request state"
+  },
+  {
+    "file": "src/http/server.mjs",
+    "pattern": "server could not complete this request",
+    "reason": "HTTP 500 error message describing request state"
+  },
+  {
+    "file": "src/memory/store.mjs",
+    "pattern": "'completed'",
+    "reason": "Database column enum status representing turn lifecycle state"
+  },
+  {
+    "file": "src/memory/store.mjs",
+    "pattern": "\\'completed\\'",
+    "reason": "Database column enum status representing turn lifecycle state"
+  },
+  {
+    "tests/answer-stream.test.mjs": true,
+    "file": "tests/answer-stream.test.mjs",
+    "pattern": "This is complete.",
+    "reason": "Sentence boundary splitting fixture sentence"
+  },
+  {
+    "file": "tests/server.test.mjs",
+    "pattern": "server could not complete this request",
+    "reason": "Test assertion verifying HTTP 500 error message"
+  }
+]

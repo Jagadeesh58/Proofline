@@ -25,7 +25,7 @@ test('submission documents record the required architecture, lifecycle, and limi
 
   assert.ok(design.includes('flowchart TD'), 'DESIGN.md must contain a mermaid diagram');
   const designWords = (design.replace(/```[\s\S]*?```/g, ' ').replace(/`[^`]*`/g, ' ').replace(/https?:\/\/\S+/g, ' ').match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
-  assert.ok(designWords <= 550, `DESIGN.md word count (${designWords}) must be at most 550 words`);
+  assert.ok(designWords >= 500 && designWords <= 600, `DESIGN.md word count (${designWords}) must be between 500 and 600 words`);
 
   // Verify config defaults agreement with DESIGN.md
   assert.ok(design.includes('20 requests per session'), 'DESIGN.md must state session quota of 20');

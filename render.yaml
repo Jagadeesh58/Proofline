@@ -5,7 +5,7 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: node src/main.mjs
-    healthCheckPath: /health
+    healthCheckPath: /api/health
     envVars:
       - key: HOST
         value: 0.0.0.0

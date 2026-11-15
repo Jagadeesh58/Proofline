@@ -1,0 +1,35 @@
+[
+  {
+    "entity": "Neon",
+    "entity_key": "neon",
+    "url": "https://neon.tech/pricing",
+    "capture_date": "2026-11-10",
+    "page_text": "Neon Launch plan starts at $19 per month with usage billing including 10 GB storage and compute at $0.106 per CU-hour.",
+    "expected_plan": "Launch",
+    "expected_amount": 19,
+    "expected_currency": "USD",
+    "verdict_against_same_baseline": "Same as before"
+  },
+  {
+    "entity": "Supabase",
+    "entity_key": "supabase",
+    "url": "https://supabase.com/pricing",
+    "capture_date": "2026-11-10",
+    "page_text": "Supabase Pro plan is $25 per month flat fee with 8 GB database space included.",
+    "expected_plan": "Pro",
+    "expected_amount": 25,
+    "expected_currency": "USD",
+    "verdict_against_same_baseline": "Same as before"
+  },
+  {
+    "entity": "Pipedrive",
+    "entity_key": "pipedrive",
+    "url": "https://www.pipedrive.com/en/pricing",
+    "capture_date": "2026-11-09",
+    "page_text": "Essential plan costs $15 per user per month billed annually with lead and deal management.",
+    "expected_plan": "Essential",
+    "expected_amount": 15,
+    "expected_currency": "USD",
+    "verdict_against_same_baseline": "Same as before"
+  }
+]
