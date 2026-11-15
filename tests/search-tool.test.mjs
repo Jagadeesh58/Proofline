@@ -365,3 +365,21 @@ test('selects the turn matching the referenced date when multiple turns exist fo
   assert.equal(resolved.since, '2026-10-20');
   assert.match(resolved.generationGapText, /20 Oct \(24 days ago\)/);
 });
+
+test('never uses a later turn as the baseline for an earlier target date', () => {
+  const turns = [
+    {
+      origin: 'imported', user_text: 'HubSpot shortlist', assistant_text: 'HubSpot Starter is $20.',
+      created_at_utc: '2026-11-10T10:00:00.000Z', source_created_at_utc: '2026-11-10T10:00:00.000Z',
+    },
+  ];
+  const resolved = resolveTargetNewsSince(
+    { entity: 'HubSpot', checks: ['news'], since: '2026-11-05' },
+    turns,
+    'Asia/Kolkata',
+    '2026-11-13',
+  );
+  assert.equal(resolved.since, null);
+  assert.equal(resolved.unavailableReason, 'generation_date_unknown');
+});
+

@@ -213,8 +213,7 @@ export function resolveTargetNewsSince(
         beforeMatches.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
         earlierGeneration = beforeMatches[0];
       } else {
-        turnItems.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
-        earlierGeneration = turnItems[0];
+        earlierGeneration = null;
       }
     }
   } else if (turnItems.length > 0) {
