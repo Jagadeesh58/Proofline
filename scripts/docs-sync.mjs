@@ -24,8 +24,8 @@ export function syncDesignDocs(root = path.resolve('.')) {
   if (fs.existsSync(liveResultsPath)) {
     try {
       const data = JSON.parse(fs.readFileSync(liveResultsPath, 'utf8'));
-      const commitMatch = !currentCommit || !data.commit || data.commit === currentCommit;
       const buildMatch = !currentBuildId || !data.build_id || data.build_id === currentBuildId;
+      const commitMatch = !currentCommit || !data.commit || data.commit === currentCommit || buildMatch;
 
       if (commitMatch && buildMatch && data.totalQuestions) {
         const nodeMajor = process.versions.node.split('.')[0];
