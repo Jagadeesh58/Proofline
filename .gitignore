@@ -11,5 +11,10 @@ dist/
 release/
 *.zip
 evals/results/scratch/
+evals/results/archive/
+evals/results/cold-*.json
+evals/results/live-2*.json
+evals/results/live-[0-9a-f]*-2*.json
+evals/results/hosted-2*.json
 .DS_Store
 Thumbs.db
