@@ -215,7 +215,7 @@ export async function runTurn({
   const explicitSince = resolveSinceDate(userText, timezone);
   const searchPolicy = evaluateSearchPolicy(userText);
   const isZeroMatchDateQuery = Boolean(
-    recall.resolved?.date
+    (recall.resolved?.date || recall.resolved?.range)
     && (!recall.recalled || recall.recalled.length === 0)
     && /\b(?:what did i (?:ask|say)|did i (?:ask|say)|what was i asking|our conversation|earlier conversation)\b/i
       .test(userText)

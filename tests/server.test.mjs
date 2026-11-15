@@ -271,7 +271,7 @@ test('quota exhaustion returns 429 when per-session budget is exceeded', async (
     });
     assert.equal(r2.status, 429);
     const body2 = await r2.json();
-    assert.match(body2.error, /Demo limit reached, try running locally via instructions in README\./);
+    assert.match(body2.error, /Demo limit reached\. Try running locally using the instructions in README\.md\./);
   }, { runTurnFn: mockRunTurn, sessionBudget: 1 });
 });
 
@@ -294,7 +294,7 @@ test('quota exhaustion returns 429 when global daily budget is exceeded', async 
     });
     assert.equal(r2.status, 429);
     const body2 = await r2.json();
-    assert.match(body2.error, /Demo limit reached, try running locally via instructions in README\./);
+    assert.match(body2.error, /Demo limit reached\. Try running locally using the instructions in README\.md\./);
   }, { runTurnFn: mockRunTurn, globalDailyBudget: 1 });
 });
 

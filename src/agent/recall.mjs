@@ -66,6 +66,9 @@ export function recallForTurn({ store, userText, timezone, now = new Date(), ses
     if (!recalled.length) fact = `0 turns found from ${resolved.range.from} to ${toDate}`;
   } else if (resolved.range && resolved.range.from > today) {
     fact = `0 turns found from ${resolved.range.from} to ${resolved.range.to}`;
+  } else if (resolved.date && resolved.date > today) {
+    recalled = [];
+    fact = `0 turns found for ${resolved.date}`;
   } else if (resolved.date) {
     recalled = store.searchByDate(resolved.date, sessionId);
     if (recalled.length) {

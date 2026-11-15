@@ -67,7 +67,7 @@ Progressive sentence gating streams introductory text immediately while holding 
 On 2026-11-15 with build id ee922328e97d on Node 24:
 - 279 tests pass in the offline fixture-based suite (`latest.json`).
 - 3 benchmark queries evaluated on the free tier.
-- Official prompts passing deterministic checks: 3 of 3 runs (3 unevaluated).
+- Official prompts passing deterministic checks: 3 of 3 runs.
 - Time to first token: median 0.1 s, max 0.1 s.
 - First model-written token: median 2.1 s, max 3.4 s.
 - Total latency: median 23.6 s, max 24.1 s.

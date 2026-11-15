@@ -327,8 +327,8 @@ export function createServer(
         }
         if (!hasAvailableBudget(sessionId)) {
           return json(response, 429, {
-            error: 'Demo limit reached, try running locally via instructions in README.',
-            message: 'Demo limit reached, try running locally via instructions in README.',
+            error: 'Demo limit reached. Try running locally using the instructions in README.md.',
+            message: 'Demo limit reached. Try running locally using the instructions in README.md.',
           });
         }
         if (!allowedRate(request)) return json(response, 429, { error: 'Too many requests. Try again later.' });
@@ -336,7 +336,7 @@ export function createServer(
         try { body = await readBody(request); }
         catch (error) { return json(response, error.status || 400, { error: error.message }); }
         if (typeof body.message !== 'string' || !body.message.trim()) {
-          return json(response, 400, { error: 'message is required.' });
+          return json(response, 400, { error: 'Message is required.' });
         }
         if (body.message.length > 12_000) return json(response, 413, { error: 'Message is too long.' });
         consumeBudget(sessionId);

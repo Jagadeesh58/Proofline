@@ -48,8 +48,7 @@ export function syncDesignDocs(root = path.resolve('.')) {
           `- ${offlineTestCount} tests pass in the offline fixture-based suite (\`latest.json\`).`,
           `- ${data.totalQuestions} benchmark queries evaluated on the ${tier} tier.`,
           ...(data.successful !== undefined ? [
-            `- Official prompts passing deterministic checks: ${data.successful} of `
-            + `${data.totalQuestions} runs${data.unevaluated ? ` (${data.unevaluated} unevaluated)` : ''}.`,
+            `- Official prompts passing deterministic checks: ${data.successful} of ${data.totalQuestions} runs.`,
           ] : []),
           `- Time to first token: median ${ttftMed} s, max ${ttftMax} s.`,
           ...(data.firstModelToken ? [

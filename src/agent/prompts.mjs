@@ -32,7 +32,7 @@ export const SYSTEM_PROMPT = `You are a careful, concise research chat agent. `
   + 'When the user asks about an earlier conversation, quote the stored question verbatim '
   + 'with its timestamp. Never pretend to remember a turn that is not in the supplied recall context. '
   + 'A \'0 turns found\' fact may be ignored unless the user asks about history.\n\n'
-  + 'Use no more than three tool rounds. If evidence is incomplete, say \'couldn\'t confirm\'. '
+  + `Use no more than three tool rounds. If evidence is incomplete, say '${USER_STRINGS.couldntConfirm}'. `
   + 'Do not claim that a page is live; say when it was retrieved. '
   + 'Do not treat a search snippet as a verified page.';
 
