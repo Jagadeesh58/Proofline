@@ -822,3 +822,24 @@ test('claims pipeline extracts verbatim quote directly matching stored page text
   store.close();
 });
 
+test('recalled turn timestamps are supported dates and do not trigger figure not verified', () => {
+  const context = {
+    userText: 'Has any of them changed pricing since?',
+    recalled: [{
+      user_text: 'On Monday we shortlisted 5 CRM tools for a 20-person sales team.',
+      assistant_text: 'The five tools shortlisted were HubSpot, Pipedrive, Zoho, Monday, and Freshsales.',
+      created_at_utc: '2026-11-09T08:30:00.000Z',
+      source_created_at_utc: '2026-10-20T08:30:00.000Z',
+      local_date: '2026-11-09',
+    }],
+    sources: [],
+    claims: [],
+    entities: [{ name: 'Monday', key: 'monday', domain: 'monday.com' }],
+    today: '2026-11-13',
+    timezone: 'Asia/Kolkata',
+  };
+  const text = 'Regarding your question from Mon, 9 Nov 2026, 14:00 ("On Monday we shortlisted 5 CRM tools for a 20-person sales team. Which should we compare first?"):';
+  const result = checkAnswerFigures(text, context);
+  assert.doesNotMatch(result.text, /figure not verified/);
+});
+

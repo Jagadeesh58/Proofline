@@ -77,11 +77,40 @@ function dateSupported(token, context) {
   const recalledText = (context.recalled || []).flatMap((turn) => [
     turn.user_text || '', turn.assistant_text || '',
   ]);
+  const recalledDates = (context.recalled || []).flatMap((turn) => {
+    const raw = [turn.local_date, turn.created_at_utc, turn.source_created_at_utc].filter(Boolean);
+    const formatted = [];
+    for (const d of raw) {
+      formatted.push(d);
+      try {
+        const dt = new Date(d);
+        if (!Number.isNaN(dt.getTime())) {
+          const gbShort = new Intl.DateTimeFormat('en-GB', {
+            day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+          }).format(dt);
+          const gbLong = new Intl.DateTimeFormat('en-GB', {
+            day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+          }).format(dt);
+          const usShort = new Intl.DateTimeFormat('en-US', {
+            day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+          }).format(dt);
+          const usLong = new Intl.DateTimeFormat('en-US', {
+            day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+          }).format(dt);
+          formatted.push(gbShort, gbLong, usShort, usLong);
+        }
+      } catch (_) {}
+    }
+    return formatted;
+  });
   const sourceDates = (context.sources || []).flatMap((source) => [
     source.provider_date || '', source.page_date_text || '',
     source.excerpt_text || source.excerpt || '',
   ]);
-  const texts = [context.userText || '', ...recalledText, ...sourceDates, ...(context.sinceDates || [])];
+  const texts = [
+    context.today || '', context.userText || '',
+    ...recalledText, ...recalledDates, ...sourceDates, ...(context.sinceDates || []),
+  ];
   return texts.some((text) => dateMentions(text).some(({ parsed }) => (
     parsed.month === wanted.month && parsed.day === wanted.day
     && (wanted.year == null || parsed.year === wanted.year)
