@@ -219,7 +219,7 @@ test('uses only compact recent-turn context and keeps each turn once', async () 
   store.close();
 });
 
-test('refreshes topic recall after a completed streaming answer', () => {
+test('refreshes topic recall after a streaming turn transitions to stored status', () => {
   const store = new Store(':memory:');
   const turn = store.createTurn({ userText: 'What is index design?', timezone: 'Asia/Kolkata' });
   store.appendAssistantText(turn.id, 'We discussed partial PostgreSQL indexes and query planning.');

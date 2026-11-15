@@ -46,10 +46,14 @@ export const config = Object.freeze({
     ? null : Number(process.env.GEMINI_TEMPERATURE),
   maxExtractsPerQuery: Math.min(3, number('MAX_EXTRACTS_PER_QUERY', 1)),
   tavilyKey: process.env.TAVILY_API_KEY || '',
-  demoMode: process.env.DEMO_MODE === '1' || process.env.DEMO_MODE === 'true',
-  searchBackend: (process.env.DEMO_MODE === '1' || process.env.DEMO_MODE === 'true')
-    ? 'replay'
-    : (process.env.SEARCH_BACKEND === 'replay' ? 'replay' : 'tavily'),
+  get demoMode() {
+    return process.env.DEMO_MODE === '1' || process.env.DEMO_MODE === 'true';
+  },
+  get searchBackend() {
+    return (process.env.DEMO_MODE === '1' || process.env.DEMO_MODE === 'true')
+      ? 'replay'
+      : (process.env.SEARCH_BACKEND === 'replay' ? 'replay' : 'tavily');
+  },
   graderKey: process.env.EVAL_GRADER_API_KEY || '',
   graderModel: process.env.EVAL_GRADER_MODEL || '',
   graderBaseUrl: process.env.EVAL_GRADER_BASE_URL || '',
@@ -79,7 +83,7 @@ export const userFacing = Object.freeze({
   genericFailure: 'The request could not be completed. Please try again.',
 });
 
-/** Replay is a complete local search backend; live mode needs a Tavily key. */
+/** Replay provides a standalone local search backend; live mode needs a Tavily key. */
 export function isSearchReady(settings = config) {
   return settings.searchBackend === 'replay' || Boolean(settings.tavilyKey);
 }

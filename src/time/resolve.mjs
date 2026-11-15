@@ -175,12 +175,12 @@ function parseRangeDateComponent(str, today, context = {}) {
   return null;
 }
 
-function parseDateRangeSpan(part1, part2, today) {
+function parseDateRangeSpan(startPart, endPart, today) {
   const context = {};
-  const d1 = parseRangeDateComponent(part1, today, context);
+  const d1 = parseRangeDateComponent(startPart, today, context);
   if (!d1) return null;
   context.baseDate = d1;
-  const d2 = parseRangeDateComponent(part2, today, context);
+  const d2 = parseRangeDateComponent(endPart, today, context);
   if (!d2) return null;
   return d1 <= d2 ? { from: d1, to: d2 } : { from: d2, to: d1 };
 }

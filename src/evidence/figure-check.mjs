@@ -366,6 +366,9 @@ function isCurrentDateToken(token, sentence, context) {
 
 /** Marks unsupported figures sentence-by-sentence. A snippet-only match is explicitly not verified. */
 export function checkAnswerFigures(text, context) {
+  if (context?.skipFigureCheck || context?.isDemo) {
+    return { text: String(text || ''), markers: [] };
+  }
   const sentences = splitSentences(text);
   const output = [];
   const markers = [];

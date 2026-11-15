@@ -37,13 +37,21 @@ function quotaExhaustionMessage(seconds = 20) {
 }
 
 const callTimestamps = [];
+let adaptiveWaitMs = 0;
 
 export function resetThrottle() {
   callTimestamps.length = 0;
   modelThrottledUntil.clear();
+  adaptiveWaitMs = 0;
 }
 
 async function throttle(signal, onWait) {
+  if (adaptiveWaitMs > 0) {
+    const waitDuration = adaptiveWaitMs;
+    adaptiveWaitMs = Math.max(0, Math.floor(adaptiveWaitMs * 0.6));
+    onWait?.(waitDuration);
+    await wait(waitDuration, signal);
+  }
   const limit = config.geminiRequestsPerMinute;
   if (!limit || limit <= 0) return;
   while (true) {
@@ -306,6 +314,7 @@ export async function generateStream({
         if (error instanceof ProviderError && error.status === 429) {
           if (callTimestamps.length) callTimestamps.pop();
           const waitMs = error.retryAfterMs ?? 5000;
+          adaptiveWaitMs = Math.min(8000, Math.max(waitMs, adaptiveWaitMs + 1500));
           if (waitMs <= 2000 && attempt === 1) {
             if (totalBackoffMs + waitMs > (config.maxTurnBackoffMs || 10_000)) {
               break;
@@ -441,6 +450,7 @@ export async function generateJson({ prompt, schema, signal, onRetry, onStatus, 
         if (error instanceof ProviderError && error.status === 429) {
           if (callTimestamps.length) callTimestamps.pop();
           const waitMs = error.retryAfterMs ?? 5000;
+          adaptiveWaitMs = Math.min(8000, Math.max(waitMs, adaptiveWaitMs + 1500));
           if (waitMs <= 2000 && attempt === 1) {
             if (totalBackoffMs + waitMs > (config.maxTurnBackoffMs || 10_000)) {
               break;

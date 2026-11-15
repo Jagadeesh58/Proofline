@@ -341,7 +341,7 @@ test('accepts a genuinely supported amount from the excerpt window sent to the m
     userText: 'Compare Pipedrive pricing.', recalled: [], claims: [], cards: [],
     entities: [{ name: 'Pipedrive', key: 'pipedrive', domain: 'pipedrive.com' }],
     sources: [{ title: 'Pipedrive pricing', registrable_domain: 'pipedrive.com', retrieval_kind: 'page_text',
-      page_text: 'The complete page contains navigation and details.',
+      page_text: 'The full page contains navigation and details.',
       excerpt_text: 'Pipedrive Starter costs $15 per user per month.' }],
   });
   assert.doesNotMatch(result.text, /figure not verified/);
@@ -797,7 +797,7 @@ test('findVerbatimSlice extracts exact verbatim substring from page text despite
   assert.equal(findVerbatimSlice(page, 'costs $999 per month for unlimited users'), null);
 });
 
-test('claims pipeline extracts verbatim quote directly matching stored page text with 100% faithfulness', () => {
+test('claims pipeline extracts verbatim quote directly matching stored page text faithfully', () => {
   const pageText = 'Pipedrive Essential costs $15 per user per month with no commitment.';
   const { store, turn, source } = makePageStore(pageText);
 

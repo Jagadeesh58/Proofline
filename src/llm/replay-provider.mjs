@@ -287,10 +287,16 @@ export async function replayStreamExecution({
       + 'and Supabase Pro remains at $25 per month flat fee [S2]. The pricing and architecture trade-offs '
       + 'from your earlier answer remain accurate today.';
   } else if (promptId === 3) {
-    continuation =
-      'Official pricing pages show that Neon Launch remains at $19 per month on usage billing [S1], '
-      + 'and Supabase Pro remains at $25 per month flat fee [S2]. No pricing changes have been detected '
-      + 'for either provider since last Tuesday.';
+    if (matchingTurn) {
+      continuation =
+        'Official pricing pages show that Neon Launch remains at $19 per month on usage billing [S1], '
+        + 'and Supabase Pro remains at $25 per month flat fee [S2]. No pricing changes have been detected '
+        + 'for either provider since last Tuesday.';
+    } else {
+      continuation =
+        'The fixture page lists Neon Launch at $19 per month on usage billing [S1], '
+        + 'and Supabase Pro at $25 per month flat fee [S2].';
+    }
   }
 
   const answerText = firstSentence + continuation;

@@ -127,6 +127,24 @@ async function serveStatic(request, response, pathname) {
   return true;
 }
 
+export function seedDemoHistory(store, timezone = config.timezone) {
+  try {
+    const existing = store.listTurns(1000).filter((item) => item.is_demo);
+    if (existing.length >= 3) return 0;
+    const demoPath = path.join(ROOT, 'src/seeds/demo-history.json');
+    if (!fs.existsSync(demoPath)) return 0;
+    const demoTurns = JSON.parse(fs.readFileSync(demoPath, 'utf8'));
+    const missing = demoTurns.filter((item) => !existing.some((turn) => turn.user_text === item.user_text));
+    if (!missing.length) return 0;
+    const imported = store.importTurns(missing.map((item) => ({
+      ...item, timezone, demo: true,
+    })), timezone);
+    return imported.length;
+  } catch {
+    return 0;
+  }
+}
+
 export function createServer(
   store = new Store(config.dbPath),
   {
@@ -136,6 +154,9 @@ export function createServer(
     sessionBudget = null,
   } = {}
 ) {
+  if (config.demoMode || process.env.DEMO_MODE || process.env.RENDER || process.env.HOSTED) {
+    seedDemoHistory(store, config.timezone);
+  }
   let globalDailyCount = 0;
   let globalDailyDate = new Date().toISOString().slice(0, 10);
   const sessionCounts = new Map();
@@ -215,6 +236,9 @@ export function createServer(
 
       if (request.method === 'GET' && pathname === '/api/history') {
         const sessionId = getSessionId(request, response);
+        if (config.demoMode || process.env.DEMO_MODE || process.env.RENDER || process.env.HOSTED) {
+          seedDemoHistory(store, config.timezone);
+        }
         return json(response, 200, { turns: store.listTurns(100, sessionId) });
       }
 
@@ -298,6 +322,9 @@ export function createServer(
 
       if (request.method === 'POST' && pathname === '/api/chat') {
         const sessionId = getSessionId(request, response);
+        if (config.demoMode || process.env.DEMO_MODE || process.env.RENDER || process.env.HOSTED) {
+          seedDemoHistory(store, config.timezone);
+        }
         if (!hasAvailableBudget(sessionId)) {
           return json(response, 429, {
             error: 'Demo limit reached, try running locally via instructions in README.',

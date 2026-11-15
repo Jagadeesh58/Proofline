@@ -20,7 +20,7 @@ function sseResponse(parts, status = 200) {
   return new Response(data, { status, headers: { 'content-type': 'text/event-stream' } });
 }
 
-test('replays the complete Gemini model parts including thoughtSignature', async () => {
+test('replays Gemini model parts including thoughtSignature', async () => {
   const calls = [];
   const previousFetch = globalThis.fetch;
   globalThis.fetch = async (url, options) => {

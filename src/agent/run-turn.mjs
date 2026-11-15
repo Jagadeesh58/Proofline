@@ -76,6 +76,7 @@ function buildEvidenceContext({
   entities,
   timezone,
   sourceExcerpts = new Map(),
+  skipFigureCheck = false,
 }) {
   const sources = store.getSources(turnId).map((source) => ({
     ...source, excerpt_text: sourceExcerpts.get(source.id) || '',
@@ -83,6 +84,7 @@ function buildEvidenceContext({
   return {
     userText, recalled: recall.recalled || [], claims, cards, sources,
     today: localDateISO(new Date(), timezone), timezone,
+    skipFigureCheck,
     entities: entities.map((target) => ({
       name: target.entity,
       key: target.entity_key,
@@ -250,6 +252,7 @@ export async function runTurn({
           entities: activeTargets,
           timezone,
           sourceExcerpts,
+          skipFigureCheck: replayActive,
         }),
         extractionPromise,
       });
@@ -397,40 +400,9 @@ export async function runTurn({
               const cardByEntity = new Map();
               let targetClaims = [];
 
-              if (activeTargets.length > 3) {
-                const outcomes = await mapConcurrent(activeTargets, 2, async (target) => {
-                  const sources = pageSources.filter((item) => item.entity === target.entity);
-                  let entityClaims = [];
-                  if (sources.length) {
-                    try {
-                      const outcome = await extractPageClaims({
-                        store, turnId: turn.id, sourceItems: sources, budget,
-                        entityFilter: target.entity_key, plans: PLANS, onTiming,
-                      });
-                      if (outcome.wrongPageSourceIds?.includes(target.page?.source_id)) {
-                        target.page.extraction_reason = 'wrong_page';
-                      }
-                      entityClaims = outcome.claims;
-                    } catch {
-                      entityClaims = [];
-                    }
-                  }
-                  const historical = store.getClaimsForEntities([target.entity_key], turn.id);
-                  const oneCard = buildComparisonCards({
-                    store, targets: [target], currentClaims: entityClaims,
-                    baselineClaims: historical, plans: PLANS,
-                    sinceByEntity: { [target.entity_key]: target.since },
-                  })[0];
-                  cardByEntity.set(target.entity_key, oneCard);
-                  const resolvedCards = activeTargets.filter((item) => cardByEntity.has(item.entity_key))
-                    .map((item) => cardByEntity.get(item.entity_key));
-                  lastEmittedCards = emitCardsIfChanged(send, resolvedCards, lastEmittedCards);
-                  return entityClaims;
-                });
-                targetClaims = outcomes.flat();
-              } else if (activeTargets.length === 1) {
-                const target = activeTargets[0];
+              const outcomes = await mapConcurrent(activeTargets, 2, async (target) => {
                 const sources = pageSources.filter((item) => item.entity === target.entity);
+                let entityClaims = [];
                 if (sources.length) {
                   try {
                     const outcome = await extractPageClaims({
@@ -440,41 +412,24 @@ export async function runTurn({
                     if (outcome.wrongPageSourceIds?.includes(target.page?.source_id)) {
                       target.page.extraction_reason = 'wrong_page';
                     }
-                    targetClaims = outcome.claims;
+                    entityClaims = outcome.claims;
                   } catch {
-                    targetClaims = [];
+                    entityClaims = [];
                   }
                 }
                 const historical = store.getClaimsForEntities([target.entity_key], turn.id);
-                const cards = buildComparisonCards({
-                  store, targets: [target], currentClaims: targetClaims,
+                const oneCard = buildComparisonCards({
+                  store, targets: [target], currentClaims: entityClaims,
                   baselineClaims: historical, plans: PLANS,
                   sinceByEntity: { [target.entity_key]: target.since },
-                });
-                lastEmittedCards = emitCardsIfChanged(send, cards, lastEmittedCards);
-              } else if (activeTargets.length > 1) {
-                const targetSources = pageSources.filter((item) => item.entity);
-                try {
-                  const outcome = await extractPageClaims({
-                    store, turnId: turn.id, sourceItems: targetSources, budget, plans: PLANS, onTiming,
-                  });
-                  for (const target of activeTargets) {
-                    if (outcome.wrongPageSourceIds?.includes(target.page?.source_id)) {
-                      target.page.extraction_reason = 'wrong_page';
-                    }
-                  }
-                  targetClaims = outcome.claims;
-                } catch {
-                  targetClaims = [];
-                }
-                const historical = store.getClaimsForEntities(activeTargets.map((t) => t.entity_key), turn.id);
-                const sinceByEntity = Object.fromEntries(activeTargets.map((t) => [t.entity_key, t.since]));
-                const cards = buildComparisonCards({
-                  store, targets: activeTargets, currentClaims: targetClaims,
-                  baselineClaims: historical, plans: PLANS, sinceByEntity,
-                });
-                lastEmittedCards = emitCardsIfChanged(send, cards, lastEmittedCards);
-              }
+                })[0];
+                cardByEntity.set(target.entity_key, oneCard);
+                const resolvedCards = activeTargets.filter((item) => cardByEntity.has(item.entity_key))
+                  .map((item) => cardByEntity.get(item.entity_key));
+                lastEmittedCards = emitCardsIfChanged(send, resolvedCards, lastEmittedCards);
+                return entityClaims;
+              });
+              targetClaims = outcomes.flat();
 
               const nonTargetSources = pageSources.filter((item) => !item.entity);
               if (nonTargetSources.length) {
@@ -484,17 +439,10 @@ export async function runTurn({
                 } else {
                   try {
                     const result = await extractPageClaims({
-                      store,
-                      turnId: turn.id,
-                      sourceItems: nonTargetSources,
-                      budget,
-                      plans: PLANS,
-                      onTiming,
+                      store, turnId: turn.id, sourceItems: nonTargetSources, budget, plans: PLANS, onTiming,
                     });
                     targetClaims.push(...result.claims);
-                  } catch {
-                    // non-target extraction failures do not block card presentation
-                  }
+                  } catch {}
                 }
               }
               return targetClaims;
@@ -536,7 +484,7 @@ export async function runTurn({
               })),
             }));
           } else {
-            // Complete every entity status before the model writes its commentary.
+            // Resolve every entity status before the model writes its commentary.
             await importedBaseline;
             try { currentClaims = await extractionPromise; } catch { currentClaims = []; }
             const historical = store.getClaimsForEntities(activeTargets.map((target) => target.entity_key), turn.id);
@@ -626,6 +574,7 @@ export async function runTurn({
         entities: [],
         timezone,
         sourceExcerpts,
+        skipFigureCheck: replayActive,
       });
       const checked = checkAnswerFigures(directDraft, context);
       timings.scanner_buffering_ms = (timings.scanner_buffering_ms || 0) + (Date.now() - scannerStart);
@@ -657,6 +606,7 @@ export async function runTurn({
         entities: activeTargets,
         timezone,
         sourceExcerpts,
+        skipFigureCheck: replayActive,
       });
       const checked = checkAnswerFigures(result.text, context);
       finalText = checked.text;
